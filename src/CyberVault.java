@@ -306,3 +306,16 @@ public class CyberVault extends JFrame {
         bg.add(authCard, wrap);
         return bg;
     }
+
+    void configureAuthMode() {
+        boolean first = !vault.exists();
+        authTitle.setText(first ? "INITIALIZE VAULT" : "ACCESS VAULT");
+        authTitle.setForeground(first ? NEON_YEL : NEON_GRN);
+        authSub.setText(first ? "// first run \u2014 create a master key (not recoverable)"
+                : "// enter master key to decrypt");
+        authLbl2.setVisible(first); authPass2.setVisible(first);
+        authBtn.setText(first ? "\u25B6 INITIALIZE VAULT" : "\u25B6 ACCESS VAULT");
+        authStatus.setText(" ");
+        authPass.setText(""); authPass2.setText("");
+        authCard.revalidate(); authCard.repaint();
+    }
