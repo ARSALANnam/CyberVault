@@ -169,3 +169,56 @@ public class CyberVault extends JFrame {
         configureAuthMode();
         screens.layout.show(screenHolder, "AUTH");
     }
+
+    static class CardLayoutScreens { java.awt.CardLayout layout = new java.awt.CardLayout(); }
+
+    public static void main(String[] args) {
+        try { UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName()); } catch (Exception ignored) {}
+        SwingUtilities.invokeLater(() -> new CyberVault().setVisible(true));
+    }
+
+    /* TITLE BAR */
+    JPanel buildTitleBar() {
+        JPanel bar = new JPanel(new BorderLayout());
+        bar.setBackground(BG_PANEL);
+        bar.setPreferredSize(new Dimension(0, 36));
+        bar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, LINE));
+        JLabel t = label("  CYBERVAULT // PERSONAL DATA TERMINAL", F_MONO_S, TXT_DIM);
+        bar.add(t, BorderLayout.WEST);
+        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 6));
+        btns.setOpaque(false);
+        btns.add(miniBtn("\u2500", ev -> setState(JFrame.ICONIFIED), NEON_CYAN));
+        btns.add(miniBtn("\u2715", ev -> System.exit(0), NEON_PINK));
+        bar.add(btns, BorderLayout.EAST);
+        MouseAdapter drag = windowDrag(this);
+        bar.addMouseListener(drag); bar.addMouseMotionListener(drag);
+        t.addMouseListener(drag);   t.addMouseMotionListener(drag);
+        return bar;
+    }
+
+    JButton miniBtn(String txt, ActionListener al, Color hover) {
+        JButton b = new JButton(txt);
+        b.setFont(F_MONO_S);
+        b.setForeground(TXT_DIM);
+        b.setPreferredSize(new Dimension(28, 22));
+        b.setMargin(new Insets(0, 0, 0, 0));
+        b.setContentAreaFilled(false); b.setBorderPainted(false); b.setFocusPainted(false);
+        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        b.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) { b.setForeground(hover); }
+            public void mouseExited(MouseEvent e)  { b.setForeground(TXT_DIM); }
+        });
+        b.addActionListener(al);
+        return b;
+    }
+
+    static MouseAdapter windowDrag(Window w) {
+        return new MouseAdapter() {
+            Point start, winStart;
+            public void mousePressed(MouseEvent e) { start = e.getLocationOnScreen(); winStart = w.getLocation(); }
+            public void mouseDragged(MouseEvent e) {
+                Point p = e.getLocationOnScreen();
+                w.setLocation(winStart.x + p.x - start.x, winStart.y + p.y - start.y);
+            }
+        };
+    }
