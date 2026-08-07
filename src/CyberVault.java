@@ -509,3 +509,65 @@ public class CyberVault extends JFrame {
         passScroll.revalidate();
         updateStats();
     }
+
+    JPanel buildPasswordCard(PasswordEntry e) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(BG_CARD);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(LINE),
+                        BorderFactory.createMatteBorder(0, 3, 0, 0, NEON_CYAN)),
+                empty(14, 16, 12, 14)));
+
+        JPanel head = new JPanel(new BorderLayout());
+        head.setOpaque(false);
+        JPanel ttl = new JPanel(new GridLayout(0, 1, 0, 2));
+        ttl.setOpaque(false);
+        ttl.add(label(e.title.toUpperCase(), pickMono(Font.BOLD, 14f), TXT));
+        ttl.add(label("ADDED " + fmtDate(e.created), F_MONO_S, new Color(0x555C82)));
+        head.add(ttl, BorderLayout.CENTER);
+
+        JPanel acts = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        acts.setOpaque(false);
+        JButton edit = chip("EDIT", NEON_CYAN);
+        JButton del = chip("DEL", NEON_PINK);
+        edit.addActionListener(ev -> openPasswordDialog(e));
+        del.addActionListener(ev -> {
+            if (confirmAction("DELETE \"" + e.title.toUpperCase() + "\" PERMANENTLY?")) {
+                vault.data.passwords.remove(e);
+                saveVault(); refreshPasswords();
+            }
+        });
+        acts.add(edit); acts.add(del);
+        head.add(acts, BorderLayout.EAST);
+        card.add(head, BorderLayout.NORTH);
+
+        JPanel body = new JPanel(new GridLayout(0, 1, 0, 7));
+        body.setOpaque(false);
+        body.setBorder(empty(12, 0, 10, 0));
+
+        body.add(row("USER/MAIL", label(cut(e.username, 60), F_MONO, TXT), actsOf(copyChip(e.username))));
+
+        JLabel pv = label(mask(e.password.length()), F_MONO, NEON_PINK);
+        JButton show = chip("SHOW", NEON_YEL);
+        JButton copyPw = copyChip(e.password);
+        boolean[] vis = { false };
+        show.addActionListener(ev -> {
+            vis[0] = !vis[0];
+            pv.setText(vis[0] ? cut(e.password, 60) : mask(e.password.length()));
+            pv.setForeground(vis[0] ? NEON_GRN : NEON_PINK);
+            show.setText(vis[0] ? "HIDE" : "SHOW");
+        });
+        body.add(row("PASSWORD", pv, actsOf(show, copyPw)));
+
+        if (!e.url.isEmpty()) {
+            JButton open = chip("OPEN", NEON_CYAN);
+            open.addActionListener(ev -> openUrl(e.url));
+            body.add(row("URL", label(cut(e.url, 60), F_MONO, NEON_CYAN), actsOf(open, copyChip(e.url))));
+        }
+        if (!e.notes.isEmpty())
+            body.add(row("NOTES", label(cut(e.notes, 70), F_MONO, TXT_DIM), null));
+
+        card.add(body, BorderLayout.CENTER);
+        return card;
+    }
