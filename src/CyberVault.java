@@ -83,6 +83,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
+
+
 public class CyberVault extends JFrame {
 
     /* THEME */
@@ -134,5 +137,35 @@ public class CyberVault extends JFrame {
     JCheckBox gUp, gLo, gDg, gSy, gAmb;
     StrengthMeter meter;
 
-
     Timer clipClear;
+
+
+
+
+
+    /* FRAME */
+    CyberVault() {
+        setTitle("CYBERVAULT");
+        try {
+            java.net.URL iconUrl = CyberVault.class.getResource("/assets/icon.png");
+            if (iconUrl != null) setIconImage(Toolkit.getDefaultToolkit().getImage(iconUrl));
+        } catch (Exception ignored) {}
+        setUndecorated(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1080, 700);
+        setMinimumSize(new Dimension(940, 620));
+        setLocationRelativeTo(null);
+
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(BG);
+        root.setBorder(BorderFactory.createLineBorder(shade(NEON_CYAN, 0.55f)));
+        root.add(buildTitleBar(), BorderLayout.NORTH);
+        root.add(screenHolder, BorderLayout.CENTER);
+        setContentPane(root);
+
+        screenHolder.setBackground(BG);
+        screenHolder.add(buildAuthScreen(), "AUTH");
+        screenHolder.add(buildAppScreen(), "APP");
+        configureAuthMode();
+        screens.layout.show(screenHolder, "AUTH");
+    }
