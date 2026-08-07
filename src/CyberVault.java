@@ -319,3 +319,34 @@ public class CyberVault extends JFrame {
         authPass.setText(""); authPass2.setText("");
         authCard.revalidate(); authCard.repaint();
     }
+
+    void authAction() {
+        char[] p1 = authPass.getPassword();
+        char[] p2 = authPass2.getPassword();
+        try {
+            if (vault.exists()) {
+                authStatus.setText("// decrypting\u2026");
+                if (vault.unlock(p1)) enterApp();
+                else { authStatus.setText("\u2715 ACCESS DENIED \u2014 WRONG MASTER KEY"); flashAuthError(); }
+            } else {
+                if (p1.length < 6) { authStatus.setText("\u2715 MASTER KEY TOO SHORT (MIN 6)"); return; }
+                if (!Arrays.equals(p1, p2)) { authStatus.setText("\u2715 KEYS DO NOT MATCH"); return; }
+                vault.create(p1);
+                enterApp();
+            }
+        } catch (Exception ex) {
+            authStatus.setText("\u2715 ERROR: " + ex.getClass().getSimpleName());
+        } finally {
+            Arrays.fill(p1, '\0'); Arrays.fill(p2, '\0');
+        }
+    }
+
+    void flashAuthError() {
+        authCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(NEON_PINK),
+                        BorderFactory.createMatteBorder(0, 4, 0, 0, NEON_PINK)),
+                empty(28, 36, 28, 36)));
+        Timer t = new Timer(650, ev -> authCard.setBorder(authCardBorder));
+        t.setRepeats(false); t.start();
+    }
