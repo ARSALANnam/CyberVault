@@ -14,9 +14,7 @@
 </p>
 
 
-
 ## ✨ Features
-
 
 - 🔐  **Master-key vault** — PBKDF2 (120k iterations) + AES-256-GCM authenticated encryption 
 - 👤  **Password entries** — title, username / email, password, URL & notes 
@@ -30,25 +28,59 @@
 - 💾  **100% offline** — data lives only in `~/.cybervault/vault.dat` 
 
 
-## Requirements
-- JDK 8+
-
-## Build
-```bash
-./build.sh        # Linux / macOS
-build.bat         # Windows
-```
-
-# Run
-java -jar CyberVault.jar
-
-# Security
-- Vault file: ~/.cybervault/vault.dat (encrypted)
-- The master key is never stored and cannot be recovered.
-
-# ScreenShots 
+# 🖼 More screenshots
 
 <p align="center"><img src="assets/ScreeShot0-1.png" width="700"></p>
 <p align="center"><img src="assets/ScreeShot0-2.png" width="700"></p>
 <p align="center"><img src="assets/ScreeShot0-3.png" width="700"></p>
 <p align="center"><img src="assets/ScreeShot0-4.png" width="700"></p>
+
+
+## Requirements
+- JDK 8+
+
+
+## 🚀 Quick start
+
+**Linux / macOS**
+
+```bash
+./run.sh          # builds if needed, then runs
+```
+
+**Windows**
+
+```bat
+run.bat
+```
+
+Manual:
+
+```bash
+./build.sh                 # or build.bat on Windows
+java -jar CyberVault.jar
+```
+
+**First run:** create a master key (min 6 chars) → it is **never stored and cannot be recovered** → start adding entries.
+
+
+## 🔐 Security model
+
+```
+master key ──PBKDF2-HMAC-SHA256 (120 000 iters, 16 B salt)──▶ AES-256 key
+vault data ──serialize──▶ AES/GCM/NoPadding (12 B IV, 128-bit tag) ──▶ vault.dat
+```
+
+File format:
+
+```
+[ salt · 16 B ][ IV · 12 B ][ ciphertext + auth tag ]
+```
+
+- Wrong master key **or** a single tampered bit → decryption fails (GCM authentication).
+- Passwords are handled as `char[]` and zeroed in memory after use.
+- **Lock** clears key, salt and decrypted data from RAM.
+- Clipboard is cleared 20 s after copying (only if unchanged).
+
+> ⚠️ This is a personal project. Use it at your own risk and **don't forget your master key**.
+
