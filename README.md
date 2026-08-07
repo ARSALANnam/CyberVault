@@ -111,4 +111,6 @@ MIT — see [LICENSE](LICENSE).
 ---
 
 
-<p align="center">Made with ⚡ and pure Java Swing</p>
+<br>
+<br>
+<p align="center">Made with ⚡, pure Java Swing & an AI pair programmer</p>
