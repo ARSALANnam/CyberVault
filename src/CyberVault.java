@@ -756,3 +756,63 @@ public class CyberVault extends JFrame {
         card.add(body, BorderLayout.CENTER);
         return card;
     }
+
+
+    void openTokenDialog(TokenEntry ex) {
+        JDialog d = cyberDialog(ex == null ? "NEW API TOKEN" : "EDIT API TOKEN", NEON_PURP);
+        JTextField fName = field();
+        JPasswordField fTok = passField();
+        JTextArea fNotes = area();
+        if (ex != null) { fName.setText(ex.name); fTok.setText(ex.token); fNotes.setText(ex.notes); }
+        JLabel err = label(" ", F_MONO_S, NEON_PINK);
+
+        JButton show = chip("SHOW", NEON_YEL);
+        boolean[] vis = { false };
+        show.addActionListener(ev -> { vis[0] = !vis[0]; fTok.setEchoChar(vis[0] ? (char) 0 : '\u2022'); show.setText(vis[0] ? "HIDE" : "SHOW"); });
+        JPanel tokRow = new JPanel(new BorderLayout(8, 0));
+        tokRow.setBackground(BG_PANEL);
+        tokRow.add(fTok, BorderLayout.CENTER);
+        tokRow.add(show, BorderLayout.EAST);
+
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setOpaque(false);
+        addFormRow(form, 0, "PROVIDER *", fName);
+        addFormRow(form, 1, "TOKEN *", tokRow);
+        JScrollPane ns = new JScrollPane(fNotes);
+        ns.setPreferredSize(new Dimension(0, 74));
+        ns.setBorder(BorderFactory.createLineBorder(LINE));
+        styleScroll(ns); ns.getViewport().setBackground(BG_FIELD);
+        addFormRow(form, 2, "NOTES", ns);
+
+        JPanel body = new JPanel(new BorderLayout(0, 16));
+        body.setBackground(BG_PANEL);
+        body.setBorder(empty(22, 24, 24, 24));
+        body.add(form, BorderLayout.CENTER);
+
+        JPanel foot = new JPanel(new BorderLayout(0, 10));
+        foot.setOpaque(false);
+        foot.add(err, BorderLayout.CENTER);
+        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        btns.setOpaque(false);
+        CyberButton save = new CyberButton("SAVE TOKEN", NEON_PURP, true);
+        CyberButton cancel = new CyberButton("CANCEL", TXT_DIM, false);
+        save.addActionListener(ev -> {
+            String n = fName.getText().trim();
+            String t = new String(fTok.getPassword()).trim();
+            if (n.isEmpty() || t.isEmpty()) { err.setText("\u2715 PROVIDER & TOKEN ARE REQUIRED"); return; }
+            TokenEntry ent = ex != null ? ex : new TokenEntry();
+            ent.name = n; ent.token = t; ent.notes = fNotes.getText().trim();
+            if (ex == null) vault.data.tokens.add(ent);
+            if (saveVault()) { refreshTokens(); d.dispose(); }
+        });
+        cancel.addActionListener(ev -> d.dispose());
+        btns.add(save); btns.add(cancel);
+        foot.add(btns, BorderLayout.SOUTH);
+        body.add(foot, BorderLayout.SOUTH);
+
+        d.add(body, BorderLayout.CENTER);
+        d.setSize(520, 390);
+        d.setLocationRelativeTo(this);
+        escapeToClose(d);
+        d.setVisible(true);
+    }
