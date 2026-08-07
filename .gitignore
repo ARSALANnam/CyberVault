@@ -1,4 +1,4 @@
-# ── Build output ─────────────────────────
+# ── Build output 
 build/
 target/
 out/
@@ -6,11 +6,11 @@ dist/
 *.class
 *.jar
 
-# ── Maven leftovers (پروژه جاوا خالصه) ───
+# ── Maven leftovers 
 .mvn/
 pom.xml
 
-# ── IDE ─────────────────────────────────
+# ── IDE 
 .idea/
 *.iml
 .vscode/
@@ -21,14 +21,14 @@ pom.xml
 *.swo
 
 
-# ── Vault data — هرگز کامیت نشه! ────────
+# ── Vault data 
 vault.dat
 .cybervault/
 
-# ── OS junk ──────────────────────────────
+# ── OS junk 
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# ── Logs ────────────────────────────────
+# ── Logs 
 *.log
