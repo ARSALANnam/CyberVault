@@ -378,9 +378,32 @@ public class CyberVault extends JFrame {
     void initTray() {
         if (!SystemTray.isSupported()) return;
         try {
-            java.awt.Image img = null;
-            java.net.URL u = CyberVault.class.getResource("/icon.png");
-            if (u != null) img = Toolkit.getDefaultToolkit().getImage(u);
+            java.net.URL u = CyberVault.class.getResource("/tray.png");
+            if (u == null) u = CyberVault.class.getResource("/icon.png");
+            if (u == null) return;
+            java.awt.image.BufferedImage src = javax.imageio.ImageIO.read(u);
+
+            // برش خودکار حاشیه روشن دور مربع سیاه
+            int x0 = src.getWidth(), y0 = src.getHeight(), x1 = 0, y1 = 0;
+            for (int y = 0; y < src.getHeight(); y++)
+                for (int x = 0; x < src.getWidth(); x++) {
+                    int rgb = src.getRGB(x, y);
+                    if (((rgb >> 16) & 255) + ((rgb >> 8) & 255) + (rgb & 255) < 300) {
+                        if (x < x0) x0 = x; if (x > x1) x1 = x;
+                        if (y < y0) y0 = y; if (y > y1) y1 = y;
+                    }
+                }
+            if (x1 > x0 && y1 > y0)
+                src = src.getSubimage(x0, y0, x1 - x0 + 1, y1 - y0 + 1);
+
+            int size = 16;   // اگه کوچیک یا crop دیدی: 48
+            java.awt.image.BufferedImage icon = new java.awt.image.BufferedImage(
+                size, size, java.awt.image.BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2 = icon.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            g2.drawImage(src, 0, 0, size, size, null);
+            g2.dispose();
 
             PopupMenu menu = new PopupMenu();
             MenuItem open = new MenuItem("Open CyberVault");
@@ -391,12 +414,13 @@ public class CyberVault extends JFrame {
             exit.addActionListener(ev -> System.exit(0));
             menu.add(open); menu.add(lock); menu.addSeparator(); menu.add(exit);
 
-            TrayIcon icon = new TrayIcon(img, "CyberVault", menu);
-            icon.setImageAutoSize(true);
-            icon.addActionListener(ev -> showWindow());
-            SystemTray.getSystemTray().add(icon);
+            TrayIcon ti = new TrayIcon(icon, "CyberVault", menu);
+            ti.setImageAutoSize(false);
+            ti.addActionListener(ev -> showWindow());
+            SystemTray.getSystemTray().add(ti);
         } catch (Exception ignored) {}
     }
+
 
     void showWindow() {
         setVisible(true);
