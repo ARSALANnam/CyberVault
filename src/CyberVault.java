@@ -972,3 +972,113 @@ public class CyberVault extends JFrame {
         if (bits < 100) return "STRONG";
         return "ELITE";
     }
+
+
+    /* DIALOGS & ACTIONS */
+    JDialog cyberDialog(String title, Color accent) {
+        JDialog d = new JDialog(this, true);
+        d.setUndecorated(true);
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(BG_PANEL);
+        root.setBorder(BorderFactory.createLineBorder(accent));
+        JPanel bar = new JPanel(new BorderLayout());
+        bar.setBackground(BG);
+        bar.setPreferredSize(new Dimension(0, 32));
+        bar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, LINE));
+        JLabel t = label("  // " + title, F_MONO_S, accent);
+        bar.add(t, BorderLayout.WEST);
+        JButton x = miniBtn("\u2715", ev -> d.dispose(), NEON_PINK);
+        JPanel xr = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 3));
+        xr.setOpaque(false); xr.add(x);
+        bar.add(xr, BorderLayout.EAST);
+        root.add(bar, BorderLayout.NORTH);
+        MouseAdapter drag = windowDrag(d);
+        bar.addMouseListener(drag); bar.addMouseMotionListener(drag);
+        t.addMouseListener(drag);   t.addMouseMotionListener(drag);
+        d.setContentPane(root);
+        return d;
+    }
+
+    boolean confirmAction(String msg) {
+        JDialog d = cyberDialog("CONFIRM ACTION", NEON_PINK);
+        JPanel body = new JPanel(new BorderLayout(0, 20));
+        body.setBackground(BG_PANEL);
+        body.setBorder(empty(24, 26, 24, 26));
+        body.add(label("<html>" + msg + "</html>", F_MONO, TXT), BorderLayout.CENTER);
+        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        btns.setOpaque(false);
+        boolean[] r = { false };
+        CyberButton yes = new CyberButton("CONFIRM", NEON_PINK, true);
+        CyberButton no = new CyberButton("CANCEL", NEON_CYAN, false);
+        yes.addActionListener(ev -> { r[0] = true; d.dispose(); });
+        no.addActionListener(ev -> d.dispose());
+        btns.add(yes); btns.add(no);
+        body.add(btns, BorderLayout.SOUTH);
+        d.add(body, BorderLayout.CENTER);
+        d.setSize(440, 150);
+        d.setLocationRelativeTo(this);
+        escapeToClose(d);
+        d.setVisible(true);
+        return r[0];
+    }
+
+    void alert(String msg) {
+        JDialog d = cyberDialog("SYSTEM ALERT", NEON_PINK);
+        JPanel body = new JPanel(new BorderLayout(0, 18));
+        body.setBackground(BG_PANEL);
+        body.setBorder(empty(24, 26, 24, 26));
+        body.add(label(msg, F_MONO, TXT), BorderLayout.CENTER);
+        CyberButton ok = new CyberButton("OK", NEON_CYAN, true);
+        ok.addActionListener(ev -> d.dispose());
+        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        btns.setOpaque(false); btns.add(ok);
+        body.add(btns, BorderLayout.SOUTH);
+        d.add(body, BorderLayout.CENTER);
+        d.setSize(420, 150);
+        d.setLocationRelativeTo(this);
+        escapeToClose(d);
+        d.setVisible(true);
+    }
+
+    boolean saveVault() {
+        try { vault.save(); return true; }
+        catch (Exception ex) { alert("VAULT SAVE FAILED: " + ex.getMessage()); return false; }
+    }
+
+    void copyText(String s, JButton src) {
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(s), null);
+        if (clipClear != null) clipClear.stop();
+        clipClear = new Timer(20000, ev -> {
+            try {
+                Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+                if (cb.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+                    String cur = (String) cb.getData(DataFlavor.stringFlavor);
+                    if (s.equals(cur)) cb.setContents(new StringSelection(""), null);
+                }
+            } catch (Exception ignored) {}
+        });
+        clipClear.setRepeats(false);
+        clipClear.start();
+        String old = src.getText();
+        src.setText("\u2713 COPIED");
+        Timer back = new Timer(1100, ev -> src.setText(old));
+        back.setRepeats(false); back.start();
+    }
+
+    JButton copyChip(String secret) {
+        JButton b = chip("COPY", NEON_GRN);
+        b.addActionListener(ev -> copyText(secret, b));
+        return b;
+    }
+
+    void openUrl(String url) {
+        try {
+            String u = url.startsWith("http") ? url : "https://" + url;
+            Desktop.getDesktop().browse(new URI(u));
+        } catch (Exception ignored) {}
+    }
+
+    static void escapeToClose(JDialog d) {
+        d.getRootPane().registerKeyboardAction(ev -> d.dispose(),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
