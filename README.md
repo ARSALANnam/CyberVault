@@ -65,7 +65,7 @@ Manual:
 
 ```bash
 ./build.sh                 # or build.bat on Windows
-java -jar CyberVault.jar
+java -jar CyberVault-v.1.4.0.jar
 ```
 
 **First run:** create a master key (min 6 chars) → it is **never stored and cannot be recovered** → start adding entries.
@@ -124,7 +124,7 @@ then right-click its icon and **Add to Favorites** to pin it to your dock.
 CyberVault can live in your system tray (top bar) like a native citizen:
 
 ```bash
-java -jar CyberVault.jar --hidden   # start with only the tray icon
+java -jar CyberVault-v1.4.0.jar --hidden   # start with only the tray icon
 ```
 
 - **Click** the tray icon → opens the vault
