@@ -113,7 +113,6 @@ public class CyberVault extends JFrame {
     static final Font F_TITLE  = pickMono(Font.BOLD, 20f);
     static final Font F_BIG    = pickMono(Font.BOLD, 27f);
 
-
     final Vault vault = new Vault();
     final CardLayoutScreens screens = new CardLayoutScreens();
     final JPanel screenHolder = new JPanel(screens.layout);
