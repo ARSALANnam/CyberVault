@@ -363,3 +363,87 @@ public class CyberVault extends JFrame {
         configureAuthMode();
         screens.layout.show(screenHolder, "AUTH");
     }
+
+
+
+
+    /* MAIN APP */
+    JPanel buildAppScreen() {
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBackground(BG);
+        p.add(buildSidebar(), BorderLayout.WEST);
+        contentHolder = new JPanel(contentCards);
+        contentHolder.setBackground(BG);
+        contentHolder.add(buildPasswordsPanel(), "PASS");
+        contentHolder.add(buildTokensPanel(), "TOK");
+        contentHolder.add(buildGeneratorPanel(), "GEN");
+        p.add(contentHolder, BorderLayout.CENTER);
+        return p;
+    }
+
+    JPanel buildSidebar() {
+        JPanel sb = new JPanel(new BorderLayout());
+        sb.setBackground(BG_PANEL);
+        sb.setPreferredSize(new Dimension(232, 0));
+        sb.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, LINE));
+
+        JPanel brand = new JPanel(new BorderLayout(12, 0));
+        brand.setOpaque(false);
+        brand.setBorder(empty(18, 16, 18, 12));
+        brand.add(new HexLogo(46), BorderLayout.WEST);
+        JPanel txts = new JPanel(new GridLayout(0, 1, 0, 2));
+        txts.setOpaque(false);
+        txts.add(label("CYBERVAULT", F_MONO_B, NEON_CYAN));
+        txts.add(label("v1.3.0 // SECURE", F_MONO_S, TXT_DIM));
+        brand.add(txts, BorderLayout.CENTER);
+        sb.add(brand, BorderLayout.NORTH);
+
+        JPanel navWrap = new JPanel(new GridBagLayout());
+        navWrap.setOpaque(false);
+        navWrap.setBorder(empty(6, 10, 6, 10));
+        GridBagConstraints g = new GridBagConstraints();
+        g.gridx = 0; g.fill = GridBagConstraints.HORIZONTAL; g.weightx = 1; g.insets = new Insets(3, 0, 3, 0);
+
+        navPass = new NavButton("> PASSWORDS", NEON_CYAN);
+        navTok  = new NavButton("> API TOKENS", NEON_PURP);
+        navGen  = new NavButton("> GENERATOR", NEON_YEL);
+        navPass.addActionListener(ev -> selectNav(navPass, "PASS"));
+        navTok.addActionListener(ev -> selectNav(navTok, "TOK"));
+        navGen.addActionListener(ev -> selectNav(navGen, "GEN"));
+        g.gridy = 0; navWrap.add(navPass, g);
+        g.gridy = 1; navWrap.add(navTok, g);
+        g.gridy = 2; navWrap.add(navGen, g);
+        g.gridy = 3; g.weighty = 1;
+        JPanel filler = new JPanel(); filler.setOpaque(false);
+        navWrap.add(filler, g);
+        sb.add(navWrap, BorderLayout.CENTER);
+
+        JPanel south = new JPanel(new BorderLayout(0, 12));
+        south.setOpaque(false);
+        south.setBorder(empty(12, 14, 16, 14));
+        statsLabel = label("\u2026", F_MONO_S, TXT_DIM);
+        JLabel foot = label("LOCAL ONLY // NO CLOUD", F_MONO_S, new Color(0x454B6E));
+        JPanel sp = new JPanel(new GridLayout(0, 1, 0, 5));
+        sp.setOpaque(false);
+        sp.add(statsLabel); sp.add(foot);
+        CyberButton lock = new CyberButton("// LOCK VAULT", NEON_PINK, false);
+        lock.setPreferredSize(new Dimension(0, 40));
+        lock.addActionListener(ev -> lockVault());
+        south.add(sp, BorderLayout.CENTER);
+        south.add(lock, BorderLayout.SOUTH);
+        sb.add(south, BorderLayout.SOUTH);
+        return sb;
+    }
+
+    void selectNav(NavButton b, String card) {
+        navPass.setActive(b == navPass);
+        navTok.setActive(b == navTok);
+        navGen.setActive(b == navGen);
+        contentCards.show(contentHolder, card);
+    }
+
+    void updateStats() {
+        int p = vault.data == null ? 0 : vault.data.passwords.size();
+        int t = vault.data == null ? 0 : vault.data.tokens.size();
+        statsLabel.setText(p + " CREDS // " + t + " TOKENS");
+    }
