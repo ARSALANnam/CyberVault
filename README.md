@@ -84,3 +84,4 @@ File format:
 
 > ⚠️ This is a personal project. Use it at your own risk and **don't forget your master key**.
 
+<p align="center">Made with ⚡ and pure Java Swing</p>
