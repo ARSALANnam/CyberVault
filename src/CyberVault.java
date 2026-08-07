@@ -1289,3 +1289,164 @@ public class CyberVault extends JFrame {
         styleScroll(sp);
         return sp;
     }
+
+
+
+    /* CUSTOM COMPONENTS */
+    static class CyberButton extends JButton {
+        final Color accent;
+        final boolean filled;
+        CyberButton(String text, Color accent, boolean filled) {
+            super(text);
+            this.accent = accent;
+            this.filled = filled;
+            setFont(F_MONO_B);
+            setForeground(filled ? BG : accent);
+            setContentAreaFilled(false); setBorderPainted(false); setFocusPainted(false);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            setMargin(new Insets(4, 14, 4, 14));
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e) { repaint(); }
+                public void mouseExited(MouseEvent e) { repaint(); }
+            });
+        }
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            int w = getWidth(), h = getHeight();
+            boolean hover = getModel().isRollover(), pressed = getModel().isPressed();
+            if (filled) {
+                g2.setColor(pressed ? accent.brighter() : hover ? accent : shade(accent, 0.82f));
+                g2.fillRect(0, 0, w, h);
+            } else {
+                if (hover || pressed) {
+                    g2.setColor(withAlpha(accent, 24));
+                    g2.fillRect(1, 1, w - 2, h - 2);
+                }
+                g2.setColor(hover || pressed ? accent : withAlpha(accent, 130));
+                g2.drawRect(0, 0, w - 1, h - 1);
+                g2.setColor(accent);
+                int t = 6;
+                g2.drawLine(0, 0, t, 0);           g2.drawLine(0, 0, 0, t);
+                g2.drawLine(w - 1 - t, 0, w - 1, 0); g2.drawLine(w - 1, 0, w - 1, t);
+                g2.drawLine(0, h - 1 - t, 0, h - 1); g2.drawLine(0, h - 1, t, h - 1);
+                g2.drawLine(w - 1 - t, h - 1, w - 1, h - 1); g2.drawLine(w - 1, h - 1 - t, w - 1, h - 1);
+            }
+            g2.dispose();
+            super.paintComponent(g);
+        }
+    }
+
+    static class NavButton extends JButton {
+        final Color accent;
+        boolean active;
+        NavButton(String text, Color accent) {
+            super(text);
+            this.accent = accent;
+            setHorizontalAlignment(SwingConstants.LEFT);
+            setFont(F_MONO_B);
+            setForeground(TXT_DIM);
+            setFocusPainted(false); setContentAreaFilled(false); setBorderPainted(false);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            setPreferredSize(new Dimension(0, 42));
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e) { if (!active) setForeground(TXT); }
+                public void mouseExited(MouseEvent e)  { if (!active) setForeground(TXT_DIM); }
+            });
+        }
+        void setActive(boolean s) {
+            active = s;
+            setForeground(s ? accent : TXT_DIM);
+            repaint();
+        }
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            if (active) {
+                g2.setColor(withAlpha(accent, 26));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.setColor(accent);
+                g2.fillRect(0, 0, 3, getHeight());
+            } else if (getModel().isRollover()) {
+                g2.setColor(withAlpha(accent, 14));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+            }
+            g2.dispose();
+            super.paintComponent(g);
+        }
+    }
+
+    static class StrengthMeter extends JPanel {
+        float level; Color color = NEON_PINK;
+        StrengthMeter() { setPreferredSize(new Dimension(0, 14)); setBackground(BG_FIELD); }
+        void setBits(double bits) {
+            level = (float) Math.min(1.0, bits / 128.0);
+            color = bits < 45 ? NEON_PINK : bits < 70 ? NEON_YEL : bits < 100 ? NEON_GRN : NEON_CYAN;
+            repaint();
+        }
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g.create();
+            int w = getWidth(), h = getHeight();
+            int segs = 26, gap = 3;
+            double sw = (double) (w - gap * (segs - 1)) / segs;
+            int filled = Math.round(level * segs);
+            for (int i = 0; i < segs; i++) {
+                int x = (int) (i * (sw + gap));
+                g2.setColor(i < filled ? color : LINE);
+                g2.fillRect(x, 2, (int) sw, h - 4);
+            }
+            g2.dispose();
+        }
+    }
+
+    static class HexLogo extends JPanel {
+        HexLogo(int size) {
+            setPreferredSize(new Dimension(size, size));
+            setOpaque(false);
+        }
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            int w = getWidth(), h = getHeight();
+            int cx = w / 2, cy = h / 2;
+            int r = Math.min(w, h) / 2 - 4;
+            Polygon hex = new Polygon();
+            for (int i = 0; i < 6; i++) {
+                double a = Math.PI / 3 * i - Math.PI / 2;
+                hex.addPoint(cx + (int) (r * Math.cos(a)), cy + (int) (r * Math.sin(a)));
+            }
+            for (int i = 5; i >= 1; i--) {
+                g2.setColor(withAlpha(NEON_CYAN, 14 + (5 - i) * 6));
+                g2.setStroke(new BasicStroke(i * 2.4f));
+                g2.draw(hex);
+            }
+            g2.setColor(NEON_CYAN);
+            g2.setStroke(new BasicStroke(1.8f));
+            g2.draw(hex);
+            float kr = r * 0.30f;
+            g2.setColor(NEON_PINK);
+            g2.setStroke(new BasicStroke(Math.max(1.6f, r * 0.07f), BasicStroke.CAP_ROUND, BasicStroke.CAP_ROUND));
+            g2.drawOval((int) (cx - kr / 2), (int) (cy - r * 0.42), (int) kr, (int) kr);
+            int stemTop = (int) (cy - r * 0.42 + kr);
+            g2.drawLine(cx, stemTop, cx, (int) (cy + r * 0.45));
+            g2.drawLine(cx, (int) (cy + r * 0.28), (int) (cx + r * 0.18), (int) (cy + r * 0.28));
+            g2.dispose();
+        }
+    }
+
+    static class GridBG extends JPanel {
+        GridBG() { setBackground(BG); }
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g.create();
+            int w = getWidth(), h = getHeight();
+            g2.setPaint(new GradientPaint(0, 0, BG, w, h, new Color(0x16, 0x0B, 0x26)));
+            g2.fillRect(0, 0, w, h);
+            g2.setColor(withAlpha(NEON_CYAN, 12));
+            for (int x = 0; x <= w; x += 42) g2.drawLine(x, 0, x, h);
+            for (int y = 0; y <= h; y += 42) g2.drawLine(0, y, w, y);
+            g2.dispose();
+        }
+    }
