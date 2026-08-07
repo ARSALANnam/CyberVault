@@ -672,3 +672,87 @@ public class CyberVault extends JFrame {
         p.add(tokScroll, BorderLayout.CENTER);
         return p;
     }
+
+    void refreshTokens() {
+        String q = queryOf(tokSearch).toLowerCase();
+        JPanel inner = new JPanel(new GridBagLayout());
+        inner.setBackground(BG);
+        inner.setBorder(empty(4, 2, 10, 10));
+        GridBagConstraints g = new GridBagConstraints();
+        g.gridx = 0; g.fill = GridBagConstraints.HORIZONTAL; g.weightx = 1;
+        int row = 0;
+        if (vault.data != null) {
+            for (TokenEntry e : vault.data.tokens) {
+                if (!q.isEmpty() && !((e.name + " " + e.notes).toLowerCase().contains(q))) continue;
+                g.gridy = row++; g.insets = new Insets(0, 0, 12, 0);
+                inner.add(buildTokenCard(e), g);
+            }
+        }
+        if (row == 0) {
+            g.gridy = 0; g.insets = new Insets(30, 0, 0, 0);
+            inner.add(emptyState(q.isEmpty() ? "NO TOKENS YET // CLICK [+ NEW TOKEN]"
+                    : "NO MATCH FOUND"), g);
+        }
+        g.gridy = row; g.weighty = 1; g.fill = GridBagConstraints.BOTH;
+        JPanel fill = new JPanel(); fill.setOpaque(false);
+        inner.add(fill, g);
+        JPanel wrap = new JPanel(new BorderLayout()); wrap.setBackground(BG);
+        wrap.add(inner, BorderLayout.CENTER);
+        tokScroll.getViewport().setView(wrap);
+        tokScroll.getViewport().setBackground(BG);
+        tokScroll.revalidate();
+        updateStats();
+    }
+
+    JPanel buildTokenCard(TokenEntry e) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(BG_CARD);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(LINE),
+                        BorderFactory.createMatteBorder(0, 3, 0, 0, NEON_PURP)),
+                empty(14, 16, 12, 14)));
+
+        JPanel head = new JPanel(new BorderLayout());
+        head.setOpaque(false);
+        JPanel ttl = new JPanel(new GridLayout(0, 1, 0, 2));
+        ttl.setOpaque(false);
+        ttl.add(label(e.name.toUpperCase(), pickMono(Font.BOLD, 14f), NEON_PURP));
+        ttl.add(label("ADDED " + fmtDate(e.created), F_MONO_S, new Color(0x555C82)));
+        head.add(ttl, BorderLayout.CENTER);
+
+        JPanel acts = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        acts.setOpaque(false);
+        JButton edit = chip("EDIT", NEON_CYAN);
+        JButton del = chip("DEL", NEON_PINK);
+        edit.addActionListener(ev -> openTokenDialog(e));
+        del.addActionListener(ev -> {
+            if (confirmAction("DELETE TOKEN \"" + e.name.toUpperCase() + "\" PERMANENTLY?")) {
+                vault.data.tokens.remove(e);
+                saveVault(); refreshTokens();
+            }
+        });
+        acts.add(edit); acts.add(del);
+        head.add(acts, BorderLayout.EAST);
+        card.add(head, BorderLayout.NORTH);
+
+        JPanel body = new JPanel(new GridLayout(0, 1, 0, 7));
+        body.setOpaque(false);
+        body.setBorder(empty(12, 0, 10, 0));
+
+        JLabel tv = label(mask(e.token.length()), F_MONO, NEON_PINK);
+        JButton show = chip("SHOW", NEON_YEL);
+        boolean[] vis = { false };
+        show.addActionListener(ev -> {
+            vis[0] = !vis[0];
+            tv.setText(vis[0] ? cut(e.token, 60) : mask(e.token.length()));
+            tv.setForeground(vis[0] ? NEON_GRN : NEON_PINK);
+            show.setText(vis[0] ? "HIDE" : "SHOW");
+        });
+        body.add(row("TOKEN", tv, actsOf(show, copyChip(e.token))));
+        if (!e.notes.isEmpty())
+            body.add(row("NOTES", label(cut(e.notes, 70), F_MONO, TXT_DIM), null));
+
+        card.add(body, BorderLayout.CENTER);
+        return card;
+    }
