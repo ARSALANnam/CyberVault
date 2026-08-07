@@ -83,6 +83,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 
 
 
@@ -149,7 +153,8 @@ public class CyberVault extends JFrame {
         try {
             java.net.URL iconUrl = CyberVault.class.getResource("/assets/icon.png");
             if (iconUrl != null) setIconImage(Toolkit.getDefaultToolkit().getImage(iconUrl));
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         setUndecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1080, 700);
@@ -168,13 +173,18 @@ public class CyberVault extends JFrame {
         screenHolder.add(buildAppScreen(), "APP");
         configureAuthMode();
         screens.layout.show(screenHolder, "AUTH");
+        initTray();
     }
 
     static class CardLayoutScreens { java.awt.CardLayout layout = new java.awt.CardLayout(); }
 
     public static void main(String[] args) {
         try { UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName()); } catch (Exception ignored) {}
-        SwingUtilities.invokeLater(() -> new CyberVault().setVisible(true));
+        boolean hidden = args.length > 0 && "--hidden".equals(args[0]);
+        SwingUtilities.invokeLater(() -> {
+            CyberVault cv = new CyberVault();
+            cv.setVisible(!hidden);
+        });
     }
 
     /* TITLE BAR */
@@ -364,6 +374,35 @@ public class CyberVault extends JFrame {
         screens.layout.show(screenHolder, "AUTH");
     }
 
+    /* TRAY */
+    void initTray() {
+        if (!SystemTray.isSupported()) return;
+        try {
+            java.awt.Image img = null;
+            java.net.URL u = CyberVault.class.getResource("/icon.png");
+            if (u != null) img = Toolkit.getDefaultToolkit().getImage(u);
+
+            PopupMenu menu = new PopupMenu();
+            MenuItem open = new MenuItem("Open CyberVault");
+            open.addActionListener(ev -> showWindow());
+            MenuItem lock = new MenuItem("Lock Vault");
+            lock.addActionListener(ev -> { lockVault(); showWindow(); });
+            MenuItem exit = new MenuItem("Exit");
+            exit.addActionListener(ev -> System.exit(0));
+            menu.add(open); menu.add(lock); menu.addSeparator(); menu.add(exit);
+
+            TrayIcon icon = new TrayIcon(img, "CyberVault", menu);
+            icon.setImageAutoSize(true);
+            icon.addActionListener(ev -> showWindow());
+            SystemTray.getSystemTray().add(icon);
+        } catch (Exception ignored) {}
+    }
+
+    void showWindow() {
+        setVisible(true);
+        setExtendedState(JFrame.NORMAL);
+        toFront();
+    }
 
 
 
