@@ -49,27 +49,12 @@
 
 ## 🚀 Quick start
 
-**Linux / macOS**
-
-```bash
-./run.sh          # builds if needed, then runs
-```
-
-**Windows**
-
-```bat
-run.bat
-```
-
-Manual:
-
 ```bash
 ./build.sh                 # or build.bat on Windows
 java -jar CyberVault-v.1.4.0.jar
 ```
 
 **First run:** create a master key (min 6 chars) → it is **never stored and cannot be recovered** → start adding entries.
-
 
 <br>
 <br>
