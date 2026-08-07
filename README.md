@@ -1,6 +1,9 @@
-# ⚡ CyberVault
+<h1 align="center">CYBERVAULT</h1>
 
-A cyberpunk-styled, fully offline password manager & API token vault built with pure Java Swing. Zero dependencies.
+<p align="center">
+  A cyberpunk-styled, fully offline password manager &amp; API token vault.<br>
+  Pure Java Swing. Zero dependencies. AES-256-GCM encrypted.
+</p>
 
 <p align="center"><img src="assets/ScreeShot0-1.png" width="700"></p>
 <p align="center"><img src="assets/ScreeShot0-2.png" width="700"></p>
