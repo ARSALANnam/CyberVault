@@ -639,3 +639,36 @@ public class CyberVault extends JFrame {
         escapeToClose(d);
         d.setVisible(true);
     }
+
+
+
+    /* TOKENS PANEL */
+    JPanel buildTokensPanel() {
+        JPanel p = new JPanel(new BorderLayout(0, 16));
+        p.setBackground(BG);
+        p.setBorder(empty(22, 26, 20, 22));
+
+        JPanel head = new JPanel(new BorderLayout());
+        head.setOpaque(false);
+        head.add(sectionHeader("API TOKENS", "// hugging face \u2022 openai \u2022 github \u2022 \u2026", NEON_PURP), BorderLayout.CENTER);
+        CyberButton add = new CyberButton("+ NEW TOKEN", NEON_PURP, true);
+        add.setPreferredSize(new Dimension(160, 38));
+        add.addActionListener(ev -> openTokenDialog(null));
+        JPanel addWrap = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        addWrap.setOpaque(false); addWrap.add(add);
+        head.add(addWrap, BorderLayout.EAST);
+
+        tokSearch = searchField("SEARCH TOKENS\u2026");
+        tokSearch.addKeyListener(new KeyAdapter() { public void keyReleased(KeyEvent e) { refreshTokens(); } });
+
+        JPanel top = new JPanel(new BorderLayout(0, 12));
+        top.setOpaque(false);
+        top.add(head, BorderLayout.NORTH);
+        top.add(tokSearch, BorderLayout.CENTER);
+        p.add(top, BorderLayout.NORTH);
+
+        JPanel placeholder = new JPanel(new BorderLayout()); placeholder.setOpaque(false);
+        tokScroll = cyberScroll(placeholder);
+        p.add(tokScroll, BorderLayout.CENTER);
+        return p;
+    }
