@@ -134,4 +134,5 @@ public class CyberVault extends JFrame {
     JCheckBox gUp, gLo, gDg, gSy, gAmb;
     StrengthMeter meter;
 
+
     Timer clipClear;
