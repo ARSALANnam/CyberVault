@@ -37,8 +37,11 @@
 <p align="center"><img src="assets/ScreeShot0-4.png" width="700"></p>
 
 
+
 ## Requirements
 - JDK 8+
+
+
 
 
 ## 🚀 Quick start
@@ -65,6 +68,8 @@ java -jar CyberVault.jar
 **First run:** create a master key (min 6 chars) → it is **never stored and cannot be recovered** → start adding entries.
 
 
+
+
 ## 🔐 Security model
 
 ```
@@ -84,5 +89,26 @@ File format:
 - Clipboard is cleared 20 s after copying (only if unchanged).
 
 > ⚠️ This is a personal project. Use it at your own risk and **don't forget your master key**.
+
+
+
+
+## 🤖 AI Assistance
+
+This project was built with an AI pair programmer ([Qwen](https://qwen.ai)).
+Every line of code was reviewed, understood and tested by me before shipping —
+the AI accelerated the process, but the decisions (and the bugs 😄) are mine.
+
+> Transparency matters: you deserve to know how the software you trust is made.
+
+
+
+## 🧾 License
+
+MIT — see [LICENSE](LICENSE).
+
+
+---
+
 
 <p align="center">Made with ⚡ and pure Java Swing</p>
