@@ -222,3 +222,87 @@ public class CyberVault extends JFrame {
             }
         };
     }
+
+    /* AUTH SCREEN */
+    JPanel buildAuthScreen() {
+        JPanel bg = new GridBG();
+        bg.setLayout(new GridBagLayout());
+
+        authCard = new JPanel(new BorderLayout());
+        authCard.setBackground(BG_PANEL);
+        authCardBorder = BorderFactory.createCompoundBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(NEON_CYAN),
+                        BorderFactory.createMatteBorder(0, 4, 0, 0, NEON_PINK)),
+                empty(28, 36, 28, 36));
+        authCard.setBorder(authCardBorder);
+        authCard.setPreferredSize(new Dimension(440, 560));
+
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setOpaque(false);
+        GridBagConstraints g = new GridBagConstraints();
+        g.gridx = 0; g.weightx = 1;
+
+        g.gridy = 0; g.fill = GridBagConstraints.NONE; g.anchor = GridBagConstraints.CENTER; g.insets = new Insets(0,0,0,0);
+        form.add(new HexLogo(92), g);
+
+        g.fill = GridBagConstraints.HORIZONTAL;
+        JLabel brand = label("C Y B E R V A U L T", F_BIG, NEON_CYAN);
+        brand.setHorizontalAlignment(SwingConstants.CENTER);
+        g.gridy++; g.insets = new Insets(12, 0, 0, 0);
+        form.add(brand, g);
+
+        JLabel tag = label("// LOCAL  \u2022  AES-256  \u2022  ZERO CLOUD", F_MONO_S, TXT_DIM);
+        tag.setHorizontalAlignment(SwingConstants.CENTER);
+        g.gridy++; g.insets = new Insets(6, 0, 0, 0);
+        form.add(tag, g);
+
+        g.anchor = GridBagConstraints.WEST;
+        authTitle = label("ACCESS VAULT", F_MONO_B, NEON_GRN);
+        g.gridy++; g.insets = new Insets(26, 0, 3, 0);
+        form.add(authTitle, g);
+        authSub = label("// enter master key to decrypt", F_MONO_S, TXT_DIM);
+        g.gridy++; g.insets = new Insets(0, 0, 14, 0);
+        form.add(authSub, g);
+
+        g.gridy++; g.insets = new Insets(4, 0, 4, 0);
+        form.add(label("MASTER KEY", F_MONO_S, TXT_DIM), g);
+        authPass = passField();
+        g.gridy++; g.insets = new Insets(0, 0, 10, 0);
+        form.add(authPass, g);
+
+        authLbl2 = label("CONFIRM MASTER KEY", F_MONO_S, TXT_DIM);
+        g.gridy++; g.insets = new Insets(0, 0, 4, 0);
+        form.add(authLbl2, g);
+        authPass2 = passField();
+        g.gridy++; g.insets = new Insets(0, 0, 8, 0);
+        form.add(authPass2, g);
+
+        authShow = cyberCheck("SHOW MASTER KEY");
+        authShow.addItemListener(ev -> {
+            char ec = authShow.isSelected() ? (char) 0 : '\u2022';
+            authPass.setEchoChar(ec); authPass2.setEchoChar(ec);
+        });
+        g.gridy++; g.insets = new Insets(2, 0, 16, 0);
+        form.add(authShow, g);
+
+        authBtn = new CyberButton("\u25B6 ACCESS VAULT", NEON_CYAN, true);
+        authBtn.setPreferredSize(new Dimension(0, 46));
+        authBtn.addActionListener(ev -> authAction());
+        g.gridy++;
+        form.add(authBtn, g);
+
+        authStatus = label(" ", F_MONO_S, NEON_PINK);
+        authStatus.setHorizontalAlignment(SwingConstants.CENTER);
+        g.gridy++; g.insets = new Insets(12, 0, 0, 0);
+        form.add(authStatus, g);
+
+        authCard.add(form, BorderLayout.CENTER);
+        authPass.addActionListener(ev -> authAction());
+        authPass2.addActionListener(ev -> authAction());
+
+        GridBagConstraints wrap = new GridBagConstraints();
+        wrap.gridx = 0; wrap.gridy = 0;
+        bg.add(authCard, wrap);
+        return bg;
+    }
