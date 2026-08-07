@@ -28,6 +28,3 @@ java -jar CyberVault.jar
 # Security
 - Vault file: ~/.cybervault/vault.dat (encrypted)
 - The master key is never stored and cannot be recovered.
-
-# License
-MIT
