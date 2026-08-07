@@ -383,7 +383,6 @@ public class CyberVault extends JFrame {
             if (u == null) return;
             java.awt.image.BufferedImage src = javax.imageio.ImageIO.read(u);
 
-            // برش خودکار حاشیه روشن دور مربع سیاه
             int x0 = src.getWidth(), y0 = src.getHeight(), x1 = 0, y1 = 0;
             for (int y = 0; y < src.getHeight(); y++)
                 for (int x = 0; x < src.getWidth(); x++) {
@@ -396,7 +395,7 @@ public class CyberVault extends JFrame {
             if (x1 > x0 && y1 > y0)
                 src = src.getSubimage(x0, y0, x1 - x0 + 1, y1 - y0 + 1);
 
-            int size = 16;   // اگه کوچیک یا crop دیدی: 48
+            int size = 16;
             java.awt.image.BufferedImage icon = new java.awt.image.BufferedImage(
                 size, size, java.awt.image.BufferedImage.TYPE_INT_RGB);
             Graphics2D g2 = icon.createGraphics();
@@ -429,7 +428,6 @@ public class CyberVault extends JFrame {
     }
 
 
-
     /* MAIN APP */
     JPanel buildAppScreen() {
         JPanel p = new JPanel(new BorderLayout());
@@ -457,7 +455,7 @@ public class CyberVault extends JFrame {
         JPanel txts = new JPanel(new GridLayout(0, 1, 0, 2));
         txts.setOpaque(false);
         txts.add(label("CYBERVAULT", F_MONO_B, NEON_CYAN));
-        txts.add(label("v1.4.2 // SECURE", F_MONO_S, TXT_DIM));
+        txts.add(label("v1.4.3 // SECURE", F_MONO_S, TXT_DIM));
         brand.add(txts, BorderLayout.CENTER);
         sb.add(brand, BorderLayout.NORTH);
 

@@ -10,7 +10,6 @@ if [ -f assets/icon.png ]; then
   cp assets/icon.png build/
   EXTRA="icon.png"
 fi
-
 if [ -f assets/tray.png ]; then
   cp assets/tray.png build/
   EXTRA="$EXTRA tray.png"
