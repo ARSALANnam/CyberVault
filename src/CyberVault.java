@@ -571,3 +571,71 @@ public class CyberVault extends JFrame {
         card.add(body, BorderLayout.CENTER);
         return card;
     }
+
+    void openPasswordDialog(PasswordEntry ex) {
+        JDialog d = cyberDialog(ex == null ? "NEW PASSWORD ENTRY" : "EDIT ENTRY", NEON_CYAN);
+        JTextField fTitle = field(), fUser = field(), fUrl = field();
+        JPasswordField fPass = passField();
+        JTextArea fNotes = area();
+        if (ex != null) {
+            fTitle.setText(ex.title); fUser.setText(ex.username);
+            fPass.setText(ex.password); fUrl.setText(ex.url); fNotes.setText(ex.notes);
+        }
+        JLabel err = label(" ", F_MONO_S, NEON_PINK);
+
+        JButton gen = chip("\u26A1 GEN", NEON_YEL);
+        gen.addActionListener(ev -> { fPass.setText(genPassword(18, true, true, true, true, false)); fPass.setEchoChar((char) 0); });
+        JButton eye = chip("SHOW", NEON_PURP);
+        boolean[] vis = { false };
+        eye.addActionListener(ev -> { vis[0] = !vis[0]; fPass.setEchoChar(vis[0] ? (char) 0 : '\u2022'); eye.setText(vis[0] ? "HIDE" : "SHOW"); });
+        JPanel passRow = new JPanel(new BorderLayout(8, 0));
+        passRow.setBackground(BG_PANEL);
+        JPanel passBtns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+        passBtns.setOpaque(false); passBtns.add(gen); passBtns.add(eye);
+        passRow.add(fPass, BorderLayout.CENTER);
+        passRow.add(passBtns, BorderLayout.EAST);
+
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setOpaque(false);
+        addFormRow(form, 0, "TITLE *", fTitle);
+        addFormRow(form, 1, "USER / EMAIL *", fUser);
+        addFormRow(form, 2, "PASSWORD *", passRow);
+        addFormRow(form, 3, "URL", fUrl);
+        JScrollPane ns = new JScrollPane(fNotes);
+        ns.setPreferredSize(new Dimension(0, 70));
+        ns.setBorder(BorderFactory.createLineBorder(LINE));
+        styleScroll(ns); ns.getViewport().setBackground(BG_FIELD);
+        addFormRow(form, 4, "NOTES", ns);
+
+        JPanel body = new JPanel(new BorderLayout(0, 16));
+        body.setBackground(BG_PANEL);
+        body.setBorder(empty(22, 24, 24, 24));
+        body.add(form, BorderLayout.CENTER);
+
+        JPanel foot = new JPanel(new BorderLayout(0, 10));
+        foot.setOpaque(false);
+        foot.add(err, BorderLayout.CENTER);
+        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        btns.setOpaque(false);
+        CyberButton save = new CyberButton("SAVE ENTRY", NEON_CYAN, true);
+        CyberButton cancel = new CyberButton("CANCEL", TXT_DIM, false);
+        save.addActionListener(ev -> {
+            String t = fTitle.getText().trim(), u = fUser.getText().trim(), pw = new String(fPass.getPassword());
+            if (t.isEmpty() || u.isEmpty() || pw.isEmpty()) { err.setText("\u2715 TITLE, USER & PASSWORD REQUIRED"); return; }
+            PasswordEntry ent = ex != null ? ex : new PasswordEntry();
+            ent.title = t; ent.username = u; ent.password = pw;
+            ent.url = fUrl.getText().trim(); ent.notes = fNotes.getText().trim();
+            if (ex == null) vault.data.passwords.add(ent);
+            if (saveVault()) { refreshPasswords(); d.dispose(); }
+        });
+        cancel.addActionListener(ev -> d.dispose());
+        btns.add(save); btns.add(cancel);
+        foot.add(btns, BorderLayout.SOUTH);
+        body.add(foot, BorderLayout.SOUTH);
+
+        d.add(body, BorderLayout.CENTER);
+        d.setSize(560, 470);
+        d.setLocationRelativeTo(this);
+        escapeToClose(d);
+        d.setVisible(true);
+    }
