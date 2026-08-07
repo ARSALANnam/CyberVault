@@ -2,8 +2,10 @@
 
 A cyberpunk-styled, fully offline password manager & API token vault built with pure Java Swing. Zero dependencies.
 
-<p align="center"><img src="assets/screenshot.png" width="700"></p>
-<p align="center"><img src="assets/screenshot2.png" width="700"></p>
+<p align="center"><img src="assets/ScreeShot-1.png" width="700"></p>
+<p align="center"><img src="assets/ScreeShot-2.png" width="700"></p>
+<p align="center"><img src="assets/ScreeShot-3.png" width="700"></p>
+<p align="center"><img src="assets/ScreeShot-4.png" width="700"></p>
 
 ## Features
 - 🔐 Master-key protected vault — PBKDF2 (120k) + AES-256-GCM
