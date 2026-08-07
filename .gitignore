@@ -22,8 +22,15 @@ pom.xml
 
 
 # ── Vault data
+*.dat
 vault.dat
 .cybervault/
+
+*.key
+*.pem
+.env
+*.env
+secrets.json
 
 # ── OS junk
 .DS_Store
