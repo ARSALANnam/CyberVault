@@ -478,3 +478,34 @@ public class CyberVault extends JFrame {
         p.add(passScroll, BorderLayout.CENTER);
         return p;
     }
+
+    void refreshPasswords() {
+        String q = queryOf(passSearch).toLowerCase();
+        JPanel inner = new JPanel(new GridBagLayout());
+        inner.setBackground(BG);
+        inner.setBorder(empty(4, 2, 10, 10));
+        GridBagConstraints g = new GridBagConstraints();
+        g.gridx = 0; g.fill = GridBagConstraints.HORIZONTAL; g.weightx = 1;
+        int row = 0;
+        if (vault.data != null) {
+            for (PasswordEntry e : vault.data.passwords) {
+                if (!q.isEmpty() && !((e.title + " " + e.username + " " + e.url).toLowerCase().contains(q))) continue;
+                g.gridy = row++; g.insets = new Insets(0, 0, 12, 0);
+                inner.add(buildPasswordCard(e), g);
+            }
+        }
+        if (row == 0) {
+            g.gridy = 0; g.insets = new Insets(30, 0, 0, 0);
+            inner.add(emptyState(q.isEmpty() ? "NO RECORDS YET // CLICK [+ NEW ENTRY]"
+                    : "NO MATCH FOUND"), g);
+        }
+        g.gridy = row; g.weighty = 1; g.fill = GridBagConstraints.BOTH;
+        JPanel fill = new JPanel(); fill.setOpaque(false);
+        inner.add(fill, g);
+        JPanel wrap = new JPanel(new BorderLayout()); wrap.setBackground(BG);
+        wrap.add(inner, BorderLayout.CENTER);
+        passScroll.getViewport().setView(wrap);
+        passScroll.getViewport().setBackground(BG);
+        passScroll.revalidate();
+        updateStats();
+    }
