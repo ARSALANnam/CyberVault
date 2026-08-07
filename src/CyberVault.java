@@ -447,3 +447,34 @@ public class CyberVault extends JFrame {
         int t = vault.data == null ? 0 : vault.data.tokens.size();
         statsLabel.setText(p + " CREDS // " + t + " TOKENS");
     }
+
+    /* PASSWORDS PANEL */
+    JPanel buildPasswordsPanel() {
+        JPanel p = new JPanel(new BorderLayout(0, 16));
+        p.setBackground(BG);
+        p.setBorder(empty(22, 26, 20, 22));
+
+        JPanel head = new JPanel(new BorderLayout());
+        head.setOpaque(false);
+        head.add(sectionHeader("PASSWORD DATABASE", "// logins \u2022 emails \u2022 accounts", NEON_CYAN), BorderLayout.CENTER);
+        CyberButton add = new CyberButton("+ NEW ENTRY", NEON_CYAN, true);
+        add.setPreferredSize(new Dimension(150, 38));
+        add.addActionListener(ev -> openPasswordDialog(null));
+        JPanel addWrap = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        addWrap.setOpaque(false); addWrap.add(add);
+        head.add(addWrap, BorderLayout.EAST);
+
+        passSearch = searchField("SEARCH ENTRIES\u2026");
+        passSearch.addKeyListener(new KeyAdapter() { public void keyReleased(KeyEvent e) { refreshPasswords(); } });
+
+        JPanel top = new JPanel(new BorderLayout(0, 12));
+        top.setOpaque(false);
+        top.add(head, BorderLayout.NORTH);
+        top.add(passSearch, BorderLayout.CENTER);
+        p.add(top, BorderLayout.NORTH);
+
+        JPanel placeholder = new JPanel(new BorderLayout()); placeholder.setOpaque(false);
+        passScroll = cyberScroll(placeholder);
+        p.add(passScroll, BorderLayout.CENTER);
+        return p;
+    }
