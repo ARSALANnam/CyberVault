@@ -11,6 +11,7 @@
   <img alt="Dependencies" src="https://img.shields.io/badge/Dependencies-0-brightgreen?style=flat-square">
   <img alt="License" src="https://img.shields.io/badge/License-MIT-ff2a6d?style=flat-square">
   <img alt="Release" src="https://img.shields.io/github/v/release/ARSALANnam/CyberVault?style=flat-square">
+  <img alt="AI" src="https://img.shields.io/badge/Human%20%2B-AI-9d4eff?style=flat-square">
 </p>
 
 
