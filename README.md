@@ -43,6 +43,8 @@
 
 
 
+<br>
+<br>
 
 ## 🚀 Quick start
 
@@ -68,7 +70,8 @@ java -jar CyberVault.jar
 **First run:** create a master key (min 6 chars) → it is **never stored and cannot be recovered** → start adding entries.
 
 
-
+<br>
+<br>
 
 ## 🔐 Security model
 
@@ -92,6 +95,8 @@ File format:
 
 
 
+<br>
+<br>
 
 ## 🤖 AI Assistance
 
@@ -101,15 +106,14 @@ the AI accelerated the process, but the decisions (and the bugs 😄) are mine.
 
 > Transparency matters: you deserve to know how the software you trust is made.
 
-
+<br>
+<br>
 
 ## 🧾 License
 
 MIT — see [LICENSE](LICENSE).
 
-
 ---
-
 
 <br>
 <br>
