@@ -350,3 +350,16 @@ public class CyberVault extends JFrame {
         Timer t = new Timer(650, ev -> authCard.setBorder(authCardBorder));
         t.setRepeats(false); t.start();
     }
+
+    void enterApp() {
+        authPass.setText(""); authPass2.setText("");
+        refreshPasswords(); refreshTokens(); updateStats();
+        selectNav(navPass, "PASS");
+        screens.layout.show(screenHolder, "APP");
+    }
+
+    void lockVault() {
+        vault.lock();
+        configureAuthMode();
+        screens.layout.show(screenHolder, "AUTH");
+    }
