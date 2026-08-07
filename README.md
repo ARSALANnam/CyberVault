@@ -102,7 +102,7 @@ File format:
 
 This project was built with an AI pair programmer ([Qwen](https://qwen.ai)).
 Every line of code was reviewed, understood and tested by me before shipping —
-the AI accelerated the process, but the decisions (and the bugs 😄) are mine.
+the AI accelerated the process, but the decisions (and the bugs) are mine.
 
 > Transparency matters: you deserve to know how the software you trust is made.
 
