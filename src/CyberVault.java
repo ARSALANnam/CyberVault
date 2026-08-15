@@ -1532,6 +1532,228 @@ public class CyberVault extends JFrame {
         List<TokenEntry> tokens = new ArrayList<>();
     }
 
+     // VAULT MANAGER — manages multiple vaults with config file
+    static class VaultManager {
+        final Path dir;
+        final Path configFile;
+        List<VaultInfo> vaults;
+        String activeVaultName;
+        String theme;
+        VaultData active;
+
+        VaultManager() throws Exception {
+            dir = Paths.get(System.getProperty("user.home"), ".cybervault");
+            configFile = dir.resolve("config.json");
+            Files.createDirectories(dir);
+            loadConfig();
+        }
+
+        void loadConfig() throws Exception {
+            if (!Files.exists(configFile)) {
+                vaults = new ArrayList<>();
+                vaults.add(new VaultInfo("Default", "default.vault"));
+                activeVaultName = "Default";
+                theme = "cyberpunk";
+                saveConfig();
+            } else {
+                String json = new String(Files.readAllBytes(configFile), StandardCharsets.UTF_8);
+                JsonObject obj = parseJson(json);
+                vaults = new ArrayList<>();
+                for (JsonObject v : obj.getArray("vaults")) {
+                    vaults.add(new VaultInfo(v.getString("name"), v.getString("file")));
+                }
+                activeVaultName = obj.getString("active", vaults.get(0).name);
+                theme = obj.getString("theme", "cyberpunk");
+            }
+        }
+
+        void saveConfig() throws Exception {
+            StringBuilder sb = new StringBuilder();
+            sb.append("{\n  \"vaults\": [\n");
+            for (int i = 0; i < vaults.size(); i++) {
+                VaultInfo v = vaults.get(i);
+                sb.append("    {\"name\": ").append(jsonStr(v.name));
+                sb.append(", \"file\": ").append(jsonStr(v.file)).append("}");
+                if (i < vaults.size() - 1) sb.append(",");
+                sb.append("\n");
+            }
+            sb.append("  ],\n");
+            sb.append("  \"active\": ").append(jsonStr(activeVaultName)).append(",\n");
+            sb.append("  \"theme\": ").append(jsonStr(theme)).append("\n");
+            sb.append("}\n");
+            Files.write(configFile, sb.toString().getBytes(StandardCharsets.UTF_8));
+        }
+
+        VaultData createVault(String name, char[] master) throws Exception {
+            String file = name.toLowerCase().replaceAll("[^a-z0-9]", "_") + ".vault";
+            for (VaultInfo v : vaults) {
+                if (v.file.equals(file)) {
+                    throw new Exception("Vault file already exists: " + file);
+                }
+            }
+            VaultData vault = new VaultData();
+            vault.create(master);
+            vault.save(dir.resolve(file));
+            vaults.add(new VaultInfo(name, file));
+            activeVaultName = name;
+            saveConfig();
+            active = vault;
+            return vault;
+        }
+
+        VaultData openVault(String name, char[] master) throws Exception {
+            VaultInfo info = null;
+            for (VaultInfo v : vaults) {
+                if (v.name.equals(name)) { info = v; break; }
+            }
+            if (info == null) throw new Exception("Vault not found: " + name);
+            Path file = dir.resolve(info.file);
+            if (!Files.exists(file)) throw new Exception("Vault file missing: " + file);
+            VaultData vault = new VaultData();
+            if (!vault.load(file, master)) {
+                throw new Exception("Invalid master key");
+            }
+            activeVaultName = name;
+            saveConfig();
+            active = vault;
+            return vault;
+        }
+
+        void deleteVault(String name) throws Exception {
+            if (vaults.size() <= 1) {
+                throw new Exception("Cannot delete the last vault");
+            }
+            VaultInfo info = null;
+            for (VaultInfo v : vaults) {
+                if (v.name.equals(name)) { info = v; break; }
+            }
+            if (info == null) return;
+            Files.deleteIfExists(dir.resolve(info.file));
+            vaults.remove(info);
+            if (activeVaultName.equals(name)) {
+                activeVaultName = vaults.get(0).name;
+            }
+            saveConfig();
+        }
+
+        void renameVault(String oldName, String newName) throws Exception {
+            for (VaultInfo v : vaults) {
+                if (v.name.equals(newName)) {
+                    throw new Exception("Vault name already exists: " + newName);
+                }
+            }
+            for (VaultInfo v : vaults) {
+                if (v.name.equals(oldName)) {
+                    v.name = newName;
+                    break;
+                }
+            }
+            if (activeVaultName.equals(oldName)) {
+                activeVaultName = newName;
+            }
+            saveConfig();
+        }
+
+        List<String> getVaultNames() {
+            List<String> names = new ArrayList<>();
+            for (VaultInfo v : vaults) names.add(v.name);
+            return names;
+        }
+    }
+
+    static class VaultInfo {
+        String name, file;
+        VaultInfo(String name, String file) { this.name = name; this.file = file; }
+    }
+
+    static class JsonObject {
+        Map<String, Object> map = new HashMap<>();
+        String getString(String key) { return getString(key, null); }
+        String getString(String key, String def) {
+            Object v = map.get(key);
+            return v instanceof String ? (String) v : def;
+        }
+        List<JsonObject> getArray(String key) {
+            Object v = map.get(key);
+            return v instanceof List ? (List<JsonObject>) v : new ArrayList<>();
+        }
+    }
+
+    static JsonObject parseJson(String json) {
+        json = json.trim();
+        if (json.startsWith("{")) {
+            JsonObject obj = new JsonObject();
+            json = json.substring(1, json.length() - 1).trim();
+            while (!json.isEmpty()) {
+                int i = json.indexOf('"');
+                if (i < 0) break;
+                int j = json.indexOf('"', i + 1);
+                String key = json.substring(i + 1, j);
+                json = json.substring(j + 1).trim();
+                if (!json.startsWith(":")) break;
+                json = json.substring(1).trim();
+                Object val;
+                if (json.startsWith("[")) {
+                    int end = findMatchingBracket(json, '[', ']');
+                    String arrStr = json.substring(1, end);
+                    val = parseJsonArray(arrStr);
+                    json = json.substring(end + 1).trim();
+                } else if (json.startsWith("{")) {
+                    int end = findMatchingBracket(json, '{', '}');
+                    val = parseJson(json.substring(0, end + 1));
+                    json = json.substring(end + 1).trim();
+                } else if (json.startsWith("\"")) {
+                    int end = json.indexOf('"', 1);
+                    val = json.substring(1, end);
+                    json = json.substring(end + 1).trim();
+                } else {
+                    int end = Math.min(json.indexOf(','), json.length());
+                    if (end < 0) end = json.length();
+                    val = json.substring(0, end).trim();
+                    json = json.substring(end).trim();
+                }
+                if (json.startsWith(",")) json = json.substring(1).trim();
+                obj.map.put(key, val);
+            }
+            return obj;
+        }
+        return new JsonObject();
+    }
+
+    static List<JsonObject> parseJsonArray(String arr) {
+        List<JsonObject> list = new ArrayList<>();
+        arr = arr.trim();
+        while (!arr.isEmpty()) {
+            if (arr.startsWith("{")) {
+                int end = findMatchingBracket(arr, '{', '}');
+                list.add(parseJson(arr.substring(0, end + 1)));
+                arr = arr.substring(end + 1).trim();
+            } else {
+                break;
+            }
+            if (arr.startsWith(",")) arr = arr.substring(1).trim();
+        }
+        return list;
+    }
+
+    static int findMatchingBracket(String s, char open, char close) {
+        int depth = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == open) depth++;
+            else if (c == close) {
+                depth--;
+                if (depth == 0) return i;
+            }
+        }
+        return s.length() - 1;
+    }
+
+    static String jsonStr(String s) {
+        if (s == null) return "null";
+        return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+    }
+
     static class Vault {
         final Path file;
         byte[] salt;
