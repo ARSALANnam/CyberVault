@@ -123,7 +123,7 @@ public class CyberVault extends JFrame {
     static final Font F_TITLE  = pickMono(Font.BOLD, 20f);
     static final Font F_BIG    = pickMono(Font.BOLD, 27f);
 
-    final Vault vault = new Vault();
+    static final Vault vault = new Vault();
     final CardLayoutScreens screens = new CardLayoutScreens();
     final JPanel screenHolder = new JPanel(screens.layout);
 
@@ -1542,7 +1542,7 @@ public class CyberVault extends JFrame {
         List<VaultInfo> vaults;
         String activeVaultName;
         String theme;
-        VaultData active;
+        Vault active;
 
         VaultManager() throws Exception {
             dir = Paths.get(System.getProperty("user.home"), ".cybervault");
@@ -1587,82 +1587,87 @@ public class CyberVault extends JFrame {
             Files.write(configFile, sb.toString().getBytes(StandardCharsets.UTF_8));
         }
 
-        VaultData createVault(String name, char[] master) throws Exception {
-            String file = name.toLowerCase().replaceAll("[^a-z0-9]", "_") + ".vault";
-            for (VaultInfo v : vaults) {
-                if (v.file.equals(file)) {
-                    throw new Exception("Vault file already exists: " + file);
-                }
-            }
-            VaultData vault = new VaultData();
-            vault.create(master);
-            vault.save(dir.resolve(file));
-            vaults.add(new VaultInfo(name, file));
-            activeVaultName = name;
-            saveConfig();
-            active = vault;
-            return vault;
-        }
+         VaultData createVault(String name, char[] master) throws Exception {
+             String file = name.toLowerCase().replaceAll("[^a-z0-9]", "_") + ".vault";
+             for (VaultInfo v : vaults) {
+                 if (v.file.equals(file)) {
+                     throw new Exception("Vault file already exists: " + file);
+                 }
+             }
+             Vault vault = new Vault(dir.resolve(file));
+             vault.create(master);  // این خودش save() می‌کنه
+             vaults.add(new VaultInfo(name, file));
+             activeVaultName = name;
+             saveConfig();
+             active = vault;
+             return vault.data;
+         }
 
-        VaultData openVault(String name, char[] master) throws Exception {
-            VaultInfo info = null;
-            for (VaultInfo v : vaults) {
-                if (v.name.equals(name)) { info = v; break; }
-            }
-            if (info == null) throw new Exception("Vault not found: " + name);
-            Path file = dir.resolve(info.file);
-            if (!Files.exists(file)) throw new Exception("Vault file missing: " + file);
-            VaultData vault = new VaultData();
-            if (!vault.load(file, master)) {
-                throw new Exception("Invalid master key");
-            }
-            activeVaultName = name;
-            saveConfig();
-            active = vault;
-            return vault;
-        }
+         VaultData openVault(String name, char[] master) throws Exception {
+             VaultInfo info = null;
+             for (VaultInfo v : vaults) {
+                 if (v.name.equals(name)) { info = v; break; }
+             }
+             if (info == null) throw new Exception("Vault not found: " + name);
+             Path file = dir.resolve(info.file);
+             if (!Files.exists(file)) throw new Exception("Vault file missing: " + file);
+             Vault vault = new Vault(file);
+             if (!vault.unlock(master)) {
+                 throw new Exception("Invalid master key");
+             }
+             activeVaultName = name;
+             saveConfig();
+             active = vault;
+             return vault.data;
+         }
 
-        void deleteVault(String name) throws Exception {
-            if (vaults.size() <= 1) {
-                throw new Exception("Cannot delete the last vault");
-            }
-            VaultInfo info = null;
-            for (VaultInfo v : vaults) {
-                if (v.name.equals(name)) { info = v; break; }
-            }
-            if (info == null) return;
-            Files.deleteIfExists(dir.resolve(info.file));
-            vaults.remove(info);
-            if (activeVaultName.equals(name)) {
-                activeVaultName = vaults.get(0).name;
-            }
-            saveConfig();
-        }
+         void deleteVault(String name) throws Exception {
+             if (vaults.size() <= 1) {
+                 throw new Exception("Cannot delete the last vault");
+             }
+             VaultInfo info = null;
+             for (VaultInfo v : vaults) {
+                 if (v.name.equals(name)) { info = v; break; }
+             }
+             if (info == null) return;
+             Files.deleteIfExists(dir.resolve(info.file));
+             vaults.remove(info);
+             if (activeVaultName.equals(name)) {
+                 activeVaultName = vaults.get(0).name;
+             }
+             active = null;
+             saveConfig();
+         }
 
-        void renameVault(String oldName, String newName) throws Exception {
-            for (VaultInfo v : vaults) {
-                if (v.name.equals(newName)) {
-                    throw new Exception("Vault name already exists: " + newName);
-                }
-            }
-            for (VaultInfo v : vaults) {
-                if (v.name.equals(oldName)) {
-                    v.name = newName;
-                    break;
-                }
-            }
-            if (activeVaultName.equals(oldName)) {
-                activeVaultName = newName;
-            }
-            saveConfig();
-        }
+         void renameVault(String oldName, String newName) throws Exception {
+             for (VaultInfo v : vaults) {
+                 if (v.name.equals(newName)) {
+                     throw new Exception("Vault name already exists: " + newName);
+                 }
+             }
+             for (VaultInfo v : vaults) {
+                 if (v.name.equals(oldName)) {
+                     v.name = newName;
+                     break;
+                 }
+             }
+             if (activeVaultName.equals(oldName)) {
+                 activeVaultName = newName;
+             }
+             saveConfig();
+         }
 
-        List<String> getVaultNames() {
-            List<String> names = new ArrayList<>();
-            for (VaultInfo v : vaults) names.add(v.name);
-            return names;
-        }
-    }
+         void setTheme(String theme) throws Exception {
+             this.theme = theme;
+             saveConfig();
+         }
+
+         List<String> getVaultNames() {
+             List<String> names = new ArrayList<>();
+             for (VaultInfo v : vaults) names.add(v.name);
+             return names;
+         }
+     }
 
     static class VaultInfo {
         String name, file;
