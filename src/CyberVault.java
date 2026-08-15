@@ -92,6 +92,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.nio.charset.StandardCharsets;
 
+import javax.swing.JOptionPane;
+import javax.swing.BoxLayout;
+import javax.swing.Box;
+
 
 public class CyberVault extends JFrame {
 
@@ -123,7 +127,7 @@ public class CyberVault extends JFrame {
     static final Font F_TITLE  = pickMono(Font.BOLD, 20f);
     static final Font F_BIG    = pickMono(Font.BOLD, 27f);
 
-    static final Vault vault = new Vault();
+    static VaultManager manager;
     final CardLayoutScreens screens = new CardLayoutScreens();
     final JPanel screenHolder = new JPanel(screens.layout);
 
@@ -145,7 +149,9 @@ public class CyberVault extends JFrame {
     StrengthMeter meter;
 
     Timer clipClear;
-
+    String selectedVaultName;
+    boolean creatingNewVault = false;
+    JPanel vaultSelectorPanel;
 
 
 
@@ -163,6 +169,10 @@ public class CyberVault extends JFrame {
         setSize(1080, 700);
         setMinimumSize(new Dimension(940, 620));
         setLocationRelativeTo(null);
+        try { manager = new VaultManager(); } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Failed to initialize: " + e.getMessage());
+            System.exit(1);
+        }
 
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(BG);
@@ -172,10 +182,12 @@ public class CyberVault extends JFrame {
         setContentPane(root);
 
         screenHolder.setBackground(BG);
+        vaultSelectorPanel = buildVaultSelector();
+        screenHolder.add(vaultSelectorPanel, "VAULTS");
         screenHolder.add(buildAuthScreen(), "AUTH");
         screenHolder.add(buildAppScreen(), "APP");
         configureAuthMode();
-        screens.layout.show(screenHolder, "AUTH");
+        screens.layout.show(screenHolder, "VAULTS");
         initTray();
     }
 
@@ -320,35 +332,194 @@ public class CyberVault extends JFrame {
         return bg;
     }
 
+    JPanel buildVaultSelector() {
+        JPanel bg = new GridBG();
+        bg.setLayout(new BorderLayout(0, 16));
+
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setOpaque(false);
+        JLabel title = label("SELECT VAULT", F_TITLE, NEON_CYAN);
+        title.setBorder(empty(24, 36, 0, 36));
+        titlePanel.add(title, BorderLayout.NORTH);
+        bg.add(titlePanel, BorderLayout.NORTH);
+
+        JPanel center = new JPanel(new BorderLayout());
+        center.setOpaque(false);
+        center.setBorder(empty(0, 36, 0, 36));
+
+        JPanel list = new JPanel();
+        list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
+        list.setOpaque(false);
+        if (manager.vaults.isEmpty()) {
+            list.add(label("// no vaults yet — create your first one", F_MONO_S, TXT_DIM));
+        }
+
+        for (VaultInfo v : manager.vaults) {
+            JPanel card = new JPanel(new BorderLayout(12, 0));
+            card.setBackground(BG_PANEL);
+            card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(NEON_CYAN),
+                empty(16, 20, 16, 20)));
+            card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
+
+            JLabel name = label(v.name, F_MONO_B, TXT);
+            card.add(name, BorderLayout.WEST);
+
+            JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+            btns.setOpaque(false);
+
+            CyberButton open = new CyberButton("▶ OPEN", NEON_GRN, false);
+            open.addActionListener(ev -> {
+                selectedVaultName = v.name;
+                configureAuthMode();
+                screens.layout.show(screenHolder, "AUTH");
+            });
+            btns.add(open);
+
+            CyberButton ren = new CyberButton("\u270E", NEON_CYAN, false);
+            ren.addActionListener(ev -> {
+                String nn = JOptionPane.showInputDialog(this, "New name for '" + v.name + "':", v.name);
+                if (nn != null && !nn.trim().isEmpty() && !nn.trim().equals(v.name)) {
+                    try { manager.renameVault(v.name, nn.trim()); refreshVaultSelector(); }
+                    catch (Exception ex) { JOptionPane.showMessageDialog(this, ex.getMessage()); }
+                }
+            });
+            btns.add(ren);
+
+            if (true) {
+                CyberButton del = new CyberButton("🗑", NEON_PINK, false);
+                del.addActionListener(ev -> {
+                    int confirm = JOptionPane.showConfirmDialog(this,
+                        "Delete vault '" + v.name + "'?\nThis cannot be undone.",
+                        "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        try {
+                            manager.deleteVault(v.name);
+                            screenHolder.remove(buildVaultSelector());
+                            vaultSelectorPanel = buildVaultSelector();
+        screenHolder.add(vaultSelectorPanel, "VAULTS");
+                            screens.layout.show(screenHolder, "VAULTS");
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(this, ex.getMessage());
+                        }
+                    }
+                });
+                btns.add(del);
+            }
+
+            card.add(btns, BorderLayout.EAST);
+            list.add(card);
+            list.add(Box.createVerticalStrut(8));
+        }
+
+        JScrollPane scroll = new JScrollPane(list);
+        scroll.setBorder(null);
+        scroll.setBackground(BG);
+        scroll.getViewport().setBackground(BG);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        center.add(scroll, BorderLayout.CENTER);
+        bg.add(center, BorderLayout.CENTER);
+
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        bottom.setOpaque(false);
+        bottom.setBorder(empty(16, 36, 24, 36));
+
+        CyberButton addBtn = new CyberButton("+ CREATE NEW VAULT", NEON_YEL, true);
+        addBtn.addActionListener(ev -> showCreateVaultDialog());
+        bottom.add(addBtn);
+
+        CyberButton impBtn = new CyberButton("\u21E7 IMPORT", NEON_CYAN, true);
+        impBtn.addActionListener(ev -> showImportVaultDialog());
+        bottom.add(impBtn);
+        bg.add(bottom, BorderLayout.SOUTH);
+
+        return bg;
+    }
+
+    void showCreateVaultDialog() {
+        JPanel panel = new JPanel(new BorderLayout(8, 8));
+        panel.add(new JLabel("Vault Name:"), BorderLayout.NORTH);
+        JTextField nameField = new JTextField(20);
+        panel.add(nameField, BorderLayout.CENTER);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Create New Vault",
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result == JOptionPane.OK_OPTION) {
+            String name = nameField.getText().trim();
+            if (name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Name cannot be empty");
+                return;
+            }
+            selectedVaultName = name;
+            creatingNewVault = true;
+            configureAuthMode();
+            screens.layout.show(screenHolder, "AUTH");
+        }
+    }
+
+    void showImportVaultDialog() {
+        javax.swing.JFileChooser fc = new javax.swing.JFileChooser(manager.dir.toFile());
+        fc.setDialogTitle("Import vault file (.dat / .vault)");
+        fc.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Vault files", "dat", "vault"));
+        if (fc.showOpenDialog(this) != javax.swing.JFileChooser.APPROVE_OPTION) return;
+        java.io.File src = fc.getSelectedFile();
+        String name = JOptionPane.showInputDialog(this, "Name for imported vault:", "Imported");
+        if (name == null || name.trim().isEmpty()) return;
+        name = name.trim();
+        try {
+            String file = name.toLowerCase().replaceAll("[^a-z0-9]", "_") + ".vault";
+            for (VaultInfo v : manager.vaults) {
+                if (v.file.equals(file)) throw new Exception("A vault with this file already exists");
+            }
+            Files.copy(src.toPath(), manager.dir.resolve(file));
+            manager.vaults.add(new VaultInfo(name, file));
+            manager.saveConfig();
+            refreshVaultSelector();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Import failed: " + ex.getMessage());
+        }
+    }
+
     void configureAuthMode() {
-        boolean first = !vault.exists();
-        authTitle.setText(first ? "INITIALIZE VAULT" : "ACCESS VAULT");
-        authTitle.setForeground(first ? NEON_YEL : NEON_GRN);
-        authSub.setText(first ? "// first run \u2014 create a master key (not recoverable)"
-                : "// enter master key to decrypt");
-        authLbl2.setVisible(first); authPass2.setVisible(first);
-        authBtn.setText(first ? "\u25B6 INITIALIZE VAULT" : "\u25B6 ACCESS VAULT");
+        boolean exists = vaultExists(selectedVaultName);
+        authTitle.setText((exists ? "ACCESS VAULT: " : "CREATE VAULT: ") + selectedVaultName);
+        authTitle.setForeground(exists ? NEON_GRN : NEON_YEL);
+        authSub.setText(exists ? "// enter master key to decrypt"
+            : "// create a master key for this vault (not recoverable)");
+        authLbl2.setVisible(!exists); authPass2.setVisible(!exists);
+        authBtn.setText(exists ? "\u25B6 ACCESS VAULT" : "\u25B6 CREATE VAULT");
         authStatus.setText(" ");
         authPass.setText(""); authPass2.setText("");
         authCard.revalidate(); authCard.repaint();
+    }
+    boolean vaultExists(String name) {
+        for (VaultInfo v : manager.vaults) {
+            if (v.name.equals(name)) {
+                return Files.exists(manager.dir.resolve(v.file));
+            }
+        }
+        return false;
     }
 
     void authAction() {
         char[] p1 = authPass.getPassword();
         char[] p2 = authPass2.getPassword();
         try {
-            if (vault.exists()) {
+            if (vaultExists(selectedVaultName)) {
                 authStatus.setText("// decrypting\u2026");
-                if (vault.unlock(p1)) enterApp();
+                if (manager.openVault(selectedVaultName, p1) != null) enterApp();
                 else { authStatus.setText("\u2715 ACCESS DENIED \u2014 WRONG MASTER KEY"); flashAuthError(); }
             } else {
                 if (p1.length < 6) { authStatus.setText("\u2715 MASTER KEY TOO SHORT (MIN 6)"); return; }
                 if (!Arrays.equals(p1, p2)) { authStatus.setText("\u2715 KEYS DO NOT MATCH"); return; }
-                vault.create(p1);
+                authStatus.setText("// creating vault\u2026");
+                if (creatingNewVault) manager.createVault(selectedVaultName, p1);
+                else manager.initExisting(selectedVaultName, p1);
+                creatingNewVault = false;
                 enterApp();
             }
         } catch (Exception ex) {
-            authStatus.setText("\u2715 ERROR: " + ex.getClass().getSimpleName());
+            authStatus.setText("\u2715 ERROR: " + ex.getMessage());
         } finally {
             Arrays.fill(p1, '\0'); Arrays.fill(p2, '\0');
         }
@@ -366,15 +537,23 @@ public class CyberVault extends JFrame {
 
     void enterApp() {
         authPass.setText(""); authPass2.setText("");
+        creatingNewVault = false;
         refreshPasswords(); refreshTokens(); updateStats();
         selectNav(navPass, "PASS");
         screens.layout.show(screenHolder, "APP");
     }
 
+    void refreshVaultSelector() {
+        screenHolder.remove(vaultSelectorPanel);
+        vaultSelectorPanel = buildVaultSelector();
+        screenHolder.add(vaultSelectorPanel, "VAULTS");
+        screens.layout.show(screenHolder, "VAULTS");
+    }
+
     void lockVault() {
-        vault.lock();
-        configureAuthMode();
-        screens.layout.show(screenHolder, "AUTH");
+        if (manager.active != null) manager.active.lock();
+        manager.active = null;
+        refreshVaultSelector();
     }
 
     /* TRAY */
@@ -458,7 +637,7 @@ public class CyberVault extends JFrame {
         JPanel txts = new JPanel(new GridLayout(0, 1, 0, 2));
         txts.setOpaque(false);
         txts.add(label("CYBERVAULT", F_MONO_B, NEON_CYAN));
-        txts.add(label("v1.4.2 // SECURE", F_MONO_S, TXT_DIM));
+        txts.add(label("v1.5.0 // SECURE", F_MONO_S, TXT_DIM));
         brand.add(txts, BorderLayout.CENTER);
         sb.add(brand, BorderLayout.NORTH);
 
@@ -507,8 +686,8 @@ public class CyberVault extends JFrame {
     }
 
     void updateStats() {
-        int p = vault.data == null ? 0 : vault.data.passwords.size();
-        int t = vault.data == null ? 0 : vault.data.tokens.size();
+        int p = manager.active.data == null ? 0 : manager.active.data.passwords.size();
+        int t = manager.active.data == null ? 0 : manager.active.data.tokens.size();
         statsLabel.setText(p + " CREDS // " + t + " TOKENS");
     }
 
@@ -551,8 +730,8 @@ public class CyberVault extends JFrame {
         GridBagConstraints g = new GridBagConstraints();
         g.gridx = 0; g.fill = GridBagConstraints.HORIZONTAL; g.weightx = 1;
         int row = 0;
-        if (vault.data != null) {
-            for (PasswordEntry e : vault.data.passwords) {
+        if (manager.active.data != null) {
+            for (PasswordEntry e : manager.active.data.passwords) {
                 if (!q.isEmpty() && !((e.title + " " + e.username + " " + e.url).toLowerCase().contains(q))) continue;
                 g.gridy = row++; g.insets = new Insets(0, 0, 12, 0);
                 inner.add(buildPasswordCard(e), g);
@@ -598,7 +777,7 @@ public class CyberVault extends JFrame {
         edit.addActionListener(ev -> openPasswordDialog(e));
         del.addActionListener(ev -> {
             if (confirmAction("DELETE \"" + e.title.toUpperCase() + "\" PERMANENTLY?")) {
-                vault.data.passwords.remove(e);
+                manager.active.data.passwords.remove(e);
                 saveVault(); refreshPasswords();
             }
         });
@@ -689,7 +868,7 @@ public class CyberVault extends JFrame {
             PasswordEntry ent = ex != null ? ex : new PasswordEntry();
             ent.title = t; ent.username = u; ent.password = pw;
             ent.url = fUrl.getText().trim(); ent.notes = fNotes.getText().trim();
-            if (ex == null) vault.data.passwords.add(ent);
+            if (ex == null) manager.active.data.passwords.add(ent);
             if (saveVault()) { refreshPasswords(); d.dispose(); }
         });
         cancel.addActionListener(ev -> d.dispose());
@@ -745,8 +924,8 @@ public class CyberVault extends JFrame {
         GridBagConstraints g = new GridBagConstraints();
         g.gridx = 0; g.fill = GridBagConstraints.HORIZONTAL; g.weightx = 1;
         int row = 0;
-        if (vault.data != null) {
-            for (TokenEntry e : vault.data.tokens) {
+        if (manager.active.data != null) {
+            for (TokenEntry e : manager.active.data.tokens) {
                 if (!q.isEmpty() && !((e.name + " " + e.notes).toLowerCase().contains(q))) continue;
                 g.gridy = row++; g.insets = new Insets(0, 0, 12, 0);
                 inner.add(buildTokenCard(e), g);
@@ -792,7 +971,7 @@ public class CyberVault extends JFrame {
         edit.addActionListener(ev -> openTokenDialog(e));
         del.addActionListener(ev -> {
             if (confirmAction("DELETE TOKEN \"" + e.name.toUpperCase() + "\" PERMANENTLY?")) {
-                vault.data.tokens.remove(e);
+                manager.active.data.tokens.remove(e);
                 saveVault(); refreshTokens();
             }
         });
@@ -866,7 +1045,7 @@ public class CyberVault extends JFrame {
             if (n.isEmpty() || t.isEmpty()) { err.setText("\u2715 PROVIDER & TOKEN ARE REQUIRED"); return; }
             TokenEntry ent = ex != null ? ex : new TokenEntry();
             ent.name = n; ent.token = t; ent.notes = fNotes.getText().trim();
-            if (ex == null) vault.data.tokens.add(ent);
+            if (ex == null) manager.active.data.tokens.add(ent);
             if (saveVault()) { refreshTokens(); d.dispose(); }
         });
         cancel.addActionListener(ev -> d.dispose());
@@ -1105,7 +1284,7 @@ public class CyberVault extends JFrame {
     }
 
     boolean saveVault() {
-        try { vault.save(); return true; }
+        try { manager.active.save(); return true; }
         catch (Exception ex) { alert("VAULT SAVE FAILED: " + ex.getMessage()); return false; }
     }
 
@@ -1544,18 +1723,26 @@ public class CyberVault extends JFrame {
         String theme;
         Vault active;
 
-        VaultManager() throws Exception {
-            dir = Paths.get(System.getProperty("user.home"), ".cybervault");
-            configFile = dir.resolve("config.json");
-            Files.createDirectories(dir);
-            loadConfig();
-        }
+         VaultManager() throws Exception {
+             dir = Paths.get(System.getProperty("user.home"), ".cybervault");
+             configFile = dir.resolve("config.json");
+             Files.createDirectories(dir);
+              loadConfig();
+         }
+
+         // مهاجرت v1.4 → v1.5: کپی vault.dat قدیمی به default.vault
+         void migrateOldVault() throws Exception {
+             Path old = dir.resolve("vault.dat");
+             Path def = dir.resolve("default.vault");
+             if (Files.exists(old) && !Files.exists(def) && !Files.exists(configFile)) {
+                 Files.copy(old, def);
+             }
+         }
 
         void loadConfig() throws Exception {
             if (!Files.exists(configFile)) {
                 vaults = new ArrayList<>();
-                vaults.add(new VaultInfo("Default", "default.vault"));
-                activeVaultName = "Default";
+                activeVaultName = null;
                 theme = "cyberpunk";
                 saveConfig();
             } else {
@@ -1565,7 +1752,7 @@ public class CyberVault extends JFrame {
                 for (JsonObject v : obj.getArray("vaults")) {
                     vaults.add(new VaultInfo(v.getString("name"), v.getString("file")));
                 }
-                activeVaultName = obj.getString("active", vaults.get(0).name);
+                activeVaultName = obj.getString("active", vaults.isEmpty() ? null : vaults.get(0).name);
                 theme = obj.getString("theme", "cyberpunk");
             }
         }
@@ -1595,8 +1782,22 @@ public class CyberVault extends JFrame {
                  }
              }
              Vault vault = new Vault(dir.resolve(file));
-             vault.create(master);  // این خودش save() می‌کنه
+             vault.create(master);
              vaults.add(new VaultInfo(name, file));
+             activeVaultName = name;
+             saveConfig();
+             active = vault;
+             return manager.active.data;
+         }
+
+         VaultData initExisting(String name, char[] master) throws Exception {
+             VaultInfo info = null;
+             for (VaultInfo v : vaults) {
+                 if (v.name.equals(name)) { info = v; break; }
+             }
+             if (info == null) throw new Exception("Vault not found: " + name);
+             Vault vault = new Vault(dir.resolve(info.file));
+             vault.create(master);
              activeVaultName = name;
              saveConfig();
              active = vault;
@@ -1618,7 +1819,7 @@ public class CyberVault extends JFrame {
              activeVaultName = name;
              saveConfig();
              active = vault;
-             return vault.data;
+             return manager.active.data;
          }
 
          void deleteVault(String name) throws Exception {
