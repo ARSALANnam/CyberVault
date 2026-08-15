@@ -1758,13 +1758,17 @@ public class CyberVault extends JFrame {
     }
 
     static class Vault {
-        final Path file;
+        Path file;
         byte[] salt;
         SecretKey key;
         VaultData data;
 
         Vault() {
             file = Paths.get(System.getProperty("user.home"), ".cybervault", "vault.dat");
+        }
+
+        Vault(Path file) {
+            this.file = file;
         }
 
         boolean exists() { return Files.exists(file); }
