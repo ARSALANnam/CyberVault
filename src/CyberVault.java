@@ -88,6 +88,9 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
 
 
 public class CyberVault extends JFrame {
