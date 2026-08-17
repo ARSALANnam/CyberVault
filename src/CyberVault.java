@@ -149,6 +149,10 @@ public class CyberVault extends JFrame {
     StrengthMeter meter;
 
     Timer clipClear;
+    Timer autoLockTimer;
+    long lastActivity = System.currentTimeMillis();
+    JLabel autoLockLabel;
+    static final long AUTO_LOCK_MS = 5 * 60 * 1000L;
     String selectedVaultName;
     boolean creatingNewVault = false;
     JPanel vaultSelectorPanel;
@@ -189,6 +193,7 @@ public class CyberVault extends JFrame {
         configureAuthMode();
         screens.layout.show(screenHolder, "VAULTS");
         initTray();
+        startActivityMonitor();
     }
 
     static class CardLayoutScreens { java.awt.CardLayout layout = new java.awt.CardLayout(); }
@@ -557,6 +562,44 @@ public class CyberVault extends JFrame {
     }
 
     /* TRAY */
+
+    /* AUTO-LOCK */
+    void resetActivity() {
+        lastActivity = System.currentTimeMillis();
+    }
+
+    void startActivityMonitor() {
+        // Listener سراسری — همه eventهای ماوس/کیبورد رو می‌گیره
+        Toolkit.getDefaultToolkit().addAWTEventListener(ev -> {
+            int id = ev.getID();
+            if (id == java.awt.event.MouseEvent.MOUSE_MOVED ||
+                id == java.awt.event.MouseEvent.MOUSE_PRESSED ||
+                id == java.awt.event.KeyEvent.KEY_PRESSED) {
+                resetActivity();
+            }
+        }, java.awt.AWTEvent.MOUSE_EVENT_MASK |
+            java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK |
+            java.awt.AWTEvent.KEY_EVENT_MASK);
+
+        // تایمر هر ثانیه چک می‌کنه
+        autoLockTimer = new Timer(1000, ev -> {
+            if (manager.active == null) return;
+            long idle = System.currentTimeMillis() - lastActivity;
+            if (idle >= AUTO_LOCK_MS) {
+                lockVault();
+                return;
+            }
+            // نمایش شمارش معکوس
+            long remain = (AUTO_LOCK_MS - idle) / 1000;
+            long m = remain / 60, sec = remain % 60;
+            String timeStr = String.format("%d:%02d", m, sec);
+            Color color = remain < 60 ? NEON_PINK : remain < 180 ? NEON_YEL : TXT_DIM;
+            autoLockLabel.setText("// AUTO-LOCK IN " + timeStr);
+            autoLockLabel.setForeground(color);
+        });
+        autoLockTimer.start();
+    }
+
     void initTray() {
         if (!SystemTray.isSupported()) return;
         try {
@@ -664,11 +707,12 @@ public class CyberVault extends JFrame {
         JPanel south = new JPanel(new BorderLayout(0, 12));
         south.setOpaque(false);
         south.setBorder(empty(12, 14, 16, 14));
-        statsLabel = label("\u2026", F_MONO_S, TXT_DIM);
+        autoLockLabel = label("// AUTO-LOCK: --:--", F_MONO_S, TXT_DIM);
+     statsLabel = label("\u2026", F_MONO_S, TXT_DIM);
         JLabel foot = label("LOCAL ONLY // NO CLOUD", F_MONO_S, new Color(0x454B6E));
         JPanel sp = new JPanel(new GridLayout(0, 1, 0, 5));
         sp.setOpaque(false);
-        sp.add(statsLabel); sp.add(foot);
+        sp.add(statsLabel); sp.add(autoLockLabel); sp.add(foot);
         CyberButton lock = new CyberButton("// LOCK VAULT", NEON_PINK, false);
         lock.setPreferredSize(new Dimension(0, 40));
         lock.addActionListener(ev -> lockVault());
