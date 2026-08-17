@@ -143,6 +143,7 @@ public class CyberVault extends JFrame {
     JLabel statsLabel;
     JTextField passSearch, tokSearch;
     JScrollPane passScroll, tokScroll;
+    JPanel passTagBar, tokTagBar;
 
     JTextField genOut; JSlider genLen; JLabel genLenVal, meterLabel;
     JCheckBox gUp, gLo, gDg, gSy, gAmb;
@@ -758,8 +759,13 @@ public class CyberVault extends JFrame {
         top.setOpaque(false);
         top.add(head, BorderLayout.NORTH);
         top.add(passSearch, BorderLayout.CENTER);
-        p.add(top, BorderLayout.NORTH);
-
+        passTagBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        passTagBar.setOpaque(false);
+        JPanel northWrap = new JPanel(new BorderLayout(0, 8));
+        northWrap.setOpaque(false);
+        northWrap.add(top, BorderLayout.NORTH);
+        northWrap.add(passTagBar, BorderLayout.CENTER);
+        p.add(northWrap, BorderLayout.NORTH);
         JPanel placeholder = new JPanel(new BorderLayout()); placeholder.setOpaque(false);
         passScroll = cyberScroll(placeholder);
         p.add(passScroll, BorderLayout.CENTER);
@@ -776,7 +782,7 @@ public class CyberVault extends JFrame {
         int row = 0;
         if (manager.active.data != null) {
             for (PasswordEntry e : manager.active.data.passwords) {
-                if (!q.isEmpty() && !((e.title + " " + e.username + " " + e.url).toLowerCase().contains(q))) continue;
+                if (!q.isEmpty() && !((e.title + " " + e.username + " " + e.url + " " + tagsStr(e.tags)).toLowerCase().contains(q))) continue;
                 g.gridy = row++; g.insets = new Insets(0, 0, 12, 0);
                 inner.add(buildPasswordCard(e), g);
             }
@@ -793,6 +799,18 @@ public class CyberVault extends JFrame {
         wrap.add(inner, BorderLayout.CENTER);
         passScroll.getViewport().setView(wrap);
         passScroll.getViewport().setBackground(BG);
+        passTagBar.removeAll();
+        if (manager.active.data != null) {
+            java.util.LinkedHashSet<String> allTags = new java.util.LinkedHashSet<>();
+            for (PasswordEntry e2 : manager.active.data.passwords)
+                if (e2.tags != null) allTags.addAll(e2.tags);
+            for (String tg : allTags) {
+                JButton tb = chip("#" + tg, NEON_PURP);
+                tb.addActionListener(ev -> { passSearch.setText(tg); passSearch.setForeground(TXT); refreshPasswords(); });
+                passTagBar.add(tb);
+            }
+        }
+        passTagBar.revalidate(); passTagBar.repaint();
         passScroll.revalidate();
         updateStats();
     }
@@ -855,6 +873,17 @@ public class CyberVault extends JFrame {
         if (!e.notes.isEmpty())
             body.add(row("NOTES", label(cut(e.notes, 70), F_MONO, TXT_DIM), null));
 
+        if (e.tags != null && !e.tags.isEmpty()) {
+            JPanel tagPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+            tagPanel.setOpaque(false);
+            for (String tg : e.tags) {
+                JButton tc = chip("#" + tg, NEON_PURP);
+                tc.addActionListener(ev -> { passSearch.setText(tg); passSearch.setForeground(TXT); refreshPasswords(); });
+                tagPanel.add(tc);
+            }
+            body.add(tagPanel);
+        }
+
         card.add(body, BorderLayout.CENTER);
         return card;
     }
@@ -864,9 +893,12 @@ public class CyberVault extends JFrame {
         JTextField fTitle = field(), fUser = field(), fUrl = field();
         JPasswordField fPass = passField();
         JTextArea fNotes = area();
+        JTextField fTags = field();
+
         if (ex != null) {
             fTitle.setText(ex.title); fUser.setText(ex.username);
             fPass.setText(ex.password); fUrl.setText(ex.url); fNotes.setText(ex.notes);
+            fTags.setText(ex.tags == null ? "" : String.join(", ", ex.tags));
         }
         JLabel err = label(" ", F_MONO_S, NEON_PINK);
 
@@ -892,7 +924,8 @@ public class CyberVault extends JFrame {
         ns.setPreferredSize(new Dimension(0, 70));
         ns.setBorder(BorderFactory.createLineBorder(LINE));
         styleScroll(ns); ns.getViewport().setBackground(BG_FIELD);
-        addFormRow(form, 4, "NOTES", ns);
+        addFormRow(form, 4, "TAGS", fTags);
+        addFormRow(form, 5, "NOTES", ns);
 
         JPanel body = new JPanel(new BorderLayout(0, 16));
         body.setBackground(BG_PANEL);
@@ -912,6 +945,7 @@ public class CyberVault extends JFrame {
             PasswordEntry ent = ex != null ? ex : new PasswordEntry();
             ent.title = t; ent.username = u; ent.password = pw;
             ent.url = fUrl.getText().trim(); ent.notes = fNotes.getText().trim();
+            ent.tags = parseTags(fTags.getText());
             if (ex == null) manager.active.data.passwords.add(ent);
             if (saveVault()) { refreshPasswords(); d.dispose(); }
         });
@@ -921,7 +955,7 @@ public class CyberVault extends JFrame {
         body.add(foot, BorderLayout.SOUTH);
 
         d.add(body, BorderLayout.CENTER);
-        d.setSize(560, 470);
+        d.setSize(560, 500);
         d.setLocationRelativeTo(this);
         escapeToClose(d);
         d.setVisible(true);
@@ -952,7 +986,13 @@ public class CyberVault extends JFrame {
         top.setOpaque(false);
         top.add(head, BorderLayout.NORTH);
         top.add(tokSearch, BorderLayout.CENTER);
-        p.add(top, BorderLayout.NORTH);
+        tokTagBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        tokTagBar.setOpaque(false);
+        JPanel northWrap = new JPanel(new BorderLayout(0, 8));
+        northWrap.setOpaque(false);
+        northWrap.add(top, BorderLayout.NORTH);
+        northWrap.add(tokTagBar, BorderLayout.CENTER);
+        p.add(northWrap, BorderLayout.NORTH);
 
         JPanel placeholder = new JPanel(new BorderLayout()); placeholder.setOpaque(false);
         tokScroll = cyberScroll(placeholder);
@@ -970,7 +1010,7 @@ public class CyberVault extends JFrame {
         int row = 0;
         if (manager.active.data != null) {
             for (TokenEntry e : manager.active.data.tokens) {
-                if (!q.isEmpty() && !((e.name + " " + e.notes).toLowerCase().contains(q))) continue;
+                if (!q.isEmpty() && !((e.name + " " + e.notes + " " + tagsStr(e.tags)).toLowerCase().contains(q))) continue;
                 g.gridy = row++; g.insets = new Insets(0, 0, 12, 0);
                 inner.add(buildTokenCard(e), g);
             }
@@ -987,6 +1027,18 @@ public class CyberVault extends JFrame {
         wrap.add(inner, BorderLayout.CENTER);
         tokScroll.getViewport().setView(wrap);
         tokScroll.getViewport().setBackground(BG);
+        tokTagBar.removeAll();
+        if (manager.active.data != null) {
+            java.util.LinkedHashSet<String> allTags = new java.util.LinkedHashSet<>();
+            for (TokenEntry e2 : manager.active.data.tokens)
+                if (e2.tags != null) allTags.addAll(e2.tags);
+            for (String tg : allTags) {
+                JButton tb = chip("#" + tg, NEON_PURP);
+                tb.addActionListener(ev -> { tokSearch.setText(tg); tokSearch.setForeground(TXT); refreshTokens(); });
+                tokTagBar.add(tb);
+            }
+        }
+        tokTagBar.revalidate(); tokTagBar.repaint();
         tokScroll.revalidate();
         updateStats();
     }
@@ -1040,6 +1092,17 @@ public class CyberVault extends JFrame {
         if (!e.notes.isEmpty())
             body.add(row("NOTES", label(cut(e.notes, 70), F_MONO, TXT_DIM), null));
 
+        if (e.tags != null && !e.tags.isEmpty()) {
+            JPanel tagPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+            tagPanel.setOpaque(false);
+            for (String tg : e.tags) {
+                JButton tc = chip("#" + tg, NEON_PURP);
+                tc.addActionListener(ev -> { tokSearch.setText(tg); tokSearch.setForeground(TXT); refreshTokens(); });
+                tagPanel.add(tc);
+            }
+            body.add(tagPanel);
+        }
+
         card.add(body, BorderLayout.CENTER);
         return card;
     }
@@ -1050,7 +1113,9 @@ public class CyberVault extends JFrame {
         JTextField fName = field();
         JPasswordField fTok = passField();
         JTextArea fNotes = area();
-        if (ex != null) { fName.setText(ex.name); fTok.setText(ex.token); fNotes.setText(ex.notes); }
+        JTextField fTags = field();
+        if (ex != null) { fName.setText(ex.name); fTok.setText(ex.token); fNotes.setText(ex.notes);
+            fTags.setText(ex.tags == null ? "" : String.join(", ", ex.tags)); }
         JLabel err = label(" ", F_MONO_S, NEON_PINK);
 
         JButton show = chip("SHOW", NEON_YEL);
@@ -1069,7 +1134,8 @@ public class CyberVault extends JFrame {
         ns.setPreferredSize(new Dimension(0, 74));
         ns.setBorder(BorderFactory.createLineBorder(LINE));
         styleScroll(ns); ns.getViewport().setBackground(BG_FIELD);
-        addFormRow(form, 2, "NOTES", ns);
+        addFormRow(form, 2, "TAGS", fTags);
+        addFormRow(form, 3, "NOTES", ns);
 
         JPanel body = new JPanel(new BorderLayout(0, 16));
         body.setBackground(BG_PANEL);
@@ -1089,6 +1155,7 @@ public class CyberVault extends JFrame {
             if (n.isEmpty() || t.isEmpty()) { err.setText("\u2715 PROVIDER & TOKEN ARE REQUIRED"); return; }
             TokenEntry ent = ex != null ? ex : new TokenEntry();
             ent.name = n; ent.token = t; ent.notes = fNotes.getText().trim();
+            ent.tags = parseTags(fTags.getText());
             if (ex == null) manager.active.data.tokens.add(ent);
             if (saveVault()) { refreshTokens(); d.dispose(); }
         });
@@ -1098,7 +1165,7 @@ public class CyberVault extends JFrame {
         body.add(foot, BorderLayout.SOUTH);
 
         d.add(body, BorderLayout.CENTER);
-        d.setSize(520, 390);
+        d.setSize(520, 420);
         d.setLocationRelativeTo(this);
         escapeToClose(d);
         d.setVisible(true);
@@ -1538,6 +1605,19 @@ public class CyberVault extends JFrame {
         return s.length() <= n ? s : s.substring(0, n - 1) + "\u2026";
     }
 
+    static List<String> parseTags(String s) {
+        List<String> out = new ArrayList<>();
+        for (String part : s.split(",")) {
+            String t = part.trim().replaceFirst("^#", "");
+            if (!t.isEmpty() && !out.contains(t)) out.add(t);
+        }
+        return out;
+    }
+
+    static String tagsStr(List<String> tags) {
+        return tags == null ? "" : String.join(" ", tags);
+    }
+
     static String fmtDate(long ms) {
         return new SimpleDateFormat("yyyy-MM-dd").format(new Date(ms));
     }
@@ -1743,12 +1823,14 @@ public class CyberVault extends JFrame {
     static class PasswordEntry implements Serializable {
         static final long serialVersionUID = 1L;
         String title = "", username = "", password = "", url = "", notes = "";
+        List<String> tags = new ArrayList<>();
         long created = System.currentTimeMillis();
     }
 
     static class TokenEntry implements Serializable {
         static final long serialVersionUID = 1L;
         String name = "", token = "", notes = "";
+        List<String> tags = new ArrayList<>();
         long created = System.currentTimeMillis();
     }
 
@@ -2040,6 +2122,8 @@ public class CyberVault extends JFrame {
                 byte[] dec = decrypt(key, Arrays.copyOfRange(raw, 16, raw.length));
                 ObjectInputStream ois = new ObjectInputStream(new java.io.ByteArrayInputStream(dec));
                 data = (VaultData) ois.readObject();
+                for (PasswordEntry pe : data.passwords) if (pe.tags == null) pe.tags = new ArrayList<>();
+                for (TokenEntry te : data.tokens) if (te.tags == null) te.tags = new ArrayList<>();
                 ois.close();
                 return true;
             } catch (Exception e) {
