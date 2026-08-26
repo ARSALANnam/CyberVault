@@ -189,6 +189,7 @@ public class CyberVault extends JFrame {
     JTextField passSearch, tokSearch;
     JScrollPane passScroll, tokScroll;
     JPanel passTagBar, tokTagBar;
+    boolean showFavPass = false, showFavTok = false;
 
     JTextField genOut; JSlider genLen; JLabel genLenVal, meterLabel;
     JCheckBox gUp, gLo, gDg, gSy, gAmb;
@@ -833,8 +834,16 @@ public class CyberVault extends JFrame {
         CyberButton add = new CyberButton("+ NEW ENTRY", NEON_CYAN, true);
         add.setPreferredSize(new Dimension(150, 38));
         add.addActionListener(ev -> openPasswordDialog(null));
-        JPanel addWrap = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        addWrap.setOpaque(false); addWrap.add(add);
+
+        CyberButton favPass = new CyberButton(showFavPass ? "\u2605 FAVORITES" : "\u2606 FAVORITES", NEON_YEL, false);
+        favPass.addActionListener(ev -> {
+            showFavPass = !showFavPass;
+            favPass.setText(showFavPass ? "\u2605 FAVORITES" : "\u2606 FAVORITES");
+            refreshPasswords();
+        });
+
+        JPanel addWrap = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        addWrap.setOpaque(false); addWrap.add(favPass); addWrap.add(add);
         head.add(addWrap, BorderLayout.EAST);
 
         passSearch = searchField("SEARCH ENTRIES\u2026");
@@ -867,6 +876,7 @@ public class CyberVault extends JFrame {
         int row = 0;
         if (manager.active.data != null) {
             for (PasswordEntry e : manager.active.data.passwords) {
+                if (showFavPass && !e.favorite) continue;
                 if (!q.isEmpty() && !((e.title + " " + e.username + " " + e.url + " " + tagsStr(e.tags)).toLowerCase().contains(q))) continue;
                 g.gridy = row++; g.insets = new Insets(0, 0, 12, 0);
                 inner.add(buildPasswordCard(e), g);
@@ -919,6 +929,8 @@ public class CyberVault extends JFrame {
 
         JPanel acts = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         acts.setOpaque(false);
+        JButton fav = chip(e.favorite ? "\u2605" : "\u2606", NEON_YEL);
+        fav.addActionListener(ev -> { e.favorite = !e.favorite; saveVault(); refreshPasswords(); });
         JButton edit = chip("EDIT", NEON_CYAN);
         JButton del = chip("DEL", NEON_PINK);
         edit.addActionListener(ev -> openPasswordDialog(e));
@@ -928,7 +940,8 @@ public class CyberVault extends JFrame {
                 saveVault(); refreshPasswords();
             }
         });
-        acts.add(edit); acts.add(del);
+
+        acts.add(fav); acts.add(edit); acts.add(del);
         head.add(acts, BorderLayout.EAST);
         card.add(head, BorderLayout.NORTH);
 
@@ -1060,8 +1073,15 @@ public class CyberVault extends JFrame {
         CyberButton add = new CyberButton("+ NEW TOKEN", NEON_PURP, true);
         add.setPreferredSize(new Dimension(160, 38));
         add.addActionListener(ev -> openTokenDialog(null));
-        JPanel addWrap = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        addWrap.setOpaque(false); addWrap.add(add);
+
+        CyberButton favTok = new CyberButton(showFavTok ? "\u2605 FAVORITES" : "\u2606 FAVORITES", NEON_YEL, false);
+        favTok.addActionListener(ev -> {
+            showFavTok = !showFavTok;
+            favTok.setText(showFavTok ? "\u2605 FAVORITES" : "\u2606 FAVORITES");
+            refreshTokens();
+        });
+        JPanel addWrap = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        addWrap.setOpaque(false); addWrap.add(favTok); addWrap.add(add);
         head.add(addWrap, BorderLayout.EAST);
 
         tokSearch = searchField("SEARCH TOKENS\u2026");
@@ -1095,6 +1115,7 @@ public class CyberVault extends JFrame {
         int row = 0;
         if (manager.active.data != null) {
             for (TokenEntry e : manager.active.data.tokens) {
+                if (showFavTok && !e.favorite) continue;
                 if (!q.isEmpty() && !((e.name + " " + e.notes + " " + tagsStr(e.tags)).toLowerCase().contains(q))) continue;
                 g.gridy = row++; g.insets = new Insets(0, 0, 12, 0);
                 inner.add(buildTokenCard(e), g);
@@ -1147,6 +1168,8 @@ public class CyberVault extends JFrame {
 
         JPanel acts = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         acts.setOpaque(false);
+        JButton fav = chip(e.favorite ? "\u2605" : "\u2606", NEON_YEL);
+        fav.addActionListener(ev -> { e.favorite = !e.favorite; saveVault(); refreshTokens(); });
         JButton edit = chip("EDIT", NEON_CYAN);
         JButton del = chip("DEL", NEON_PINK);
         edit.addActionListener(ev -> openTokenDialog(e));
@@ -1156,7 +1179,8 @@ public class CyberVault extends JFrame {
                 saveVault(); refreshTokens();
             }
         });
-        acts.add(edit); acts.add(del);
+
+        acts.add(fav); acts.add(edit); acts.add(del);
         head.add(acts, BorderLayout.EAST);
         card.add(head, BorderLayout.NORTH);
 
@@ -1931,6 +1955,7 @@ public class CyberVault extends JFrame {
         static final long serialVersionUID = 1L;
         String title = "", username = "", password = "", url = "", notes = "";
         List<String> tags = new ArrayList<>();
+        boolean favorite = false;
         long created = System.currentTimeMillis();
     }
 
@@ -1938,6 +1963,7 @@ public class CyberVault extends JFrame {
         static final long serialVersionUID = 1L;
         String name = "", token = "", notes = "";
         List<String> tags = new ArrayList<>();
+        boolean favorite = false;
         long created = System.currentTimeMillis();
     }
 
