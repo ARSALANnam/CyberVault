@@ -100,18 +100,23 @@ import javax.swing.Box;
 public class CyberVault extends JFrame {
 
     /* THEME */
-    static final Color BG = new Color(0x0A0A14);
-    static final Color BG_PANEL = new Color(0x10101E);
-    static final Color BG_CARD = new Color(0x151528);
-    static final Color BG_FIELD = new Color(0x0C0C1A);
-    static final Color LINE = new Color(0x2A2F4A);
-    static final Color NEON_CYAN = new Color(0x00F0FF);
-    static final Color NEON_PINK = new Color(0xFF2A6D);
-    static final Color NEON_PURP = new Color(0x9D4EFF);
-    static final Color NEON_GRN = new Color(0x39FF14);
-    static final Color NEON_YEL = new Color(0xFFE600);
-    static final Color TXT = new Color(0xE4E9FF);
-    static final Color TXT_DIM = new Color(0x7A82A8);
+    static Color BG = new Color(0x0A0A14);
+    static Color BG_PANEL = new Color(0x10101E);
+    static Color BG_CARD = new Color(0x151528);
+    static Color BG_FIELD = new Color(0x0C0C1A);
+    static Color LINE = new Color(0x2A2F4A);
+    static Color NEON_CYAN = new Color(0x00F0FF);
+    static Color NEON_PINK = new Color(0xFF2A6D);
+    static Color NEON_PURP = new Color(0x9D4EFF);
+    static Color NEON_GRN = new Color(0x39FF14);
+    static Color NEON_YEL = new Color(0xFFE600);
+    static Color TXT = new Color(0xE4E9FF);
+    static Color TXT_DIM = new Color(0x7A82A8);
+    static Color BG_GRAD = new Color(0x16, 0x0B, 0x26);
+    static Color DIM_1 = new Color(0x555C82);
+    static Color DIM_2 = new Color(0x454B6E);
+    static Color SCROLL_C = new Color(0x333A5C);
+    static boolean matrixRain = false;
 
     static Font pickMono(int style, float size) {
         String[] prefs = {"Consolas", "JetBrains Mono", "Cascadia Code", "Fira Code", "Menlo", "DejaVu Sans Mono"};
@@ -126,6 +131,46 @@ public class CyberVault extends JFrame {
     static final Font F_MONO_B = pickMono(Font.BOLD, 13f);
     static final Font F_TITLE  = pickMono(Font.BOLD, 20f);
     static final Font F_BIG    = pickMono(Font.BOLD, 27f);
+
+    static void applyTheme(String name) {
+        if ("matrix".equals(name)) {
+            BG = new Color(0x000A00);
+            BG_PANEL = new Color(0x001400);
+            BG_CARD = new Color(0x001C00);
+            BG_FIELD = new Color(0x000E00);
+            LINE = new Color(0x1E4D1E);
+            NEON_CYAN = new Color(0x00FF41);
+            NEON_PINK = new Color(0x00CC33);
+            NEON_PURP = new Color(0x66FF99);
+            NEON_GRN = new Color(0x00FF41);
+            NEON_YEL = new Color(0xB3FFB3);
+            TXT = new Color(0xD6FFD6);
+            TXT_DIM = new Color(0x4E994E);
+            BG_GRAD = new Color(0x001400);
+            DIM_1 = new Color(0x3E8A3E);
+            DIM_2 = new Color(0x2E662E);
+            SCROLL_C = new Color(0x1E4D1E);
+            matrixRain = true;
+        } else {
+            BG = new Color(0x0A0A14);
+            BG_PANEL = new Color(0x10101E);
+            BG_CARD = new Color(0x151528);
+            BG_FIELD = new Color(0x0C0C1A);
+            LINE = new Color(0x2A2F4A);
+            NEON_CYAN = new Color(0x00F0FF);
+            NEON_PINK = new Color(0xFF2A6D);
+            NEON_PURP = new Color(0x9D4EFF);
+            NEON_GRN = new Color(0x39FF14);
+            NEON_YEL = new Color(0xFFE600);
+            TXT = new Color(0xE4E9FF);
+            TXT_DIM = new Color(0x7A82A8);
+            BG_GRAD = new Color(0x16, 0x0B, 0x26);
+            DIM_1 = new Color(0x555C82);
+            DIM_2 = new Color(0x454B6E);
+            SCROLL_C = new Color(0x333A5C);
+            matrixRain = false;
+        }
+    }
 
     static VaultManager manager;
     final CardLayoutScreens screens = new CardLayoutScreens();
