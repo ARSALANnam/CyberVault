@@ -83,11 +83,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.TrayIcon;
-
 import java.util.Map;
 import java.util.HashMap;
 import java.nio.charset.StandardCharsets;
@@ -151,6 +146,42 @@ public class CyberVault extends JFrame {
             DIM_2 = new Color(0x2E662E);
             SCROLL_C = new Color(0x1E4D1E);
             matrixRain = true;
+        } else if ("dark".equals(name)) {
+            BG = new Color(0x1A1A2E);
+            BG_PANEL = new Color(0x16213E);
+            BG_CARD = new Color(0x1F2940);
+            BG_FIELD = new Color(0x0F1525);
+            LINE = new Color(0x2E3A55);
+            NEON_CYAN = new Color(0x4FC3F7);
+            NEON_PINK = new Color(0xFF6B9D);
+            NEON_PURP = new Color(0xB388FF);
+            NEON_GRN = new Color(0x69F0AE);
+            NEON_YEL = new Color(0xFFD54F);
+            TXT = new Color(0xE0E0E0);
+            TXT_DIM = new Color(0x9E9E9E);
+            BG_GRAD = new Color(0x0F172A);
+            DIM_1 = new Color(0x78909C);
+            DIM_2 = new Color(0x607D8B);
+            SCROLL_C = new Color(0x37474F);
+            matrixRain = false;
+        } else if ("light".equals(name)) {
+            BG = new Color(0xF5F5F5);
+            BG_PANEL = new Color(0xFFFFFF);
+            BG_CARD = new Color(0xFFFFFF);
+            BG_FIELD = new Color(0xE8E8E8);
+            LINE = new Color(0xD0D0D0);
+            NEON_CYAN = new Color(0x0288D1);
+            NEON_PINK = new Color(0xE91E63);
+            NEON_PURP = new Color(0x7B1FA2);
+            NEON_GRN = new Color(0x2E7D32);
+            NEON_YEL = new Color(0xF9A825);
+            TXT = new Color(0x212121);
+            TXT_DIM = new Color(0x757575);
+            BG_GRAD = new Color(0xE3F2FD);
+            DIM_1 = new Color(0x90A4AE);
+            DIM_2 = new Color(0xB0BEC5);
+            SCROLL_C = new Color(0xBDBDBD);
+            matrixRain = false;
         } else {
             BG = new Color(0x0A0A14);
             BG_PANEL = new Color(0x10101E);
@@ -239,11 +270,9 @@ public class CyberVault extends JFrame {
 //        screenHolder.add(buildAppScreen(), "APP");
 //        configureAuthMode();
 //        screens.layout.show(screenHolder, "VAULTS");
-//        initTray();
 
         applyTheme(manager.theme);
         buildFrame();
-        initTray();
         startActivityMonitor();
     }
 
@@ -273,7 +302,12 @@ public class CyberVault extends JFrame {
     }
 
     void switchTheme() {
-        String next = "matrix".equals(manager.theme) ? "cyberpunk" : "matrix";
+        String[] themes = {"cyberpunk", "matrix", "dark", "light"};
+        int idx = 0;
+        for (int i = 0; i < themes.length; i++) {
+            if (themes[i].equals(manager.theme)) { idx = i; break; }
+        }
+        String next = themes[(idx + 1) % themes.length];
         try { manager.setTheme(next); } catch (Exception ex) {}
         applyTheme(next);
         buildFrame();
@@ -283,10 +317,9 @@ public class CyberVault extends JFrame {
 
     public static void main(String[] args) {
         try { UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName()); } catch (Exception ignored) {}
-        boolean hidden = args.length > 0 && "--hidden".equals(args[0]);
         SwingUtilities.invokeLater(() -> {
             CyberVault cv = new CyberVault();
-            cv.setVisible(!hidden);
+            cv.setVisible(true);
         });
     }
 
@@ -301,8 +334,8 @@ public class CyberVault extends JFrame {
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 6));
         btns.setOpaque(false);
 
-        JButton themeBtn = miniBtn("◐ THEME", ev -> switchTheme(), NEON_GRN);
-        themeBtn.setPreferredSize(new Dimension(74, 22));
+        JButton themeBtn = miniBtn("\u25D0 " + manager.theme.toUpperCase(), ev -> switchTheme(), NEON_GRN);
+        themeBtn.setPreferredSize(new Dimension(110, 22));
         btns.add(themeBtn);
         btns.add(miniBtn("\u2500", ev -> setState(JFrame.ICONIFIED), NEON_CYAN));
         btns.add(miniBtn("\u2715", ev -> System.exit(0), NEON_PINK));
@@ -685,58 +718,6 @@ public class CyberVault extends JFrame {
             autoLockLabel.setForeground(color);
         });
         autoLockTimer.start();
-    }
-
-    void initTray() {
-        if (!SystemTray.isSupported()) return;
-        try {
-            java.net.URL u = CyberVault.class.getResource("/tray.png");
-            if (u == null) u = CyberVault.class.getResource("/icon.png");
-            if (u == null) return;
-            java.awt.image.BufferedImage src = javax.imageio.ImageIO.read(u);
-
-            int x0 = src.getWidth(), y0 = src.getHeight(), x1 = 0, y1 = 0;
-            for (int y = 0; y < src.getHeight(); y++)
-                for (int x = 0; x < src.getWidth(); x++) {
-                    int rgb = src.getRGB(x, y);
-                    if (((rgb >> 16) & 255) + ((rgb >> 8) & 255) + (rgb & 255) < 300) {
-                        if (x < x0) x0 = x; if (x > x1) x1 = x;
-                        if (y < y0) y0 = y; if (y > y1) y1 = y;
-                    }
-                }
-            if (x1 > x0 && y1 > y0)
-                src = src.getSubimage(x0, y0, x1 - x0 + 1, y1 - y0 + 1);
-
-            int size = 16;
-            java.awt.image.BufferedImage icon = new java.awt.image.BufferedImage(
-                size, size, java.awt.image.BufferedImage.TYPE_INT_RGB);
-            Graphics2D g2 = icon.createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            g2.drawImage(src, 0, 0, size, size, null);
-            g2.dispose();
-
-            PopupMenu menu = new PopupMenu();
-            MenuItem open = new MenuItem("Open CyberVault");
-            open.addActionListener(ev -> showWindow());
-            MenuItem lock = new MenuItem("Lock Vault");
-            lock.addActionListener(ev -> { lockVault(); showWindow(); });
-            MenuItem exit = new MenuItem("Exit");
-            exit.addActionListener(ev -> System.exit(0));
-            menu.add(open); menu.add(lock); menu.addSeparator(); menu.add(exit);
-
-            TrayIcon ti = new TrayIcon(icon, "CyberVault", menu);
-            ti.setImageAutoSize(false);
-            ti.addActionListener(ev -> showWindow());
-            SystemTray.getSystemTray().add(ti);
-        } catch (Exception ignored) {}
-    }
-
-
-    void showWindow() {
-        setVisible(true);
-        setExtendedState(JFrame.NORMAL);
-        toFront();
     }
 
 

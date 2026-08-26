@@ -1,4 +1,4 @@
-# ── Build output
+# Build output
 build/
 target/
 out/
@@ -6,11 +6,11 @@ dist/
 *.class
 *.jar
 
-# ── Maven leftovers
+# Maven leftovers
 .mvn/
 pom.xml
 
-# ── IDE
+# IDE
 .idea/
 *.iml
 .vscode/
@@ -21,7 +21,7 @@ pom.xml
 *.swo
 
 
-# ── Vault data
+# Vault data
 *.dat
 vault.dat
 .cybervault/
@@ -32,10 +32,10 @@ vault.dat
 *.env
 secrets.json
 
-# ── OS junk
+# OS junk
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# ── Logs
+# Logs
 *.log

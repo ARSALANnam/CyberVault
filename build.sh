@@ -6,13 +6,10 @@ rm -rf build && mkdir -p build
 javac -encoding UTF-8 -d build src/CyberVault.java
 
 EXTRA=""
-if [ -f assets/icon.png ]; then
-  cp assets/icon.png build/
-  EXTRA="icon.png"
-fi
-if [ -f assets/tray.png ]; then
-  cp assets/tray.png build/
-  EXTRA="$EXTRA tray.png"
+if [ -d assets ]; then
+    mkdir -p build/assets
+    cp -r assets/. build/assets/
+    EXTRA="assets"
 fi
 
 cd build
