@@ -224,22 +224,58 @@ public class CyberVault extends JFrame {
             System.exit(1);
         }
 
+//        JPanel root = new JPanel(new BorderLayout());
+//        root.setBackground(BG);
+//        root.setBorder(BorderFactory.createLineBorder(shade(NEON_CYAN, 0.55f)));
+//        root.add(buildTitleBar(), BorderLayout.NORTH);
+//        root.add(screenHolder, BorderLayout.CENTER);
+//        setContentPane(root);
+//
+//        screenHolder.setBackground(BG);
+//        vaultSelectorPanel = buildVaultSelector();
+//        screenHolder.add(vaultSelectorPanel, "VAULTS");
+//        screenHolder.add(buildAuthScreen(), "AUTH");
+//        screenHolder.add(buildAppScreen(), "APP");
+//        configureAuthMode();
+//        screens.layout.show(screenHolder, "VAULTS");
+//        initTray();
+//        startActivityMonitor();
+
+        applyTheme(manager.theme);
+        buildFrame();
+        initTray();
+    }
+
+    void buildFrame() {
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(BG);
         root.setBorder(BorderFactory.createLineBorder(shade(NEON_CYAN, 0.55f)));
         root.add(buildTitleBar(), BorderLayout.NORTH);
         root.add(screenHolder, BorderLayout.CENTER);
         setContentPane(root);
-
+        screenHolder.removeAll();
         screenHolder.setBackground(BG);
         vaultSelectorPanel = buildVaultSelector();
         screenHolder.add(vaultSelectorPanel, "VAULTS");
         screenHolder.add(buildAuthScreen(), "AUTH");
         screenHolder.add(buildAppScreen(), "APP");
         configureAuthMode();
-        screens.layout.show(screenHolder, "VAULTS");
-        initTray();
-        startActivityMonitor();
+        if (manager.active != null) {
+            refreshPasswords(); refreshTokens(); updateStats();
+            selectNav(navPass, "PASS");
+            screens.layout.show(screenHolder, "APP");
+        } else {
+            screens.layout.show(screenHolder, "VAULTS");
+        }
+        revalidate();
+        repaint();
+    }
+
+    void switchTheme() {
+        String next = "matrix".equals(manager.theme) ? "cyberpunk" : "matrix";
+        try { manager.setTheme(next); } catch (Exception ex) {}
+        applyTheme(next);
+        buildFrame();
     }
 
     static class CardLayoutScreens { java.awt.CardLayout layout = new java.awt.CardLayout(); }
@@ -263,6 +299,7 @@ public class CyberVault extends JFrame {
         bar.add(t, BorderLayout.WEST);
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 6));
         btns.setOpaque(false);
+        btns.add(miniBtn("\u25D0", ev -> switchTheme(), NEON_GRN));
         btns.add(miniBtn("\u2500", ev -> setState(JFrame.ICONIFIED), NEON_CYAN));
         btns.add(miniBtn("\u2715", ev -> System.exit(0), NEON_PINK));
         bar.add(btns, BorderLayout.EAST);
@@ -1849,13 +1886,35 @@ public class CyberVault extends JFrame {
     }
 
     static class GridBG extends JPanel {
-        GridBG() { setBackground(BG); }
+        javax.swing.Timer rain;
+        GridBG() {
+            setBackground(BG);
+            rain = new javax.swing.Timer(66, ev -> repaint());
+        }
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g.create();
             int w = getWidth(), h = getHeight();
-            g2.setPaint(new GradientPaint(0, 0, BG, w, h, new Color(0x16, 0x0B, 0x26)));
+            g2.setPaint(new GradientPaint(0, 0, BG, w, h, BG_GRAD));
             g2.fillRect(0, 0, w, h);
+            if (matrixRain) {
+                g2.setFont(F_MONO_S);
+                long t = System.currentTimeMillis() / 50;
+                for (int x = 0; x < w; x += 14) {
+                    int speed = 1 + (x * 7919 % 5);
+                    int yOff = (int) ((t * speed) % (h + 120)) - 60;
+                    for (int k = 0; k < 6; k++) {
+                        int y = yOff - k * 16;
+                        if (y < 0 || y > h) continue;
+                        char ch = (char) ('!' + ((x * 31 + k * 17 + (int) (t / 40)) % 94));
+                        g2.setColor(withAlpha(NEON_GRN, Math.max(20, 150 - k * 24)));
+                        g2.drawString(String.valueOf(ch), x, y);
+                    }
+                }
+                if (!rain.isRunning()) rain.start();
+            } else {
+                if (rain.isRunning()) rain.stop();
+            }
             g2.setColor(withAlpha(NEON_CYAN, 12));
             for (int x = 0; x <= w; x += 42) g2.drawLine(x, 0, x, h);
             for (int y = 0; y <= h; y += 42) g2.drawLine(0, y, w, y);
