@@ -19,32 +19,58 @@
 
 ## ✨ Features
 
-- 🔐  **Master-key vault** — PBKDF2 (120k iterations) + AES-256-GCM authenticated encryption 
-- 👤  **Password entries** — title, username / email, password, URL & notes 
-- 🤖  **API token vault** — keep Hugging Face, OpenAI, GitHub… tokens safe 
-- ⚡  **Password generator** — 8–64 chars, custom pools, no-ambiguous mode, live entropy meter 
-- 🔎  **Live search** across entries and tokens 
-- 👁  **Show / hide** secrets with one click 
-- 📋  **One-click copy** — clipboard auto-clears after 20 s 
-- 🔒  **Lock vault** — wipes keys & decrypted data from RAM 
-- 🌃  **Neon cyberpunk UI** — custom-painted buttons, slider, scrollbars & hex logo 
-- 💾  **100% offline** — data lives only in `~/.cybervault/vault.dat`
-- 🖥  **System tray** — lives in your top bar: click to open, right-click to Lock / Exit 
-- 🌙  **Start hidden & autostart** — `--hidden` flag + ready-made autostart entry 
+### 🔒 Security First
+- 🔐 **Master-key vault** — PBKDF2 (120k iterations) + AES-256-GCM authenticated encryption
+- ⏰ **Auto-Lock** — vault locks automatically after 5 minutes of idle time (live countdown in sidebar)
+- 🔒 **Lock vault** — wipes keys & decrypted data from RAM
+- 📋 **One-click copy** — clipboard auto-clears after 20 s
+- 💾 **100% offline** — data lives only in `~/.cybervault/`, never touches the network
+
+### 📦 Multi-Vault Architecture
+- 🗂️ **Unlimited isolated vaults** — separate keys for personal, work, and crypto credentials
+- 🏷️ **Rename, delete & import** vaults on the fly
+- 👁️ **Per-vault master keys** — each vault has its own encryption
+
+### 📝 Organization
+- 👤 **Password entries** — title, username / email, password, URL, notes & tags
+- 🤖 **API token vault** — keep Hugging Face, OpenAI, GitHub… tokens safe
+- 🏷️ **Tags & Categories** — comma-separated tags, clickable `#tag` chips, filter bar, tag search
+- ⭐ **Favorites** — star any entry to pin it, filter starred entries with one click
+- 🔎 **Live search** — across titles, usernames, URLs, notes **and tags**
+- 👁 **Show / hide** secrets with one click
+
+### 🎨 Themes
+- 🌃 **Cyberpunk** — the classic neon cyan & pink look
+- 🟢 **Matrix** — green palette with animated **digital rain** background
+- 🌙 **Dark** — calm low-light theme for night sessions
+- ☀️ **Light** — clean bright theme for daylight use
+- ◐ **Live theme switcher**
+
+### ⚡ Power Tools
+- ⚡ **Password generator** — 8–64 chars, custom pools, no-ambiguous mode, live entropy meter
+- 🌃 **Neon cyberpunk UI** — custom-painted buttons, slider, scrollbars & hex logo
+- 🖥️ **Cross-platform** — works on Linux, macOS & Windows (JDK 8+)
 
 # 🖼 More screenshots
 
-<p align="center"><img src="assets/ScreeShot0-1.png" width="700"></p>
-<p align="center"><img src="assets/ScreeShot0-2.png" width="700"></p>
-<p align="center"><img src="assets/ScreeShot0-3.png" width="700"></p>
-<p align="center"><img src="assets/ScreeShot0-4.png" width="700"></p>
+<p align="center"><img src="assets/ScreenShot-01.png" width="700"></p>
+<p align="center"><img src="assets/ScreenShot-02.png" width="700"></p>
 
+## Matrix
+<p align="center"><img src="assets/Screenshot-05.png" width="700"></p>
+<p align="center"><img src="assets/Screenshot-06.png" width="700"></p>
+
+# Dark
+<p align="center"><img src="assets/Screenshot-07.png" width="700"></p>
+<p align="center"><img src="assets/Screenshot-08.png" width="700"></p>
+
+# Light
+<p align="center"><img src="assets/Screenshot-09.png" width="700"></p>
+<p align="center"><img src="assets/Screenshot-10.png" width="700"></p>
 
 
 ## Requirements
 - JDK 8+
-
-
 
 <br>
 <br>
@@ -78,6 +104,7 @@ File format:
 - Passwords are handled as `char[]` and zeroed in memory after use.
 - **Lock** clears key, salt and decrypted data from RAM.
 - Clipboard is cleared 20 s after copying (only if unchanged).
+- Auto-Lock triggers after 5 minutes of inactivity (configurable in code).
 
 > ⚠️ This is a personal project. Use it at your own risk and **don't forget your master key**.
 
@@ -106,37 +133,6 @@ update-desktop-database ~/.local/share/applications
 Now CyberVault is available in the app menu (Super key) — launch it once,
 then right-click its icon and **Add to Favorites** to pin it to your dock.
 
-## 🕹 System Tray & Autostart
-
-CyberVault can live in your system tray (top bar) like a native citizen:
-
-```bash
-java -jar CyberVault.jar --hidden   # start with only the tray icon
-```
-
-- **Click** the tray icon → opens the vault
-- **Right-click** → `Open` / `Lock Vault` / `Exit`
-
-> 🐧 **GNOME users:** Java tray icons use the legacy XEmbed protocol.
-> Install the **Tray Icons: Reloaded** extension (via Extension Manager)
-> to show them in the top bar next to your clipboard indicator.
-
-**Autostart on login (Linux):**
-
-```bash
-mkdir -p ~/.config/autostart
-cat > ~/.config/autostart/cybervault.desktop <<EOF
-[Desktop Entry]
-Name=CyberVault
-Exec=java -jar /home/USER/path/to/CyberVault.jar --hidden
-Icon=/home/USER/path/to/assets/icon.png
-Terminal=false
-Type=Application
-EOF
-```
-
-> Replace `/home/USER/path/to` with your actual project path
-> (tip: run `pwd` inside the project folder to get it).
 
 <br>
 <br>
