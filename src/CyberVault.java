@@ -239,11 +239,11 @@ public class CyberVault extends JFrame {
 //        configureAuthMode();
 //        screens.layout.show(screenHolder, "VAULTS");
 //        initTray();
-//        startActivityMonitor();
 
         applyTheme(manager.theme);
         buildFrame();
         initTray();
+        startActivityMonitor();
     }
 
     void buildFrame() {
@@ -299,7 +299,10 @@ public class CyberVault extends JFrame {
         bar.add(t, BorderLayout.WEST);
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 6));
         btns.setOpaque(false);
-        btns.add(miniBtn("\u25D0", ev -> switchTheme(), NEON_GRN));
+
+        JButton themeBtn = miniBtn("◐ THEME", ev -> switchTheme(), NEON_GRN);
+        themeBtn.setPreferredSize(new Dimension(74, 22));
+        btns.add(themeBtn);
         btns.add(miniBtn("\u2500", ev -> setState(JFrame.ICONIFIED), NEON_CYAN));
         btns.add(miniBtn("\u2715", ev -> System.exit(0), NEON_PINK));
         bar.add(btns, BorderLayout.EAST);
