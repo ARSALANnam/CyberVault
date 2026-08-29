@@ -2400,7 +2400,13 @@ public class CyberVault extends JFrame {
             new Color(0xDCDCDC), new Color(0x0099CC), new Color(0xCC3366), new Color(0x7733CC),
             new Color(0x2D8844), new Color(0xCC9900), new Color(0x1A1A1A), new Color(0x666666),
             new Color(0xE8E8E8), new Color(0x999999), new Color(0xAAAAAA), new Color(0xBBBBBB),
-            false)
+            false),
+        new Theme("pufak", "Pufak Namaki",
+            new Color(0xDA291C), new Color(0xB02015), new Color(0xBE2418), new Color(0xA01A0F),
+            new Color(0xE8A33D), new Color(0xFFC72C), new Color(0xFFFFFF), new Color(0xFFB300),
+            new Color(0xFFE082), new Color(0xFFEB3B), new Color(0xFFF8E1), new Color(0xEFA093),
+            new Color(0x8C1A10), new Color(0xE58F7F), new Color(0xD07A6C), new Color(0xFFC72C),
+            false),
 //        new Theme()
     };
 
