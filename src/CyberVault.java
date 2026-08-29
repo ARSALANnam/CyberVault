@@ -128,79 +128,13 @@ public class CyberVault extends JFrame {
     static final Font F_BIG    = pickMono(Font.BOLD, 27f);
 
     static void applyTheme(String name) {
-        if ("matrix".equals(name)) {
-            BG = new Color(0x000A00);
-            BG_PANEL = new Color(0x001400);
-            BG_CARD = new Color(0x001C00);
-            BG_FIELD = new Color(0x000E00);
-            LINE = new Color(0x1E4D1E);
-            NEON_CYAN = new Color(0x00FF41);
-            NEON_PINK = new Color(0x00CC33);
-            NEON_PURP = new Color(0x66FF99);
-            NEON_GRN = new Color(0x00FF41);
-            NEON_YEL = new Color(0xB3FFB3);
-            TXT = new Color(0xD6FFD6);
-            TXT_DIM = new Color(0x4E994E);
-            BG_GRAD = new Color(0x001400);
-            DIM_1 = new Color(0x3E8A3E);
-            DIM_2 = new Color(0x2E662E);
-            SCROLL_C = new Color(0x1E4D1E);
-            matrixRain = true;
-        } else if ("dark".equals(name)) {
-            BG = new Color(0x1A1A2E);
-            BG_PANEL = new Color(0x16213E);
-            BG_CARD = new Color(0x1F2940);
-            BG_FIELD = new Color(0x0F1525);
-            LINE = new Color(0x2E3A55);
-            NEON_CYAN = new Color(0x4FC3F7);
-            NEON_PINK = new Color(0xFF6B9D);
-            NEON_PURP = new Color(0xB388FF);
-            NEON_GRN = new Color(0x69F0AE);
-            NEON_YEL = new Color(0xFFD54F);
-            TXT = new Color(0xE0E0E0);
-            TXT_DIM = new Color(0x9E9E9E);
-            BG_GRAD = new Color(0x0F172A);
-            DIM_1 = new Color(0x78909C);
-            DIM_2 = new Color(0x607D8B);
-            SCROLL_C = new Color(0x37474F);
-            matrixRain = false;
-        } else if ("light".equals(name)) {
-            BG = new Color(0xF5F5F5);
-            BG_PANEL = new Color(0xFFFFFF);
-            BG_CARD = new Color(0xFFFFFF);
-            BG_FIELD = new Color(0xE8E8E8);
-            LINE = new Color(0xD0D0D0);
-            NEON_CYAN = new Color(0x0288D1);
-            NEON_PINK = new Color(0xE91E63);
-            NEON_PURP = new Color(0x7B1FA2);
-            NEON_GRN = new Color(0x2E7D32);
-            NEON_YEL = new Color(0xF9A825);
-            TXT = new Color(0x212121);
-            TXT_DIM = new Color(0x757575);
-            BG_GRAD = new Color(0xE3F2FD);
-            DIM_1 = new Color(0x90A4AE);
-            DIM_2 = new Color(0xB0BEC5);
-            SCROLL_C = new Color(0xBDBDBD);
-            matrixRain = false;
-        } else {
-            BG = new Color(0x0A0A14);
-            BG_PANEL = new Color(0x10101E);
-            BG_CARD = new Color(0x151528);
-            BG_FIELD = new Color(0x0C0C1A);
-            LINE = new Color(0x2A2F4A);
-            NEON_CYAN = new Color(0x00F0FF);
-            NEON_PINK = new Color(0xFF2A6D);
-            NEON_PURP = new Color(0x9D4EFF);
-            NEON_GRN = new Color(0x39FF14);
-            NEON_YEL = new Color(0xFFE600);
-            TXT = new Color(0xE4E9FF);
-            TXT_DIM = new Color(0x7A82A8);
-            BG_GRAD = new Color(0x16, 0x0B, 0x26);
-            DIM_1 = new Color(0x555C82);
-            DIM_2 = new Color(0x454B6E);
-            SCROLL_C = new Color(0x333A5C);
-            matrixRain = false;
-        }
+        Theme t = findTheme(name);
+        BG = t.bg; BG_PANEL = t.bgPanel; BG_CARD = t.bgCard; BG_FIELD = t.bgField;
+        LINE = t.line; NEON_CYAN = t.neonCyan; NEON_PINK = t.neonPink;
+        NEON_PURP = t.neonPurp; NEON_GRN = t.neonGrn; NEON_YEL = t.neonYel;
+        TXT = t.txt; TXT_DIM = t.txtDim; BG_GRAD = t.bgGrad;
+        DIM_1 = t.dim1; DIM_2 = t.dim2; SCROLL_C = t.scrollC;
+        matrixRain = t.matrixRain;
     }
 
     static VaultManager manager;
@@ -334,9 +268,9 @@ public class CyberVault extends JFrame {
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 6));
         btns.setOpaque(false);
 
-        JButton themeBtn = miniBtn("\u25D0 " + manager.theme.toUpperCase(), ev -> switchTheme(), NEON_GRN);
-        themeBtn.setPreferredSize(new Dimension(110, 22));
-        btns.add(themeBtn);
+        JButton settingsBtn = miniBtn("SETTINGS", ev -> openSettings(), NEON_CYAN);
+        settingsBtn.setPreferredSize(new Dimension(96, 22));
+        btns.add(settingsBtn);
         btns.add(miniBtn("\u2500", ev -> setState(JFrame.ICONIFIED), NEON_CYAN));
         btns.add(miniBtn("\u2715", ev -> System.exit(0), NEON_PINK));
         bar.add(btns, BorderLayout.EAST);
@@ -1484,6 +1418,119 @@ public class CyberVault extends JFrame {
         d.setVisible(true);
     }
 
+    void openSettings() {
+        JDialog d = cyberDialog("SETTINGS", NEON_CYAN);
+        JPanel body = new JPanel(new BorderLayout(0, 20));
+        body.setBackground(BG_PANEL);
+        body.setBorder(empty(24, 26, 24, 26));
+
+        body.add(label("// SELECT THEME", F_MONO_B, TXT_DIM), BorderLayout.NORTH);
+
+        JPanel grid = new JPanel(new GridLayout(2, 2, 16, 16));
+        grid.setOpaque(false);
+
+        for (Theme t : PRESETS) {
+            JPanel card = new JPanel(new BorderLayout(0, 10));
+            card.setBackground(BG_CARD);
+            card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(t.name.equals(manager.theme) ? NEON_CYAN : LINE, 2),
+                empty(12, 14, 12, 14)));
+            card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            // ── preview ──
+            JPanel preview = new JPanel(new BorderLayout(0, 6));
+            preview.setBackground(t.bg);
+            preview.setBorder(BorderFactory.createLineBorder(t.line));
+            preview.setPreferredSize(new Dimension(0, 100));
+
+            JPanel pTitle = new JPanel(new BorderLayout());
+            pTitle.setBackground(t.bgPanel);
+            pTitle.setPreferredSize(new Dimension(0, 18));
+            JLabel pLbl = new JLabel("  // " + t.displayName);
+            pLbl.setFont(F_MONO_S); pLbl.setForeground(t.txtDim);
+            pTitle.add(pLbl, BorderLayout.WEST);
+            preview.add(pTitle, BorderLayout.NORTH);
+
+            JPanel pCard = new JPanel(new BorderLayout(6, 4));
+            pCard.setBackground(t.bgCard);
+            pCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(t.line), empty(6, 8, 6, 8)));
+            pCard.add(label("TITLE", pickMono(Font.BOLD, 10f), t.txt), BorderLayout.NORTH);
+            pCard.add(label("••••••••", F_MONO_S, t.neonPink), BorderLayout.CENTER);
+            JPanel pActs = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
+            pActs.setOpaque(false);
+            pActs.add(miniChip("EDIT", t.neonCyan));
+            pActs.add(miniChip("★", t.neonYel));
+            pCard.add(pActs, BorderLayout.SOUTH);
+
+            JPanel pWrap = new JPanel(new BorderLayout());
+            pWrap.setOpaque(false); pWrap.setBorder(empty(6, 8, 6, 8));
+            pWrap.add(pCard, BorderLayout.CENTER);
+            preview.add(pWrap, BorderLayout.CENTER);
+
+            // ── swatches ──
+            JPanel swatches = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 4));
+            swatches.setOpaque(false);
+            Color[] palette = { t.neonCyan, t.neonPink, t.neonPurp, t.neonGrn, t.neonYel, t.txt };
+            for (Color c : palette) {
+                JPanel sw = new JPanel();
+                sw.setBackground(c);
+                sw.setPreferredSize(new Dimension(18, 18));
+                sw.setBorder(BorderFactory.createLineBorder(LINE));
+                swatches.add(sw);
+            }
+            preview.add(swatches, BorderLayout.SOUTH);
+
+            card.add(preview, BorderLayout.CENTER);
+
+            JPanel nameRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            nameRow.setOpaque(false);
+            nameRow.add(label(t.displayName.toUpperCase(), pickMono(Font.BOLD, 13f), TXT));
+            if (t.name.equals(manager.theme)) {
+                nameRow.add(label("   [ACTIVE]", F_MONO_S, NEON_GRN));
+            }
+            card.add(nameRow, BorderLayout.SOUTH);
+
+            card.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    try { manager.setTheme(t.name); } catch (Exception ex) {}
+                    applyTheme(t.name);
+                    buildFrame();
+                    d.dispose();
+                    openSettings();  // reopen to reflect new active
+                }
+                public void mouseEntered(MouseEvent e) {
+                    card.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(NEON_CYAN, 2), empty(12, 14, 12, 14)));
+                }
+                public void mouseExited(MouseEvent e) {
+                    card.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(t.name.equals(manager.theme) ? NEON_CYAN : LINE, 2),
+                        empty(12, 14, 12, 14)));
+                }
+            });
+            grid.add(card);
+        }
+
+        body.add(grid, BorderLayout.CENTER);
+        d.add(body, BorderLayout.CENTER);
+        d.setSize(640, 540);
+        d.setLocationRelativeTo(this);
+        escapeToClose(d);
+        d.setVisible(true);
+    }
+
+    static JPanel miniChip(String text, Color c) {
+        JPanel p = new JPanel();
+        p.setBackground(withAlpha(c, 30));
+        p.setBorder(BorderFactory.createLineBorder(c));
+        p.setPreferredSize(new Dimension(36, 14));
+        JLabel l = new JLabel(text);
+        l.setFont(F_MONO_S); l.setForeground(c);
+        p.add(l);
+        return p;
+    }
+
     boolean saveVault() {
         try { manager.active.save(); return true; }
         catch (Exception ex) { alert("VAULT SAVE FAILED: " + ex.getMessage()); return false; }
@@ -2284,5 +2331,59 @@ public class CyberVault extends JFrame {
             c.init(Cipher.DECRYPT_MODE, k, new GCMParameterSpec(128, Arrays.copyOfRange(d, 0, 12)));
             return c.doFinal(Arrays.copyOfRange(d, 12, d.length));
         }
+    }
+
+    static class Theme {
+        final String name, displayName;
+        final Color bg, bgPanel, bgCard, bgField;
+        final Color line, neonCyan, neonPink, neonPurp, neonGrn, neonYel;
+        final Color txt, txtDim, bgGrad, dim1, dim2, scrollC;
+        final boolean matrixRain;
+
+        Theme(String name, String displayName,
+              Color bg, Color bgPanel, Color bgCard, Color bgField,
+              Color line, Color neonCyan, Color neonPink, Color neonPurp, Color neonGrn, Color neonYel,
+              Color txt, Color txtDim, Color bgGrad, Color dim1, Color dim2, Color scrollC,
+              boolean matrixRain) {
+            this.name = name; this.displayName = displayName;
+            this.bg = bg; this.bgPanel = bgPanel; this.bgCard = bgCard; this.bgField = bgField;
+            this.line = line; this.neonCyan = neonCyan; this.neonPink = neonPink;
+            this.neonPurp = neonPurp; this.neonGrn = neonGrn; this.neonYel = neonYel;
+            this.txt = txt; this.txtDim = txtDim; this.bgGrad = bgGrad;
+            this.dim1 = dim1; this.dim2 = dim2; this.scrollC = scrollC;
+            this.matrixRain = matrixRain;
+        }
+    }
+
+    static final Theme[] PRESETS = {
+        new Theme("cyberpunk", "Cyberpunk",
+            new Color(0x0A0A14), new Color(0x10101E), new Color(0x151528), new Color(0x0C0C1A),
+            new Color(0x2A2F4A), new Color(0x00F0FF), new Color(0xFF2A6D), new Color(0x9D4EFF),
+            new Color(0x39FF14), new Color(0xFFE600), new Color(0xE4E9FF), new Color(0x7A82A8),
+            new Color(0x16, 0x0B, 0x26), new Color(0x555C82), new Color(0x454B6E), new Color(0x333A5C),
+            false),
+        new Theme("matrix", "Matrix",
+            new Color(0x000A00), new Color(0x001400), new Color(0x001C00), new Color(0x000E00),
+            new Color(0x1E4D1E), new Color(0x00FF41), new Color(0x00CC33), new Color(0x66FF99),
+            new Color(0x00FF41), new Color(0xB3FFB3), new Color(0xD6FFD6), new Color(0x4E994E),
+            new Color(0x001400), new Color(0x3E8A3E), new Color(0x2E662E), new Color(0x1E4D1E),
+            true),
+        new Theme("dark", "Dark",
+            new Color(0x1A1A1A), new Color(0x222222), new Color(0x2A2A2A), new Color(0x1E1E1E),
+            new Color(0x3A3A3A), new Color(0x5DADE2), new Color(0xE74C3C), new Color(0x9B59B6),
+            new Color(0x27AE60), new Color(0xF39C12), new Color(0xECF0F1), new Color(0x95A5A6),
+            new Color(0x1A1A1A), new Color(0x7F8C8D), new Color(0x616161), new Color(0x4A4A4A),
+            false),
+        new Theme("light", "Light",
+            new Color(0xF5F5F5), new Color(0xFFFFFF), new Color(0xFAFAFA), new Color(0xEFEFEF),
+            new Color(0xDCDCDC), new Color(0x0099CC), new Color(0xCC3366), new Color(0x7733CC),
+            new Color(0x2D8844), new Color(0xCC9900), new Color(0x1A1A1A), new Color(0x666666),
+            new Color(0xE8E8E8), new Color(0x999999), new Color(0xAAAAAA), new Color(0xBBBBBB),
+            false)
+    };
+
+    static Theme findTheme(String name) {
+        for (Theme t : PRESETS) if (t.name.equals(name)) return t;
+        return PRESETS[0];
     }
 }
