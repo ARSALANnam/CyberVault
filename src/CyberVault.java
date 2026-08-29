@@ -1426,8 +1426,7 @@ public class CyberVault extends JFrame {
 
         body.add(label("// SELECT THEME", F_MONO_B, TXT_DIM), BorderLayout.NORTH);
 
-        JPanel grid = new JPanel(new GridLayout(2, 2, 16, 16));
-        grid.setOpaque(false);
+        JPanel grid = new ScrollGrid(new GridLayout(0, 2, 16, 16));
 
         for (Theme t : PRESETS) {
             JPanel card = new JPanel(new BorderLayout(0, 10));
@@ -1441,7 +1440,7 @@ public class CyberVault extends JFrame {
             JPanel preview = new JPanel(new BorderLayout(0, 6));
             preview.setBackground(t.bg);
             preview.setBorder(BorderFactory.createLineBorder(t.line));
-            preview.setPreferredSize(new Dimension(0, 100));
+            preview.setPreferredSize(new Dimension(220, 150));
 
             JPanel pTitle = new JPanel(new BorderLayout());
             pTitle.setBackground(t.bgPanel);
@@ -1459,8 +1458,8 @@ public class CyberVault extends JFrame {
             pCard.add(label("••••••••", F_MONO_S, t.neonPink), BorderLayout.CENTER);
             JPanel pActs = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
             pActs.setOpaque(false);
-            pActs.add(miniChip("EDIT", t.neonCyan));
-            pActs.add(miniChip("★", t.neonYel));
+            pActs.add(miniChip("EDIT", t.neonCyan, t.bgField));
+            pActs.add(miniChip("\u2605", t.neonYel, t.bgField));
             pCard.add(pActs, BorderLayout.SOUTH);
 
             JPanel pWrap = new JPanel(new BorderLayout());
@@ -1512,22 +1511,35 @@ public class CyberVault extends JFrame {
             grid.add(card);
         }
 
-        body.add(grid, BorderLayout.CENTER);
+        JScrollPane scroll = cyberScroll(grid);
+        scroll.getViewport().setBackground(BG_PANEL);
+        body.add(scroll, BorderLayout.CENTER);
         d.add(body, BorderLayout.CENTER);
-        d.setSize(640, 540);
+        d.setSize(600, 580);
         d.setLocationRelativeTo(this);
         escapeToClose(d);
         d.setVisible(true);
     }
 
-    static JPanel miniChip(String text, Color c) {
-        JPanel p = new JPanel();
-        p.setBackground(withAlpha(c, 30));
-        p.setBorder(BorderFactory.createLineBorder(c));
-        p.setPreferredSize(new Dimension(36, 14));
-        JLabel l = new JLabel(text);
-        l.setFont(F_MONO_S); l.setForeground(c);
-        p.add(l);
+    static JComponent miniChip(String text, Color c, Color bg) {
+        JComponent p = new JComponent() {
+            public Dimension getPreferredSize() { return new Dimension(46, 16); }
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                int w = getWidth(), h = getHeight();
+                g2.setColor(bg);
+                g2.fillRect(0, 0, w, h);
+                g2.setColor(c);
+                g2.drawRect(0, 0, w - 1, h - 1);
+                g2.setFont(pickMono(Font.BOLD, 8f));
+                java.awt.FontMetrics fm = g2.getFontMetrics();
+                int tw = fm.stringWidth(text);
+                g2.drawString(text, (w - tw) / 2, (h + fm.getAscent() - 2) / 2);
+                g2.dispose();
+            }
+        };
         return p;
     }
 
@@ -1977,6 +1989,15 @@ public class CyberVault extends JFrame {
         }
     }
 
+    static class ScrollGrid extends JPanel implements javax.swing.Scrollable {
+        ScrollGrid(java.awt.LayoutManager lm) { super(lm); setOpaque(false); }
+        public Dimension getPreferredScrollableViewportSize() { return getPreferredSize(); }
+        public int getScrollableUnitIncrement(Rectangle r, int o, int d) { return 16; }
+        public int getScrollableBlockIncrement(Rectangle r, int o, int d) { return 64; }
+        public boolean getScrollableTracksViewportWidth() { return true; }   // عرض = عرض viewport
+        public boolean getScrollableTracksViewportHeight() { return false; } // ارتفاع = preferred → اسکرول عمودی
+    }
+
 
     /* DATA & CRYPTO */
     static class PasswordEntry implements Serializable {
@@ -2380,7 +2401,7 @@ public class CyberVault extends JFrame {
             new Color(0x2D8844), new Color(0xCC9900), new Color(0x1A1A1A), new Color(0x666666),
             new Color(0xE8E8E8), new Color(0x999999), new Color(0xAAAAAA), new Color(0xBBBBBB),
             false)
-//        new Theme( )
+//        new Theme()
     };
 
     static Theme findTheme(String name) {
