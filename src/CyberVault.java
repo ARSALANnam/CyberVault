@@ -2380,6 +2380,7 @@ public class CyberVault extends JFrame {
             new Color(0x2D8844), new Color(0xCC9900), new Color(0x1A1A1A), new Color(0x666666),
             new Color(0xE8E8E8), new Color(0x999999), new Color(0xAAAAAA), new Color(0xBBBBBB),
             false)
+//        new Theme( )
     };
 
     static Theme findTheme(String name) {
