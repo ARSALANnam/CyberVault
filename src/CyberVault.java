@@ -113,7 +113,6 @@ public class CyberVault extends JFrame {
     static Color SCROLL_C = new Color(0x333A5C);
     static boolean matrixRain = false;
 
-    // sfg
     static Font pickMono(int style, float size) {
         String[] prefs = {"Consolas", "JetBrains Mono", "Cascadia Code", "Fira Code", "Menlo", "DejaVu Sans Mono"};
         Set<String> avail = new HashSet<>(Arrays.asList(
