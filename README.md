@@ -1,7 +1,8 @@
-<h1 align="center">CYBERVAULT</h1>
+<h1 align="center">CYBERVAULT
 
 ![Matrix Divider](https://capsule-render.vercel.app/api?type=rect&color=0:000000,50:00FF41,100:000000&height=4&section=header&reversal=false)
 
+</h1>
 <p align="center"><img src="assets/bg.png" width="700"></p>
 
 <p align="center">
