@@ -1,8 +1,4 @@
-<h1 align="center">CYBERVAULT
-
-![Matrix Divider](https://capsule-render.vercel.app/api?type=rect&color=0:000000,50:00FF41,100:000000&height=4&section=header&reversal=false)
-
-</h1>
+<h1 align="center">CYBERVAULT</h1>
 <p align="center"><img src="assets/bg.png" width="700"></p>
 
 <p align="center">
@@ -18,7 +14,6 @@
   <img alt="Release" src="https://img.shields.io/github/v/release/ARSALANnam/CyberVault?style=flat-square">
   <img alt="AI" src="https://img.shields.io/badge/Human%20%2B-AI-9d4eff?style=flat-square">
 </p>
-
 
 ## ✨ Features
 
