@@ -59,6 +59,7 @@ import javax.swing.Box;
 
 public class CyberVault extends JFrame {
 
+    public static ui.panels.PasswordsPanel passwordsPanel;
     public static VaultManager manager;
     final CardLayoutScreens screens = new CardLayoutScreens();
     final JPanel screenHolder = new JPanel(screens.layout);
@@ -72,11 +73,11 @@ public class CyberVault extends JFrame {
     java.awt.CardLayout contentCards = new java.awt.CardLayout();
     JPanel contentHolder;
     NavButton navPass, navTok, navGen;
-    JLabel statsLabel;
-    JTextField passSearch, tokSearch;
-    JScrollPane passScroll, tokScroll;
-    JPanel passTagBar, tokTagBar;
-    boolean showFavPass = false, showFavTok = false;
+    public static JLabel statsLabel;
+    JTextField tokSearch;
+    JScrollPane tokScroll;
+    JPanel tokTagBar;
+    boolean showFavTok = false;
 
 //    JTextField genOut; JSlider genLen; JLabel genLenVal, meterLabel;
 //    JCheckBox gUp, gLo, gDg, gSy, gAmb;
@@ -131,7 +132,9 @@ public class CyberVault extends JFrame {
         screenHolder.add(buildAppScreen(), "APP");
         configureAuthMode();
         if (manager.active != null) {
-            refreshPasswords(); refreshTokens(); updateStats();
+            if (passwordsPanel != null) passwordsPanel.refreshPasswords();
+            refreshTokens();
+            updateStats();
             selectNav(navPass, "PASS");
             screens.layout.show(screenHolder, "APP");
         } else {
@@ -503,7 +506,8 @@ public class CyberVault extends JFrame {
     void enterApp() {
         authPass.setText(""); authPass2.setText("");
         creatingNewVault = false;
-        refreshPasswords(); refreshTokens(); updateStats();
+        if (passwordsPanel != null) passwordsPanel.refreshPasswords();
+        refreshTokens(); updateStats();
         selectNav(navPass, "PASS");
         screens.layout.show(screenHolder, "APP");
     }
@@ -568,7 +572,8 @@ public class CyberVault extends JFrame {
         p.add(buildSidebar(), BorderLayout.WEST);
         contentHolder = new JPanel(contentCards);
         contentHolder.setBackground(ThemeManager.BG);
-        contentHolder.add(buildPasswordsPanel(), "PASS");
+        passwordsPanel = new ui.panels.PasswordsPanel();
+        contentHolder.add(passwordsPanel, "PASS");
         contentHolder.add(buildTokensPanel(), "TOK");
         contentHolder.add(new GeneratorPanel(), "GEN");
         p.add(contentHolder, BorderLayout.CENTER);
@@ -637,248 +642,248 @@ public class CyberVault extends JFrame {
         contentCards.show(contentHolder, card);
     }
 
-    void updateStats() {
+    public static void updateStats() {
         int p = manager.active.data == null ? 0 : manager.active.data.passwords.size();
         int t = manager.active.data == null ? 0 : manager.active.data.tokens.size();
         statsLabel.setText(p + " CREDS // " + t + " TOKENS");
     }
 
-    /* PASSWORDS PANEL */
-    JPanel buildPasswordsPanel() {
-        JPanel p = new JPanel(new BorderLayout(0, 16));
-        p.setBackground(ThemeManager.BG);
-        p.setBorder(empty(22, 26, 20, 22));
-
-        JPanel head = new JPanel(new BorderLayout());
-        head.setOpaque(false);
-        head.add(sectionHeader("PASSWORD DATABASE", "// logins \u2022 emails \u2022 accounts", ThemeManager.NEON_CYAN), BorderLayout.CENTER);
-        CyberButton add = new CyberButton("+ NEW ENTRY", ThemeManager.NEON_CYAN, true);
-        add.setPreferredSize(new Dimension(150, 38));
-        add.addActionListener(ev -> openPasswordDialog(null));
-
-        CyberButton favPass = new CyberButton(showFavPass ? "\u2605 FAVORITES" : "\u2606 FAVORITES", ThemeManager.NEON_YEL, false);
-        favPass.addActionListener(ev -> {
-            showFavPass = !showFavPass;
-            favPass.setText(showFavPass ? "\u2605 FAVORITES" : "\u2606 FAVORITES");
-            refreshPasswords();
-        });
-
-        JPanel addWrap = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        addWrap.setOpaque(false); addWrap.add(favPass); addWrap.add(add);
-        head.add(addWrap, BorderLayout.EAST);
-
-        passSearch = searchField("SEARCH ENTRIES\u2026");
-        passSearch.addKeyListener(new KeyAdapter() { public void keyReleased(KeyEvent e) { refreshPasswords(); } });
-
-        JPanel top = new JPanel(new BorderLayout(0, 12));
-        top.setOpaque(false);
-        top.add(head, BorderLayout.NORTH);
-        top.add(passSearch, BorderLayout.CENTER);
-        passTagBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-        passTagBar.setOpaque(false);
-        JPanel northWrap = new JPanel(new BorderLayout(0, 8));
-        northWrap.setOpaque(false);
-        northWrap.add(top, BorderLayout.NORTH);
-        northWrap.add(passTagBar, BorderLayout.CENTER);
-        p.add(northWrap, BorderLayout.NORTH);
-        JPanel placeholder = new JPanel(new BorderLayout()); placeholder.setOpaque(false);
-        passScroll = cyberScroll(placeholder);
-        p.add(passScroll, BorderLayout.CENTER);
-        return p;
-    }
-
-    void refreshPasswords() {
-        String q = queryOf(passSearch).toLowerCase();
-        JPanel inner = new JPanel(new GridBagLayout());
-        inner.setBackground(ThemeManager.BG);
-        inner.setBorder(empty(4, 2, 10, 10));
-        GridBagConstraints g = new GridBagConstraints();
-        g.gridx = 0; g.fill = GridBagConstraints.HORIZONTAL; g.weightx = 1;
-        int row = 0;
-        if (manager.active.data != null) {
-            for (PasswordEntry e : manager.active.data.passwords) {
-                if (showFavPass && !e.favorite) continue;
-                if (!q.isEmpty() && !((e.title + " " + e.username + " " + e.url + " " + tagsStr(e.tags)).toLowerCase().contains(q))) continue;
-                g.gridy = row++; g.insets = new Insets(0, 0, 12, 0);
-                inner.add(buildPasswordCard(e), g);
-            }
-        }
-        if (row == 0) {
-            g.gridy = 0; g.insets = new Insets(30, 0, 0, 0);
-            inner.add(emptyState(q.isEmpty() ? "NO RECORDS YET // CLICK [+ NEW ENTRY]"
-                    : "NO MATCH FOUND"), g);
-        }
-        g.gridy = row; g.weighty = 1; g.fill = GridBagConstraints.BOTH;
-        JPanel fill = new JPanel(); fill.setOpaque(false);
-        inner.add(fill, g);
-        JPanel wrap = new JPanel(new BorderLayout()); wrap.setBackground(ThemeManager.BG);
-        wrap.add(inner, BorderLayout.CENTER);
-        passScroll.getViewport().setView(wrap);
-        passScroll.getViewport().setBackground(ThemeManager.BG);
-        passTagBar.removeAll();
-        if (manager.active.data != null) {
-            java.util.LinkedHashSet<String> allTags = new java.util.LinkedHashSet<>();
-            for (PasswordEntry e2 : manager.active.data.passwords)
-                if (e2.tags != null) allTags.addAll(e2.tags);
-            for (String tg : allTags) {
-                JButton tb = chip("#" + tg, ThemeManager.NEON_PURP);
-                tb.addActionListener(ev -> { passSearch.setText(tg); passSearch.setForeground(ThemeManager.TXT); refreshPasswords(); });
-                passTagBar.add(tb);
-            }
-        }
-        passTagBar.revalidate(); passTagBar.repaint();
-        passScroll.revalidate();
-        updateStats();
-    }
-
-    JPanel buildPasswordCard(PasswordEntry e) {
-        JPanel card = new JPanel(new BorderLayout());
-        card.setBackground(ThemeManager.BG_CARD);
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(ThemeManager.LINE),
-                        BorderFactory.createMatteBorder(0, 3, 0, 0, ThemeManager.NEON_CYAN)),
-                empty(14, 16, 12, 14)));
-
-        JPanel head = new JPanel(new BorderLayout());
-        head.setOpaque(false);
-        JPanel ttl = new JPanel(new GridLayout(0, 1, 0, 2));
-        ttl.setOpaque(false);
-        ttl.add(label(e.title.toUpperCase(), ThemeManager.pickMono(Font.BOLD, 14f), ThemeManager.TXT));
-        ttl.add(label("ADDED " + fmtDate(e.created), ThemeManager.F_MONO_S, new Color(0x555C82)));
-        head.add(ttl, BorderLayout.CENTER);
-
-        JPanel acts = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        acts.setOpaque(false);
-        JButton fav = chip(e.favorite ? "\u2605" : "\u2606", ThemeManager.NEON_YEL);
-        fav.addActionListener(ev -> { e.favorite = !e.favorite; saveVault(); refreshPasswords(); });
-        JButton edit = chip("EDIT", ThemeManager.NEON_CYAN);
-        JButton del = chip("DEL", ThemeManager.NEON_PINK);
-        edit.addActionListener(ev -> openPasswordDialog(e));
-        del.addActionListener(ev -> {
-            if (confirmAction("DELETE \"" + e.title.toUpperCase() + "\" PERMANENTLY?")) {
-                manager.active.data.passwords.remove(e);
-                saveVault(); refreshPasswords();
-            }
-        });
-
-        acts.add(fav); acts.add(edit); acts.add(del);
-        head.add(acts, BorderLayout.EAST);
-        card.add(head, BorderLayout.NORTH);
-
-        JPanel body = new JPanel(new GridLayout(0, 1, 0, 7));
-        body.setOpaque(false);
-        body.setBorder(empty(12, 0, 10, 0));
-
-        body.add(row("USER/MAIL", label(cut(e.username, 60), ThemeManager.F_MONO, ThemeManager.TXT), actsOf(copyChip(e.username))));
-
-        JLabel pv = label(mask(e.password.length()), ThemeManager.F_MONO, ThemeManager.NEON_PINK);
-        JButton show = chip("SHOW", ThemeManager.NEON_YEL);
-        JButton copyPw = copyChip(e.password);
-        boolean[] vis = { false };
-        show.addActionListener(ev -> {
-            vis[0] = !vis[0];
-            pv.setText(vis[0] ? cut(e.password, 60) : mask(e.password.length()));
-            pv.setForeground(vis[0] ? ThemeManager.NEON_GRN : ThemeManager.NEON_PINK);
-            show.setText(vis[0] ? "HIDE" : "SHOW");
-        });
-        body.add(row("PASSWORD", pv, actsOf(show, copyPw)));
-
-        if (!e.url.isEmpty()) {
-            JButton open = chip("OPEN", ThemeManager.NEON_CYAN);
-            open.addActionListener(ev -> openUrl(e.url));
-            body.add(row("URL", label(cut(e.url, 60), ThemeManager.F_MONO, ThemeManager.NEON_CYAN), actsOf(open, copyChip(e.url))));
-        }
-        if (!e.notes.isEmpty())
-            body.add(row("NOTES", label(cut(e.notes, 70), ThemeManager.F_MONO, ThemeManager.TXT_DIM), null));
-
-        if (e.tags != null && !e.tags.isEmpty()) {
-            JPanel tagPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-            tagPanel.setOpaque(false);
-            for (String tg : e.tags) {
-                JButton tc = chip("#" + tg, ThemeManager.NEON_PURP);
-                tc.addActionListener(ev -> { passSearch.setText(tg); passSearch.setForeground(ThemeManager.TXT); refreshPasswords(); });
-                tagPanel.add(tc);
-            }
-            body.add(tagPanel);
-        }
-
-        card.add(body, BorderLayout.CENTER);
-        return card;
-    }
-
-    void openPasswordDialog(PasswordEntry ex) {
-        JDialog d = cyberDialog(ex == null ? "NEW PASSWORD ENTRY" : "EDIT ENTRY", ThemeManager.NEON_CYAN);
-        JTextField fTitle = field(), fUser = field(), fUrl = field();
-        JPasswordField fPass = passField();
-        JTextArea fNotes = area();
-        JTextField fTags = field();
-
-        if (ex != null) {
-            fTitle.setText(ex.title); fUser.setText(ex.username);
-            fPass.setText(ex.password); fUrl.setText(ex.url); fNotes.setText(ex.notes);
-            fTags.setText(ex.tags == null ? "" : String.join(", ", ex.tags));
-        }
-        JLabel err = label(" ", ThemeManager.F_MONO_S, ThemeManager.NEON_PINK);
-
-        JButton gen = chip("\u26A1 GEN", ThemeManager.NEON_YEL);
-        gen.addActionListener(ev -> { fPass.setText(GeneratorPanel.genPassword(18, true, true, true, true, false)); fPass.setEchoChar((char) 0); });
-        JButton eye = chip("SHOW", ThemeManager.NEON_PURP);
-        boolean[] vis = { false };
-        eye.addActionListener(ev -> { vis[0] = !vis[0]; fPass.setEchoChar(vis[0] ? (char) 0 : '\u2022'); eye.setText(vis[0] ? "HIDE" : "SHOW"); });
-        JPanel passRow = new JPanel(new BorderLayout(8, 0));
-        passRow.setBackground(ThemeManager.BG_PANEL);
-        JPanel passBtns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
-        passBtns.setOpaque(false); passBtns.add(gen); passBtns.add(eye);
-        passRow.add(fPass, BorderLayout.CENTER);
-        passRow.add(passBtns, BorderLayout.EAST);
-
-        JPanel form = new JPanel(new GridBagLayout());
-        form.setOpaque(false);
-        addFormRow(form, 0, "TITLE *", fTitle);
-        addFormRow(form, 1, "USER / EMAIL *", fUser);
-        addFormRow(form, 2, "PASSWORD *", passRow);
-        addFormRow(form, 3, "URL", fUrl);
-        JScrollPane ns = new JScrollPane(fNotes);
-        ns.setPreferredSize(new Dimension(0, 70));
-        ns.setBorder(BorderFactory.createLineBorder(ThemeManager.LINE));
-        styleScroll(ns); ns.getViewport().setBackground(ThemeManager.BG_FIELD);
-        addFormRow(form, 4, "TAGS", fTags);
-        addFormRow(form, 5, "NOTES", ns);
-
-        JPanel body = new JPanel(new BorderLayout(0, 16));
-        body.setBackground(ThemeManager.BG_PANEL);
-        body.setBorder(empty(22, 24, 24, 24));
-        body.add(form, BorderLayout.CENTER);
-
-        JPanel foot = new JPanel(new BorderLayout(0, 10));
-        foot.setOpaque(false);
-        foot.add(err, BorderLayout.CENTER);
-        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        btns.setOpaque(false);
-        CyberButton save = new CyberButton("SAVE ENTRY", ThemeManager.NEON_CYAN, true);
-        CyberButton cancel = new CyberButton("CANCEL", ThemeManager.TXT_DIM, false);
-        save.addActionListener(ev -> {
-            String t = fTitle.getText().trim(), u = fUser.getText().trim(), pw = new String(fPass.getPassword());
-            if (t.isEmpty() || u.isEmpty() || pw.isEmpty()) { err.setText("\u2715 TITLE, USER & PASSWORD REQUIRED"); return; }
-            PasswordEntry ent = ex != null ? ex : new PasswordEntry();
-            ent.title = t; ent.username = u; ent.password = pw;
-            ent.url = fUrl.getText().trim(); ent.notes = fNotes.getText().trim();
-            ent.tags = parseTags(fTags.getText());
-            if (ex == null) manager.active.data.passwords.add(ent);
-            if (saveVault()) { refreshPasswords(); d.dispose(); }
-        });
-        cancel.addActionListener(ev -> d.dispose());
-        btns.add(save); btns.add(cancel);
-        foot.add(btns, BorderLayout.SOUTH);
-        body.add(foot, BorderLayout.SOUTH);
-
-        d.add(body, BorderLayout.CENTER);
-        d.setSize(560, 500);
-        d.setLocationRelativeTo(this);
-        escapeToClose(d);
-        d.setVisible(true);
-    }
+//    /* PASSWORDS PANEL */
+//    JPanel buildPasswordsPanel() {
+//        JPanel p = new JPanel(new BorderLayout(0, 16));
+//        p.setBackground(ThemeManager.BG);
+//        p.setBorder(empty(22, 26, 20, 22));
+//
+//        JPanel head = new JPanel(new BorderLayout());
+//        head.setOpaque(false);
+//        head.add(sectionHeader("PASSWORD DATABASE", "// logins \u2022 emails \u2022 accounts", ThemeManager.NEON_CYAN), BorderLayout.CENTER);
+//        CyberButton add = new CyberButton("+ NEW ENTRY", ThemeManager.NEON_CYAN, true);
+//        add.setPreferredSize(new Dimension(150, 38));
+//        add.addActionListener(ev -> openPasswordDialog(null));
+//
+//        CyberButton favPass = new CyberButton(showFavPass ? "\u2605 FAVORITES" : "\u2606 FAVORITES", ThemeManager.NEON_YEL, false);
+//        favPass.addActionListener(ev -> {
+//            showFavPass = !showFavPass;
+//            favPass.setText(showFavPass ? "\u2605 FAVORITES" : "\u2606 FAVORITES");
+//            refreshPasswords();
+//        });
+//
+//        JPanel addWrap = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+//        addWrap.setOpaque(false); addWrap.add(favPass); addWrap.add(add);
+//        head.add(addWrap, BorderLayout.EAST);
+//
+//        passSearch = searchField("SEARCH ENTRIES\u2026");
+//        passSearch.addKeyListener(new KeyAdapter() { public void keyReleased(KeyEvent e) { refreshPasswords(); } });
+//
+//        JPanel top = new JPanel(new BorderLayout(0, 12));
+//        top.setOpaque(false);
+//        top.add(head, BorderLayout.NORTH);
+//        top.add(passSearch, BorderLayout.CENTER);
+//        passTagBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+//        passTagBar.setOpaque(false);
+//        JPanel northWrap = new JPanel(new BorderLayout(0, 8));
+//        northWrap.setOpaque(false);
+//        northWrap.add(top, BorderLayout.NORTH);
+//        northWrap.add(passTagBar, BorderLayout.CENTER);
+//        p.add(northWrap, BorderLayout.NORTH);
+//        JPanel placeholder = new JPanel(new BorderLayout()); placeholder.setOpaque(false);
+//        passScroll = cyberScroll(placeholder);
+//        p.add(passScroll, BorderLayout.CENTER);
+//        return p;
+//    }
+//
+//    void refreshPasswords() {
+//        String q = queryOf(passSearch).toLowerCase();
+//        JPanel inner = new JPanel(new GridBagLayout());
+//        inner.setBackground(ThemeManager.BG);
+//        inner.setBorder(empty(4, 2, 10, 10));
+//        GridBagConstraints g = new GridBagConstraints();
+//        g.gridx = 0; g.fill = GridBagConstraints.HORIZONTAL; g.weightx = 1;
+//        int row = 0;
+//        if (manager.active.data != null) {
+//            for (PasswordEntry e : manager.active.data.passwords) {
+//                if (showFavPass && !e.favorite) continue;
+//                if (!q.isEmpty() && !((e.title + " " + e.username + " " + e.url + " " + tagsStr(e.tags)).toLowerCase().contains(q))) continue;
+//                g.gridy = row++; g.insets = new Insets(0, 0, 12, 0);
+//                inner.add(buildPasswordCard(e), g);
+//            }
+//        }
+//        if (row == 0) {
+//            g.gridy = 0; g.insets = new Insets(30, 0, 0, 0);
+//            inner.add(emptyState(q.isEmpty() ? "NO RECORDS YET // CLICK [+ NEW ENTRY]"
+//                    : "NO MATCH FOUND"), g);
+//        }
+//        g.gridy = row; g.weighty = 1; g.fill = GridBagConstraints.BOTH;
+//        JPanel fill = new JPanel(); fill.setOpaque(false);
+//        inner.add(fill, g);
+//        JPanel wrap = new JPanel(new BorderLayout()); wrap.setBackground(ThemeManager.BG);
+//        wrap.add(inner, BorderLayout.CENTER);
+//        passScroll.getViewport().setView(wrap);
+//        passScroll.getViewport().setBackground(ThemeManager.BG);
+//        passTagBar.removeAll();
+//        if (manager.active.data != null) {
+//            java.util.LinkedHashSet<String> allTags = new java.util.LinkedHashSet<>();
+//            for (PasswordEntry e2 : manager.active.data.passwords)
+//                if (e2.tags != null) allTags.addAll(e2.tags);
+//            for (String tg : allTags) {
+//                JButton tb = chip("#" + tg, ThemeManager.NEON_PURP);
+//                tb.addActionListener(ev -> { passSearch.setText(tg); passSearch.setForeground(ThemeManager.TXT); refreshPasswords(); });
+//                passTagBar.add(tb);
+//            }
+//        }
+//        passTagBar.revalidate(); passTagBar.repaint();
+//        passScroll.revalidate();
+//        updateStats();
+//    }
+//
+//    JPanel buildPasswordCard(PasswordEntry e) {
+//        JPanel card = new JPanel(new BorderLayout());
+//        card.setBackground(ThemeManager.BG_CARD);
+//        card.setBorder(BorderFactory.createCompoundBorder(
+//                BorderFactory.createCompoundBorder(
+//                        BorderFactory.createLineBorder(ThemeManager.LINE),
+//                        BorderFactory.createMatteBorder(0, 3, 0, 0, ThemeManager.NEON_CYAN)),
+//                empty(14, 16, 12, 14)));
+//
+//        JPanel head = new JPanel(new BorderLayout());
+//        head.setOpaque(false);
+//        JPanel ttl = new JPanel(new GridLayout(0, 1, 0, 2));
+//        ttl.setOpaque(false);
+//        ttl.add(label(e.title.toUpperCase(), ThemeManager.pickMono(Font.BOLD, 14f), ThemeManager.TXT));
+//        ttl.add(label("ADDED " + fmtDate(e.created), ThemeManager.F_MONO_S, new Color(0x555C82)));
+//        head.add(ttl, BorderLayout.CENTER);
+//
+//        JPanel acts = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+//        acts.setOpaque(false);
+//        JButton fav = chip(e.favorite ? "\u2605" : "\u2606", ThemeManager.NEON_YEL);
+//        fav.addActionListener(ev -> { e.favorite = !e.favorite; saveVault(); refreshPasswords(); });
+//        JButton edit = chip("EDIT", ThemeManager.NEON_CYAN);
+//        JButton del = chip("DEL", ThemeManager.NEON_PINK);
+//        edit.addActionListener(ev -> openPasswordDialog(e));
+//        del.addActionListener(ev -> {
+//            if (confirmAction("DELETE \"" + e.title.toUpperCase() + "\" PERMANENTLY?")) {
+//                manager.active.data.passwords.remove(e);
+//                saveVault(); refreshPasswords();
+//            }
+//        });
+//
+//        acts.add(fav); acts.add(edit); acts.add(del);
+//        head.add(acts, BorderLayout.EAST);
+//        card.add(head, BorderLayout.NORTH);
+//
+//        JPanel body = new JPanel(new GridLayout(0, 1, 0, 7));
+//        body.setOpaque(false);
+//        body.setBorder(empty(12, 0, 10, 0));
+//
+//        body.add(row("USER/MAIL", label(cut(e.username, 60), ThemeManager.F_MONO, ThemeManager.TXT), actsOf(copyChip(e.username))));
+//
+//        JLabel pv = label(mask(e.password.length()), ThemeManager.F_MONO, ThemeManager.NEON_PINK);
+//        JButton show = chip("SHOW", ThemeManager.NEON_YEL);
+//        JButton copyPw = copyChip(e.password);
+//        boolean[] vis = { false };
+//        show.addActionListener(ev -> {
+//            vis[0] = !vis[0];
+//            pv.setText(vis[0] ? cut(e.password, 60) : mask(e.password.length()));
+//            pv.setForeground(vis[0] ? ThemeManager.NEON_GRN : ThemeManager.NEON_PINK);
+//            show.setText(vis[0] ? "HIDE" : "SHOW");
+//        });
+//        body.add(row("PASSWORD", pv, actsOf(show, copyPw)));
+//
+//        if (!e.url.isEmpty()) {
+//            JButton open = chip("OPEN", ThemeManager.NEON_CYAN);
+//            open.addActionListener(ev -> openUrl(e.url));
+//            body.add(row("URL", label(cut(e.url, 60), ThemeManager.F_MONO, ThemeManager.NEON_CYAN), actsOf(open, copyChip(e.url))));
+//        }
+//        if (!e.notes.isEmpty())
+//            body.add(row("NOTES", label(cut(e.notes, 70), ThemeManager.F_MONO, ThemeManager.TXT_DIM), null));
+//
+//        if (e.tags != null && !e.tags.isEmpty()) {
+//            JPanel tagPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+//            tagPanel.setOpaque(false);
+//            for (String tg : e.tags) {
+//                JButton tc = chip("#" + tg, ThemeManager.NEON_PURP);
+//                tc.addActionListener(ev -> { passSearch.setText(tg); passSearch.setForeground(ThemeManager.TXT); refreshPasswords(); });
+//                tagPanel.add(tc);
+//            }
+//            body.add(tagPanel);
+//        }
+//
+//        card.add(body, BorderLayout.CENTER);
+//        return card;
+//    }
+//
+//    void openPasswordDialog(PasswordEntry ex) {
+//        JDialog d = cyberDialog(ex == null ? "NEW PASSWORD ENTRY" : "EDIT ENTRY", ThemeManager.NEON_CYAN);
+//        JTextField fTitle = field(), fUser = field(), fUrl = field();
+//        JPasswordField fPass = passField();
+//        JTextArea fNotes = area();
+//        JTextField fTags = field();
+//
+//        if (ex != null) {
+//            fTitle.setText(ex.title); fUser.setText(ex.username);
+//            fPass.setText(ex.password); fUrl.setText(ex.url); fNotes.setText(ex.notes);
+//            fTags.setText(ex.tags == null ? "" : String.join(", ", ex.tags));
+//        }
+//        JLabel err = label(" ", ThemeManager.F_MONO_S, ThemeManager.NEON_PINK);
+//
+//        JButton gen = chip("\u26A1 GEN", ThemeManager.NEON_YEL);
+//        gen.addActionListener(ev -> { fPass.setText(GeneratorPanel.genPassword(18, true, true, true, true, false)); fPass.setEchoChar((char) 0); });
+//        JButton eye = chip("SHOW", ThemeManager.NEON_PURP);
+//        boolean[] vis = { false };
+//        eye.addActionListener(ev -> { vis[0] = !vis[0]; fPass.setEchoChar(vis[0] ? (char) 0 : '\u2022'); eye.setText(vis[0] ? "HIDE" : "SHOW"); });
+//        JPanel passRow = new JPanel(new BorderLayout(8, 0));
+//        passRow.setBackground(ThemeManager.BG_PANEL);
+//        JPanel passBtns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+//        passBtns.setOpaque(false); passBtns.add(gen); passBtns.add(eye);
+//        passRow.add(fPass, BorderLayout.CENTER);
+//        passRow.add(passBtns, BorderLayout.EAST);
+//
+//        JPanel form = new JPanel(new GridBagLayout());
+//        form.setOpaque(false);
+//        addFormRow(form, 0, "TITLE *", fTitle);
+//        addFormRow(form, 1, "USER / EMAIL *", fUser);
+//        addFormRow(form, 2, "PASSWORD *", passRow);
+//        addFormRow(form, 3, "URL", fUrl);
+//        JScrollPane ns = new JScrollPane(fNotes);
+//        ns.setPreferredSize(new Dimension(0, 70));
+//        ns.setBorder(BorderFactory.createLineBorder(ThemeManager.LINE));
+//        styleScroll(ns); ns.getViewport().setBackground(ThemeManager.BG_FIELD);
+//        addFormRow(form, 4, "TAGS", fTags);
+//        addFormRow(form, 5, "NOTES", ns);
+//
+//        JPanel body = new JPanel(new BorderLayout(0, 16));
+//        body.setBackground(ThemeManager.BG_PANEL);
+//        body.setBorder(empty(22, 24, 24, 24));
+//        body.add(form, BorderLayout.CENTER);
+//
+//        JPanel foot = new JPanel(new BorderLayout(0, 10));
+//        foot.setOpaque(false);
+//        foot.add(err, BorderLayout.CENTER);
+//        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+//        btns.setOpaque(false);
+//        CyberButton save = new CyberButton("SAVE ENTRY", ThemeManager.NEON_CYAN, true);
+//        CyberButton cancel = new CyberButton("CANCEL", ThemeManager.TXT_DIM, false);
+//        save.addActionListener(ev -> {
+//            String t = fTitle.getText().trim(), u = fUser.getText().trim(), pw = new String(fPass.getPassword());
+//            if (t.isEmpty() || u.isEmpty() || pw.isEmpty()) { err.setText("\u2715 TITLE, USER & PASSWORD REQUIRED"); return; }
+//            PasswordEntry ent = ex != null ? ex : new PasswordEntry();
+//            ent.title = t; ent.username = u; ent.password = pw;
+//            ent.url = fUrl.getText().trim(); ent.notes = fNotes.getText().trim();
+//            ent.tags = parseTags(fTags.getText());
+//            if (ex == null) manager.active.data.passwords.add(ent);
+//            if (saveVault()) { refreshPasswords(); d.dispose(); }
+//        });
+//        cancel.addActionListener(ev -> d.dispose());
+//        btns.add(save); btns.add(cancel);
+//        foot.add(btns, BorderLayout.SOUTH);
+//        body.add(foot, BorderLayout.SOUTH);
+//
+//        d.add(body, BorderLayout.CENTER);
+//        d.setSize(560, 500);
+//        d.setLocationRelativeTo(this);
+//        escapeToClose(d);
+//        d.setVisible(true);
+//    }
 
 
 
