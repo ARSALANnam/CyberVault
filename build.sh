@@ -1,19 +1,11 @@
-#!/usr/bin/env bash
-set -e
-cd "$(dirname "$0")"
+#!/bin/bash
 
-rm -rf build && mkdir -p build
-javac -encoding UTF-8 -d build src/CyberVault.java
+mkdir -p build
 
-EXTRA=""
-if [ -d assets ]; then
-    mkdir -p build/assets
-    cp -r assets/. build/assets/
-    EXTRA="assets"
-fi
+find src -name "*.java" > sources.txt
 
-cd build
-echo "Main-Class: CyberVault" > manifest.mf
-jar cfm ../CyberVault.jar manifest.mf CyberVault*.class $EXTRA
-cd ..
-echo "✅ Built: $(pwd)/CyberVault.jar"
+javac -encoding UTF-8 -d build @sources.txt
+
+jar cfe CyberVault.jar CyberVault -C build .
+
+rm sources.txt
