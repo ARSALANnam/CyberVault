@@ -78,49 +78,6 @@ import ui.theme.ThemeManager;
 
 public class CyberVault extends JFrame {
 
-//    /* THEME */
-//    static Color BG = new Color(0x0A0A14);
-//    static Color ThemeManager.BG_PANEL = new Color(0x10101E);
-//    static Color ThemeManager.BG_CARD = new Color(0x151528);
-//    static Color ThemeManager.BG_FIELD = new Color(0x0C0C1A);
-//    static Color LINE = new Color(0x2A2F4A);
-//    static Color ThemeManager.NEON_CYAN = new Color(0x00F0FF);
-//    static Color ThemeManager.NEON_PINK = new Color(0xFF2A6D);
-//    static Color ThemeManager.NEON_PURP = new Color(0x9D4EFF);
-//    static Color ThemeManager.NEON_GRN = new Color(0x39FF14);
-//    static Color ThemeManager.NEON_YEL = new Color(0xFFE600);
-//    static Color TXT = new Color(0xE4E9FF);
-//    static Color ThemeManager.TXT_DIM = new Color(0x7A82A8);
-//    static Color ThemeManager.BG_GRAD = new Color(0x16, 0x0B, 0x26);
-//    static Color DIM_1 = new Color(0x555C82);
-//    static Color DIM_2 = new Color(0x454B6E);
-//    static Color SCROLL_C = new Color(0x333A5C);
-//    static boolean ThemeManager.matrixRain = false;
-//
-//    static Font ThemeManager.pickMono(int style, float size) {
-//        String[] prefs = {"Consolas", "JetBrains Mono", "Cascadia Code", "Fira Code", "Menlo", "DejaVu Sans Mono"};
-//        Set<String> avail = new HashSet<>(Arrays.asList(
-//                GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
-//        for (String p : prefs) if (avail.contains(p)) return new Font(p, style, 12).deriveFont(size);
-//        return new Font(Font.MONOSPACED, style, 12).deriveFont(size);
-//    }
-//
-//    static final Font F_MONO   = ThemeManager.pickMono(Font.PLAIN, 13f);
-//    static final Font ThemeManager.F_MONO_S = ThemeManager.pickMono(Font.PLAIN, 11f);
-//    static final Font ThemeManager.F_MONO_B = ThemeManager.pickMono(Font.BOLD, 13f);
-//    static final Font ThemeManager.F_TITLE  = ThemeManager.pickMono(Font.BOLD, 20f);
-//    static final Font ThemeManager.F_BIG    = ThemeManager.pickMono(Font.BOLD, 27f);
-//
-//    static void ThemeManager.applyTheme(String name) {
-//        Theme t = findTheme(name);
-//        BG = t.bg; ThemeManager.BG_PANEL = t.bgPanel; ThemeManager.BG_CARD = t.bgCard; ThemeManager.BG_FIELD = t.bgField;
-//        LINE = t.line; ThemeManager.NEON_CYAN = t.neonCyan; ThemeManager.NEON_PINK = t.neonPink;
-//        ThemeManager.NEON_PURP = t.neonPurp; ThemeManager.NEON_GRN = t.neonGrn; ThemeManager.NEON_YEL = t.neonYel;
-//        TXT = t.txt; ThemeManager.TXT_DIM = t.txtDim; ThemeManager.BG_GRAD = t.bgGrad;
-//        DIM_1 = t.dim1; DIM_2 = t.dim2; SCROLL_C = t.scrollC;
-//        ThemeManager.matrixRain = t.ThemeManager.matrixRain;
-//    }
-
     static VaultManager manager;
     final CardLayoutScreens screens = new CardLayoutScreens();
     final JPanel screenHolder = new JPanel(screens.layout);
@@ -154,8 +111,6 @@ public class CyberVault extends JFrame {
     JPanel vaultSelectorPanel;
 
 
-
-
     /* FRAME */
     CyberVault() {
         setTitle("CYBERVAULT");
@@ -174,20 +129,6 @@ public class CyberVault extends JFrame {
             System.exit(1);
         }
 
-//        JPanel root = new JPanel(new BorderLayout());
-//        root.setBackground(BG);
-//        root.setBorder(BorderFactory.createLineBorder(ThemeManager.shade(ThemeManager.NEON_CYAN, 0.55f)));
-//        root.add(buildTitleBar(), BorderLayout.NORTH);
-//        root.add(screenHolder, BorderLayout.CENTER);
-//        setContentPane(root);
-//
-//        screenHolder.setBackground(BG);
-//        vaultSelectorPanel = buildVaultSelector();
-//        screenHolder.add(vaultSelectorPanel, "VAULTS");
-//        screenHolder.add(buildAuthScreen(), "AUTH");
-//        screenHolder.add(buildAppScreen(), "APP");
-//        configureAuthMode();
-//        screens.layout.show(screenHolder, "VAULTS");
 
         ThemeManager.applyTheme(manager.theme);
         buildFrame();
@@ -196,13 +137,13 @@ public class CyberVault extends JFrame {
 
     void buildFrame() {
         JPanel root = new JPanel(new BorderLayout());
-        root.setBackground(BG);
+        root.setBackground(ThemeManager.BG);
         root.setBorder(BorderFactory.createLineBorder(ThemeManager.shade(ThemeManager.NEON_CYAN, 0.55f)));
         root.add(buildTitleBar(), BorderLayout.NORTH);
         root.add(screenHolder, BorderLayout.CENTER);
         setContentPane(root);
         screenHolder.removeAll();
-        screenHolder.setBackground(BG);
+        screenHolder.setBackground(ThemeManager.BG);
         vaultSelectorPanel = buildVaultSelector();
         screenHolder.add(vaultSelectorPanel, "VAULTS");
         screenHolder.add(buildAuthScreen(), "AUTH");
@@ -220,7 +161,7 @@ public class CyberVault extends JFrame {
     }
 
     void switchTheme() {
-        String[] themes = {"cyberpunk", "matrix", "dark", "light"};
+        String[] themes = {"cyberpunk", "matrix", "dark", "light", "Pufak namaki"};
         int idx = 0;
         for (int i = 0; i < themes.length; i++) {
             if (themes[i].equals(manager.theme)) { idx = i; break; }
@@ -246,7 +187,7 @@ public class CyberVault extends JFrame {
         JPanel bar = new JPanel(new BorderLayout());
         bar.setBackground(ThemeManager.BG_PANEL);
         bar.setPreferredSize(new Dimension(0, 36));
-        bar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, LINE));
+        bar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ThemeManager.LINE));
         JLabel t = label("  CYBERVAULT // PERSONAL DATA TERMINAL", ThemeManager.F_MONO_S, ThemeManager.TXT_DIM);
         bar.add(t, BorderLayout.WEST);
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 6));
@@ -405,7 +346,7 @@ public class CyberVault extends JFrame {
                 empty(16, 20, 16, 20)));
             card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
 
-            JLabel name = label(v.name, ThemeManager.F_MONO_B, TXT);
+            JLabel name = label(v.name, ThemeManager.F_MONO_B, ThemeManager.TXT);
             card.add(name, BorderLayout.WEST);
 
             JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
@@ -457,8 +398,8 @@ public class CyberVault extends JFrame {
 
         JScrollPane scroll = new JScrollPane(list);
         scroll.setBorder(null);
-        scroll.setBackground(BG);
-        scroll.getViewport().setBackground(BG);
+        scroll.setBackground(ThemeManager.BG);
+        scroll.getViewport().setBackground(ThemeManager.BG);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         center.add(scroll, BorderLayout.CENTER);
         bg.add(center, BorderLayout.CENTER);
@@ -642,10 +583,10 @@ public class CyberVault extends JFrame {
     /* MAIN APP */
     JPanel buildAppScreen() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setBackground(BG);
+        p.setBackground(ThemeManager.BG);
         p.add(buildSidebar(), BorderLayout.WEST);
         contentHolder = new JPanel(contentCards);
-        contentHolder.setBackground(BG);
+        contentHolder.setBackground(ThemeManager.BG);
         contentHolder.add(buildPasswordsPanel(), "PASS");
         contentHolder.add(buildTokensPanel(), "TOK");
         contentHolder.add(buildGeneratorPanel(), "GEN");
@@ -657,7 +598,7 @@ public class CyberVault extends JFrame {
         JPanel sb = new JPanel(new BorderLayout());
         sb.setBackground(ThemeManager.BG_PANEL);
         sb.setPreferredSize(new Dimension(232, 0));
-        sb.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, LINE));
+        sb.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, ThemeManager.LINE));
 
         JPanel brand = new JPanel(new BorderLayout(12, 0));
         brand.setOpaque(false);
@@ -666,7 +607,7 @@ public class CyberVault extends JFrame {
         JPanel txts = new JPanel(new GridLayout(0, 1, 0, 2));
         txts.setOpaque(false);
         txts.add(label("CYBERVAULT", ThemeManager.F_MONO_B, ThemeManager.NEON_CYAN));
-        txts.add(label("v1.6.0 // SECURE", ThemeManager.F_MONO_S, ThemeManager.TXT_DIM));
+        txts.add(label("v1.8.0 // SECURE", ThemeManager.F_MONO_S, ThemeManager.TXT_DIM));
         brand.add(txts, BorderLayout.CENTER);
         sb.add(brand, BorderLayout.NORTH);
 
@@ -724,7 +665,7 @@ public class CyberVault extends JFrame {
     /* PASSWORDS PANEL */
     JPanel buildPasswordsPanel() {
         JPanel p = new JPanel(new BorderLayout(0, 16));
-        p.setBackground(BG);
+        p.setBackground(ThemeManager.BG);
         p.setBorder(empty(22, 26, 20, 22));
 
         JPanel head = new JPanel(new BorderLayout());
@@ -768,7 +709,7 @@ public class CyberVault extends JFrame {
     void refreshPasswords() {
         String q = queryOf(passSearch).toLowerCase();
         JPanel inner = new JPanel(new GridBagLayout());
-        inner.setBackground(BG);
+        inner.setBackground(ThemeManager.BG);
         inner.setBorder(empty(4, 2, 10, 10));
         GridBagConstraints g = new GridBagConstraints();
         g.gridx = 0; g.fill = GridBagConstraints.HORIZONTAL; g.weightx = 1;
@@ -789,10 +730,10 @@ public class CyberVault extends JFrame {
         g.gridy = row; g.weighty = 1; g.fill = GridBagConstraints.BOTH;
         JPanel fill = new JPanel(); fill.setOpaque(false);
         inner.add(fill, g);
-        JPanel wrap = new JPanel(new BorderLayout()); wrap.setBackground(BG);
+        JPanel wrap = new JPanel(new BorderLayout()); wrap.setBackground(ThemeManager.BG);
         wrap.add(inner, BorderLayout.CENTER);
         passScroll.getViewport().setView(wrap);
-        passScroll.getViewport().setBackground(BG);
+        passScroll.getViewport().setBackground(ThemeManager.BG);
         passTagBar.removeAll();
         if (manager.active.data != null) {
             java.util.LinkedHashSet<String> allTags = new java.util.LinkedHashSet<>();
@@ -800,7 +741,7 @@ public class CyberVault extends JFrame {
                 if (e2.tags != null) allTags.addAll(e2.tags);
             for (String tg : allTags) {
                 JButton tb = chip("#" + tg, ThemeManager.NEON_PURP);
-                tb.addActionListener(ev -> { passSearch.setText(tg); passSearch.setForeground(TXT); refreshPasswords(); });
+                tb.addActionListener(ev -> { passSearch.setText(tg); passSearch.setForeground(ThemeManager.TXT); refreshPasswords(); });
                 passTagBar.add(tb);
             }
         }
@@ -814,7 +755,7 @@ public class CyberVault extends JFrame {
         card.setBackground(ThemeManager.BG_CARD);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(LINE),
+                        BorderFactory.createLineBorder(ThemeManager.LINE),
                         BorderFactory.createMatteBorder(0, 3, 0, 0, ThemeManager.NEON_CYAN)),
                 empty(14, 16, 12, 14)));
 
@@ -822,7 +763,7 @@ public class CyberVault extends JFrame {
         head.setOpaque(false);
         JPanel ttl = new JPanel(new GridLayout(0, 1, 0, 2));
         ttl.setOpaque(false);
-        ttl.add(label(e.title.toUpperCase(), ThemeManager.pickMono(Font.BOLD, 14f), TXT));
+        ttl.add(label(e.title.toUpperCase(), ThemeManager.pickMono(Font.BOLD, 14f), ThemeManager.TXT));
         ttl.add(label("ADDED " + fmtDate(e.created), ThemeManager.F_MONO_S, new Color(0x555C82)));
         head.add(ttl, BorderLayout.CENTER);
 
@@ -848,9 +789,9 @@ public class CyberVault extends JFrame {
         body.setOpaque(false);
         body.setBorder(empty(12, 0, 10, 0));
 
-        body.add(row("USER/MAIL", label(cut(e.username, 60), F_MONO, TXT), actsOf(copyChip(e.username))));
+        body.add(row("USER/MAIL", label(cut(e.username, 60), ThemeManager.F_MONO, ThemeManager.TXT), actsOf(copyChip(e.username))));
 
-        JLabel pv = label(mask(e.password.length()), F_MONO, ThemeManager.NEON_PINK);
+        JLabel pv = label(mask(e.password.length()), ThemeManager.F_MONO, ThemeManager.NEON_PINK);
         JButton show = chip("SHOW", ThemeManager.NEON_YEL);
         JButton copyPw = copyChip(e.password);
         boolean[] vis = { false };
@@ -865,17 +806,17 @@ public class CyberVault extends JFrame {
         if (!e.url.isEmpty()) {
             JButton open = chip("OPEN", ThemeManager.NEON_CYAN);
             open.addActionListener(ev -> openUrl(e.url));
-            body.add(row("URL", label(cut(e.url, 60), F_MONO, ThemeManager.NEON_CYAN), actsOf(open, copyChip(e.url))));
+            body.add(row("URL", label(cut(e.url, 60), ThemeManager.F_MONO, ThemeManager.NEON_CYAN), actsOf(open, copyChip(e.url))));
         }
         if (!e.notes.isEmpty())
-            body.add(row("NOTES", label(cut(e.notes, 70), F_MONO, ThemeManager.TXT_DIM), null));
+            body.add(row("NOTES", label(cut(e.notes, 70), ThemeManager.F_MONO, ThemeManager.TXT_DIM), null));
 
         if (e.tags != null && !e.tags.isEmpty()) {
             JPanel tagPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
             tagPanel.setOpaque(false);
             for (String tg : e.tags) {
                 JButton tc = chip("#" + tg, ThemeManager.NEON_PURP);
-                tc.addActionListener(ev -> { passSearch.setText(tg); passSearch.setForeground(TXT); refreshPasswords(); });
+                tc.addActionListener(ev -> { passSearch.setText(tg); passSearch.setForeground(ThemeManager.TXT); refreshPasswords(); });
                 tagPanel.add(tc);
             }
             body.add(tagPanel);
@@ -919,7 +860,7 @@ public class CyberVault extends JFrame {
         addFormRow(form, 3, "URL", fUrl);
         JScrollPane ns = new JScrollPane(fNotes);
         ns.setPreferredSize(new Dimension(0, 70));
-        ns.setBorder(BorderFactory.createLineBorder(LINE));
+        ns.setBorder(BorderFactory.createLineBorder(ThemeManager.LINE));
         styleScroll(ns); ns.getViewport().setBackground(ThemeManager.BG_FIELD);
         addFormRow(form, 4, "TAGS", fTags);
         addFormRow(form, 5, "NOTES", ns);
@@ -963,7 +904,7 @@ public class CyberVault extends JFrame {
     /* TOKENS PANEL */
     JPanel buildTokensPanel() {
         JPanel p = new JPanel(new BorderLayout(0, 16));
-        p.setBackground(BG);
+        p.setBackground(ThemeManager.BG);
         p.setBorder(empty(22, 26, 20, 22));
 
         JPanel head = new JPanel(new BorderLayout());
@@ -1007,7 +948,7 @@ public class CyberVault extends JFrame {
     void refreshTokens() {
         String q = queryOf(tokSearch).toLowerCase();
         JPanel inner = new JPanel(new GridBagLayout());
-        inner.setBackground(BG);
+        inner.setBackground(ThemeManager.BG);
         inner.setBorder(empty(4, 2, 10, 10));
         GridBagConstraints g = new GridBagConstraints();
         g.gridx = 0; g.fill = GridBagConstraints.HORIZONTAL; g.weightx = 1;
@@ -1028,10 +969,10 @@ public class CyberVault extends JFrame {
         g.gridy = row; g.weighty = 1; g.fill = GridBagConstraints.BOTH;
         JPanel fill = new JPanel(); fill.setOpaque(false);
         inner.add(fill, g);
-        JPanel wrap = new JPanel(new BorderLayout()); wrap.setBackground(BG);
+        JPanel wrap = new JPanel(new BorderLayout()); wrap.setBackground(ThemeManager.BG);
         wrap.add(inner, BorderLayout.CENTER);
         tokScroll.getViewport().setView(wrap);
-        tokScroll.getViewport().setBackground(BG);
+        tokScroll.getViewport().setBackground(ThemeManager.BG);
         tokTagBar.removeAll();
         if (manager.active.data != null) {
             java.util.LinkedHashSet<String> allTags = new java.util.LinkedHashSet<>();
@@ -1039,7 +980,7 @@ public class CyberVault extends JFrame {
                 if (e2.tags != null) allTags.addAll(e2.tags);
             for (String tg : allTags) {
                 JButton tb = chip("#" + tg, ThemeManager.NEON_PURP);
-                tb.addActionListener(ev -> { tokSearch.setText(tg); tokSearch.setForeground(TXT); refreshTokens(); });
+                tb.addActionListener(ev -> { tokSearch.setText(tg); tokSearch.setForeground(ThemeManager.TXT); refreshTokens(); });
                 tokTagBar.add(tb);
             }
         }
@@ -1053,7 +994,7 @@ public class CyberVault extends JFrame {
         card.setBackground(ThemeManager.BG_CARD);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(LINE),
+                        BorderFactory.createLineBorder(ThemeManager.LINE),
                         BorderFactory.createMatteBorder(0, 3, 0, 0, ThemeManager.NEON_PURP)),
                 empty(14, 16, 12, 14)));
 
@@ -1087,7 +1028,7 @@ public class CyberVault extends JFrame {
         body.setOpaque(false);
         body.setBorder(empty(12, 0, 10, 0));
 
-        JLabel tv = label(mask(e.token.length()), F_MONO, ThemeManager.NEON_PINK);
+        JLabel tv = label(mask(e.token.length()), ThemeManager.F_MONO, ThemeManager.NEON_PINK);
         JButton show = chip("SHOW", ThemeManager.NEON_YEL);
         boolean[] vis = { false };
         show.addActionListener(ev -> {
@@ -1098,14 +1039,14 @@ public class CyberVault extends JFrame {
         });
         body.add(row("TOKEN", tv, actsOf(show, copyChip(e.token))));
         if (!e.notes.isEmpty())
-            body.add(row("NOTES", label(cut(e.notes, 70), F_MONO, ThemeManager.TXT_DIM), null));
+            body.add(row("NOTES", label(cut(e.notes, 70), ThemeManager.F_MONO, ThemeManager.TXT_DIM), null));
 
         if (e.tags != null && !e.tags.isEmpty()) {
             JPanel tagPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
             tagPanel.setOpaque(false);
             for (String tg : e.tags) {
                 JButton tc = chip("#" + tg, ThemeManager.NEON_PURP);
-                tc.addActionListener(ev -> { tokSearch.setText(tg); tokSearch.setForeground(TXT); refreshTokens(); });
+                tc.addActionListener(ev -> { tokSearch.setText(tg); tokSearch.setForeground(ThemeManager.TXT); refreshTokens(); });
                 tagPanel.add(tc);
             }
             body.add(tagPanel);
@@ -1140,7 +1081,7 @@ public class CyberVault extends JFrame {
         addFormRow(form, 1, "TOKEN *", tokRow);
         JScrollPane ns = new JScrollPane(fNotes);
         ns.setPreferredSize(new Dimension(0, 74));
-        ns.setBorder(BorderFactory.createLineBorder(LINE));
+        ns.setBorder(BorderFactory.createLineBorder(ThemeManager.LINE));
         styleScroll(ns); ns.getViewport().setBackground(ThemeManager.BG_FIELD);
         addFormRow(form, 2, "TAGS", fTags);
         addFormRow(form, 3, "NOTES", ns);
@@ -1182,12 +1123,12 @@ public class CyberVault extends JFrame {
     /* GENERATOR */
     JPanel buildGeneratorPanel() {
         JPanel outer = new JPanel(new GridBagLayout());
-        outer.setBackground(BG);
+        outer.setBackground(ThemeManager.BG);
         outer.setBorder(empty(22, 26, 20, 22));
 
         JPanel card = new JPanel(new BorderLayout(0, 20));
         card.setBackground(ThemeManager.BG_CARD);
-        card.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(LINE), empty(24, 26, 26, 26)));
+        card.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ThemeManager.LINE), empty(24, 26, 26, 26)));
         card.add(sectionHeader("PASSWORD GENERATOR", "// forge fresh high-entropy keys", ThemeManager.NEON_YEL), BorderLayout.NORTH);
 
         JPanel body = new JPanel(new GridBagLayout());
@@ -1219,7 +1160,7 @@ public class CyberVault extends JFrame {
             public void paintTrack(Graphics gr) {
                 Graphics2D g2 = (Graphics2D) gr.create();
                 int y = trackRect.y + trackRect.height / 2 - 2;
-                g2.setColor(LINE);
+                g2.setColor(ThemeManager.LINE);
                 g2.fillRect(trackRect.x, y, trackRect.width, 4);
                 g2.setColor(ThemeManager.withAlpha(ThemeManager.NEON_YEL, 150));
                 g2.fillRect(trackRect.x, y, Math.max(0, thumbRect.x - trackRect.x), 4);
@@ -1344,9 +1285,9 @@ public class CyberVault extends JFrame {
         root.setBackground(ThemeManager.BG_PANEL);
         root.setBorder(BorderFactory.createLineBorder(accent));
         JPanel bar = new JPanel(new BorderLayout());
-        bar.setBackground(BG);
+        bar.setBackground(ThemeManager.BG);
         bar.setPreferredSize(new Dimension(0, 32));
-        bar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, LINE));
+        bar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ThemeManager.LINE));
         JLabel t = label("  // " + title, ThemeManager.F_MONO_S, accent);
         bar.add(t, BorderLayout.WEST);
         JButton x = miniBtn("\u2715", ev -> d.dispose(), ThemeManager.NEON_PINK);
@@ -1366,7 +1307,7 @@ public class CyberVault extends JFrame {
         JPanel body = new JPanel(new BorderLayout(0, 20));
         body.setBackground(ThemeManager.BG_PANEL);
         body.setBorder(empty(24, 26, 24, 26));
-        body.add(label("<html>" + msg + "</html>", F_MONO, TXT), BorderLayout.CENTER);
+        body.add(label("<html>" + msg + "</html>", ThemeManager.F_MONO, ThemeManager.TXT), BorderLayout.CENTER);
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         btns.setOpaque(false);
         boolean[] r = { false };
@@ -1389,7 +1330,7 @@ public class CyberVault extends JFrame {
         JPanel body = new JPanel(new BorderLayout(0, 18));
         body.setBackground(ThemeManager.BG_PANEL);
         body.setBorder(empty(24, 26, 24, 26));
-        body.add(label(msg, F_MONO, TXT), BorderLayout.CENTER);
+        body.add(label(msg, ThemeManager.F_MONO, ThemeManager.TXT), BorderLayout.CENTER);
         CyberButton ok = new CyberButton("OK", ThemeManager.NEON_CYAN, true);
         ok.addActionListener(ev -> d.dispose());
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
@@ -1412,11 +1353,11 @@ public class CyberVault extends JFrame {
 
         JPanel grid = new ScrollGrid(new GridLayout(0, 2, 16, 16));
 
-        for (Theme t : PRESETS) {
+        for (Theme t : ThemeManager.PRESETS) {
             JPanel card = new JPanel(new BorderLayout(0, 10));
             card.setBackground(ThemeManager.BG_CARD);
             card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(t.name.equals(manager.theme) ? ThemeManager.NEON_CYAN : LINE, 2),
+                BorderFactory.createLineBorder(t.name.equals(manager.theme) ? ThemeManager.NEON_CYAN : ThemeManager.LINE, 2),
                 empty(12, 14, 12, 14)));
             card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -1459,7 +1400,7 @@ public class CyberVault extends JFrame {
                 JPanel sw = new JPanel();
                 sw.setBackground(c);
                 sw.setPreferredSize(new Dimension(18, 18));
-                sw.setBorder(BorderFactory.createLineBorder(LINE));
+                sw.setBorder(BorderFactory.createLineBorder(ThemeManager.LINE));
                 swatches.add(sw);
             }
             preview.add(swatches, BorderLayout.SOUTH);
@@ -1468,7 +1409,7 @@ public class CyberVault extends JFrame {
 
             JPanel nameRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
             nameRow.setOpaque(false);
-            nameRow.add(label(t.displayName.toUpperCase(), ThemeManager.pickMono(Font.BOLD, 13f), TXT));
+            nameRow.add(label(t.displayName.toUpperCase(), ThemeManager.pickMono(Font.BOLD, 13f), ThemeManager.TXT));
             if (t.name.equals(manager.theme)) {
                 nameRow.add(label("   [ACTIVE]", ThemeManager.F_MONO_S, ThemeManager.NEON_GRN));
             }
@@ -1488,7 +1429,7 @@ public class CyberVault extends JFrame {
                 }
                 public void mouseExited(MouseEvent e) {
                     card.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(t.name.equals(manager.theme) ? ThemeManager.NEON_CYAN : LINE, 2),
+                        BorderFactory.createLineBorder(t.name.equals(manager.theme) ? ThemeManager.NEON_CYAN : ThemeManager.LINE, 2),
                         empty(12, 14, 12, 14)));
                 }
             });
@@ -1593,17 +1534,17 @@ public class CyberVault extends JFrame {
 
     static void styleField(JTextField tf) {
         tf.setBackground(ThemeManager.BG_FIELD);
-        tf.setForeground(TXT);
+        tf.setForeground(ThemeManager.TXT);
         tf.setCaretColor(ThemeManager.NEON_CYAN);
-        tf.setFont(F_MONO);
+        tf.setFont(ThemeManager.F_MONO);
         javax.swing.border.Border pad = BorderFactory.createEmptyBorder(9, 12, 9, 12);
-        tf.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(LINE), pad));
+        tf.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ThemeManager.LINE), pad));
         tf.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
                 tf.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ThemeManager.NEON_CYAN), pad));
             }
             public void focusLost(FocusEvent e) {
-                tf.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(LINE), pad));
+                tf.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ThemeManager.LINE), pad));
             }
         });
     }
@@ -1613,8 +1554,8 @@ public class CyberVault extends JFrame {
 
     static JTextArea area() {
         JTextArea ta = new JTextArea();
-        ta.setBackground(ThemeManager.BG_FIELD); ta.setForeground(TXT); ta.setCaretColor(ThemeManager.NEON_CYAN);
-        ta.setFont(F_MONO); ta.setLineWrap(true); ta.setWrapStyleWord(true);
+        ta.setBackground(ThemeManager.BG_FIELD); ta.setForeground(ThemeManager.TXT); ta.setCaretColor(ThemeManager.NEON_CYAN);
+        ta.setFont(ThemeManager.F_MONO); ta.setLineWrap(true); ta.setWrapStyleWord(true);
         ta.setBorder(empty(8, 10, 8, 10));
         return ta;
     }
@@ -1625,7 +1566,7 @@ public class CyberVault extends JFrame {
         tf.setForeground(ThemeManager.TXT_DIM);
         tf.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
-                if (tf.getText().equals(hint)) { tf.setText(""); tf.setForeground(TXT); }
+                if (tf.getText().equals(hint)) { tf.setText(""); tf.setForeground(ThemeManager.TXT); }
             }
             public void focusLost(FocusEvent e) {
                 if (tf.getText().isEmpty()) { tf.setText(hint); tf.setForeground(ThemeManager.TXT_DIM); }
@@ -1642,7 +1583,7 @@ public class CyberVault extends JFrame {
     static JCheckBox cyberCheck(String text) {
         JCheckBox cb = new JCheckBox(text);
         cb.setFont(ThemeManager.F_MONO_S);
-        cb.setForeground(TXT);
+        cb.setForeground(ThemeManager.TXT);
         cb.setFocusPainted(false);
         cb.setOpaque(false);
         cb.setIcon(new Icon() {
@@ -1707,7 +1648,7 @@ public class CyberVault extends JFrame {
         h.setOpaque(false);
         JPanel col = new JPanel(new GridLayout(0, 1, 0, 4));
         col.setOpaque(false);
-        col.add(label(title, ThemeManager.F_TITLE, TXT));
+        col.add(label(title, ThemeManager.F_TITLE, ThemeManager.TXT));
         col.add(label(sub, ThemeManager.F_MONO_S, ThemeManager.TXT_DIM));
         h.add(col, BorderLayout.CENTER);
         JPanel line = new JPanel();
@@ -1721,8 +1662,8 @@ public class CyberVault extends JFrame {
         JPanel p = new JPanel(new GridBagLayout());
         p.setOpaque(false);
         p.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createDashedBorder(LINE, 8, 6), empty(46)));
-        p.add(label(msg, F_MONO, ThemeManager.TXT_DIM), new GridBagConstraints());
+                BorderFactory.createDashedBorder(ThemeManager.LINE, 8, 6), empty(46)));
+        p.add(label(msg, ThemeManager.F_MONO, ThemeManager.TXT_DIM), new GridBagConstraints());
         return p;
     }
 
@@ -1773,13 +1714,13 @@ public class CyberVault extends JFrame {
                 g2.dispose();
             }
             protected void paintTrack(Graphics g, JComponent c, Rectangle r) {
-                g.setColor(BG); g.fillRect(r.x, r.y, r.width, r.height);
+                g.setColor(ThemeManager.BG); g.fillRect(r.x, r.y, r.width, r.height);
             }
         });
         sp.getVerticalScrollBar().setPreferredSize(new Dimension(10, Integer.MAX_VALUE));
-        sp.getVerticalScrollBar().setBackground(BG);
+        sp.getVerticalScrollBar().setBackground(ThemeManager.BG);
         sp.getVerticalScrollBar().setUnitIncrement(16);
-        sp.getViewport().setBackground(BG);
+        sp.getViewport().setBackground(ThemeManager.BG);
     }
 
     static JScrollPane cyberScroll(JComponent view) {
@@ -1789,613 +1730,4 @@ public class CyberVault extends JFrame {
         styleScroll(sp);
         return sp;
     }
-
-
-
-//    /* CUSTOM COMPONENTS */
-//    static class CyberButton extends JButton {
-//        final Color accent;
-//        final boolean filled;
-//        CyberButton(String text, Color accent, boolean filled) {
-//            super(text);
-//            this.accent = accent;
-//            this.filled = filled;
-//            setFont(ThemeManager.F_MONO_B);
-//            setForeground(filled ? BG : accent);
-//            setContentAreaFilled(false); setBorderPainted(false); setFocusPainted(false);
-//            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//            setMargin(new Insets(4, 14, 4, 14));
-//            addMouseListener(new MouseAdapter() {
-//                public void mouseEntered(MouseEvent e) { repaint(); }
-//                public void mouseExited(MouseEvent e) { repaint(); }
-//            });
-//        }
-//        protected void paintComponent(Graphics g) {
-//            Graphics2D g2 = (Graphics2D) g.create();
-//            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//            int w = getWidth(), h = getHeight();
-//            boolean hover = getModel().isRollover(), pressed = getModel().isPressed();
-//            if (filled) {
-//                g2.setColor(pressed ? accent.brighter() : hover ? accent : ThemeManager.shade(accent, 0.82f));
-//                g2.fillRect(0, 0, w, h);
-//            } else {
-//                if (hover || pressed) {
-//                    g2.setColor(ThemeManager.withAlpha(accent, 24));
-//                    g2.fillRect(1, 1, w - 2, h - 2);
-//                }
-//                g2.setColor(hover || pressed ? accent : ThemeManager.withAlpha(accent, 130));
-//                g2.drawRect(0, 0, w - 1, h - 1);
-//                g2.setColor(accent);
-//                int t = 6;
-//                g2.drawLine(0, 0, t, 0);           g2.drawLine(0, 0, 0, t);
-//                g2.drawLine(w - 1 - t, 0, w - 1, 0); g2.drawLine(w - 1, 0, w - 1, t);
-//                g2.drawLine(0, h - 1 - t, 0, h - 1); g2.drawLine(0, h - 1, t, h - 1);
-//                g2.drawLine(w - 1 - t, h - 1, w - 1, h - 1); g2.drawLine(w - 1, h - 1 - t, w - 1, h - 1);
-//            }
-//            g2.dispose();
-//            super.paintComponent(g);
-//        }
-//    }
-//
-//    static class NavButton extends JButton {
-//        final Color accent;
-//        boolean active;
-//        NavButton(String text, Color accent) {
-//            super(text);
-//            this.accent = accent;
-//            setHorizontalAlignment(SwingConstants.LEFT);
-//            setFont(ThemeManager.F_MONO_B);
-//            setForeground(ThemeManager.TXT_DIM);
-//            setFocusPainted(false); setContentAreaFilled(false); setBorderPainted(false);
-//            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//            setPreferredSize(new Dimension(0, 42));
-//            addMouseListener(new MouseAdapter() {
-//                public void mouseEntered(MouseEvent e) { if (!active) setForeground(TXT); }
-//                public void mouseExited(MouseEvent e)  { if (!active) setForeground(ThemeManager.TXT_DIM); }
-//            });
-//        }
-//        void setActive(boolean s) {
-//            active = s;
-//            setForeground(s ? accent : ThemeManager.TXT_DIM);
-//            repaint();
-//        }
-//        protected void paintComponent(Graphics g) {
-//            Graphics2D g2 = (Graphics2D) g.create();
-//            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//            if (active) {
-//                g2.setColor(ThemeManager.withAlpha(accent, 26));
-//                g2.fillRect(0, 0, getWidth(), getHeight());
-//                g2.setColor(accent);
-//                g2.fillRect(0, 0, 3, getHeight());
-//            } else if (getModel().isRollover()) {
-//                g2.setColor(ThemeManager.withAlpha(accent, 14));
-//                g2.fillRect(0, 0, getWidth(), getHeight());
-//            }
-//            g2.dispose();
-//            super.paintComponent(g);
-//        }
-//    }
-//
-//    static class StrengthMeter extends JPanel {
-//        float level; Color color = ThemeManager.NEON_PINK;
-//        StrengthMeter() { setPreferredSize(new Dimension(0, 14)); setBackground(ThemeManager.BG_FIELD); }
-//        void setBits(double bits) {
-//            level = (float) Math.min(1.0, bits / 128.0);
-//            color = bits < 45 ? ThemeManager.NEON_PINK : bits < 70 ? ThemeManager.NEON_YEL : bits < 100 ? ThemeManager.NEON_GRN : ThemeManager.NEON_CYAN;
-//            repaint();
-//        }
-//        protected void paintComponent(Graphics g) {
-//            super.paintComponent(g);
-//            Graphics2D g2 = (Graphics2D) g.create();
-//            int w = getWidth(), h = getHeight();
-//            int segs = 26, gap = 3;
-//            double sw = (double) (w - gap * (segs - 1)) / segs;
-//            int filled = Math.round(level * segs);
-//            for (int i = 0; i < segs; i++) {
-//                int x = (int) (i * (sw + gap));
-//                g2.setColor(i < filled ? color : LINE);
-//                g2.fillRect(x, 2, (int) sw, h - 4);
-//            }
-//            g2.dispose();
-//        }
-//    }
-//
-//    static class HexLogo extends JPanel {
-//        HexLogo(int size) {
-//            setPreferredSize(new Dimension(size, size));
-//            setOpaque(false);
-//        }
-//        protected void paintComponent(Graphics g) {
-//            super.paintComponent(g);
-//            Graphics2D g2 = (Graphics2D) g.create();
-//            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//            int w = getWidth(), h = getHeight();
-//            int cx = w / 2, cy = h / 2;
-//            int r = Math.min(w, h) / 2 - 4;
-//            Polygon hex = new Polygon();
-//            for (int i = 0; i < 6; i++) {
-//                double a = Math.PI / 3 * i - Math.PI / 2;
-//                hex.addPoint(cx + (int) (r * Math.cos(a)), cy + (int) (r * Math.sin(a)));
-//            }
-//            for (int i = 5; i >= 1; i--) {
-//                g2.setColor(ThemeManager.withAlpha(ThemeManager.NEON_CYAN, 14 + (5 - i) * 6));
-//                g2.setStroke(new BasicStroke(i * 2.4f));
-//                g2.draw(hex);
-//            }
-//            g2.setColor(ThemeManager.NEON_CYAN);
-//            g2.setStroke(new BasicStroke(1.8f));
-//            g2.draw(hex);
-//            float kr = r * 0.30f;
-//            g2.setColor(ThemeManager.NEON_PINK);
-//            g2.setStroke(new BasicStroke(Math.max(1.6f, r * 0.07f), BasicStroke.CAP_ROUND, BasicStroke.CAP_ROUND));
-//            g2.drawOval((int) (cx - kr / 2), (int) (cy - r * 0.42), (int) kr, (int) kr);
-//            int stemTop = (int) (cy - r * 0.42 + kr);
-//            g2.drawLine(cx, stemTop, cx, (int) (cy + r * 0.45));
-//            g2.drawLine(cx, (int) (cy + r * 0.28), (int) (cx + r * 0.18), (int) (cy + r * 0.28));
-//            g2.dispose();
-//        }
-//    }
-//
-//    static class GridBG extends JPanel {
-//        javax.swing.Timer rain;
-//        GridBG() {
-//            setBackground(BG);
-//            rain = new javax.swing.Timer(66, ev -> repaint());
-//        }
-//        protected void paintComponent(Graphics g) {
-//            super.paintComponent(g);
-//            Graphics2D g2 = (Graphics2D) g.create();
-//            int w = getWidth(), h = getHeight();
-//            g2.setPaint(new GradientPaint(0, 0, BG, w, h, ThemeManager.BG_GRAD));
-//            g2.fillRect(0, 0, w, h);
-//            if (ThemeManager.matrixRain) {
-//                g2.setFont(ThemeManager.F_MONO_S);
-//                long t = System.currentTimeMillis() / 50;
-//                for (int x = 0; x < w; x += 14) {
-//                    int speed = 1 + (x * 7919 % 5);
-//                    int yOff = (int) ((t * speed) % (h + 120)) - 60;
-//                    for (int k = 0; k < 6; k++) {
-//                        int y = yOff - k * 16;
-//                        if (y < 0 || y > h) continue;
-//                        char ch = (char) ('!' + ((x * 31 + k * 17 + (int) (t / 40)) % 94));
-//                        g2.setColor(ThemeManager.withAlpha(ThemeManager.NEON_GRN, Math.max(20, 150 - k * 24)));
-//                        g2.drawString(String.valueOf(ch), x, y);
-//                    }
-//                }
-//                if (!rain.isRunning()) rain.start();
-//            } else {
-//                if (rain.isRunning()) rain.stop();
-//            }
-//            g2.setColor(ThemeManager.withAlpha(ThemeManager.NEON_CYAN, 12));
-//            for (int x = 0; x <= w; x += 42) g2.drawLine(x, 0, x, h);
-//            for (int y = 0; y <= h; y += 42) g2.drawLine(0, y, w, y);
-//            g2.dispose();
-//        }
-//    }
-//
-//    static class ScrollGrid extends JPanel implements javax.swing.Scrollable {
-//        ScrollGrid(java.awt.LayoutManager lm) { super(lm); setOpaque(false); }
-//        public Dimension getPreferredScrollableViewportSize() { return getPreferredSize(); }
-//        public int getScrollableUnitIncrement(Rectangle r, int o, int d) { return 16; }
-//        public int getScrollableBlockIncrement(Rectangle r, int o, int d) { return 64; }
-//        public boolean getScrollableTracksViewportWidth() { return true; }   // عرض = عرض viewport
-//        public boolean getScrollableTracksViewportHeight() { return false; } // ارتفاع = preferred → اسکرول عمودی
-//    }
-
-
-//    /* DATA & CRYPTO */
-//    static class PasswordEntry implements Serializable {
-//        static final long serialVersionUID = 1L;
-//        String title = "", username = "", password = "", url = "", notes = "";
-//        List<String> tags = new ArrayList<>();
-//        boolean favorite = false;
-//        long created = System.currentTimeMillis();
-//    }
-
-//    static class TokenEntry implements Serializable {
-//        static final long serialVersionUID = 1L;
-//        String name = "", token = "", notes = "";
-//        List<String> tags = new ArrayList<>();
-//        boolean favorite = false;
-//        long created = System.currentTimeMillis();
-//    }
-
-//    static class VaultData implements Serializable {
-//        static final long serialVersionUID = 1L;
-//        List<PasswordEntry> passwords = new ArrayList<>();
-//        List<TokenEntry> tokens = new ArrayList<>();
-//    }
-
-//     // VAULT MANAGER — manages multiple vaults with config file
-//    static class VaultManager {
-//        final Path dir;
-//        final Path configFile;
-//        List<VaultInfo> vaults;
-//        String activeVaultName;
-//        String theme;
-//        Vault active;
-//
-//         VaultManager() throws Exception {
-//             dir = Paths.get(System.getProperty("user.home"), ".cybervault");
-//             configFile = dir.resolve("config.json");
-//             Files.createDirectories(dir);
-//              loadConfig();
-//         }
-//
-//         // مهاجرت v1.4 → v1.5: کپی vault.dat قدیمی به default.vault
-//         void migrateOldVault() throws Exception {
-//             Path old = dir.resolve("vault.dat");
-//             Path def = dir.resolve("default.vault");
-//             if (Files.exists(old) && !Files.exists(def) && !Files.exists(configFile)) {
-//                 Files.copy(old, def);
-//             }
-//         }
-//
-//        void loadConfig() throws Exception {
-//            if (!Files.exists(configFile)) {
-//                vaults = new ArrayList<>();
-//                activeVaultName = null;
-//                theme = "cyberpunk";
-//                saveConfig();
-//            } else {
-//                String json = new String(Files.readAllBytes(configFile), StandardCharsets.UTF_8);
-//                JsonObject obj = parseJson(json);
-//                vaults = new ArrayList<>();
-//                for (JsonObject v : obj.getArray("vaults")) {
-//                    vaults.add(new VaultInfo(v.getString("name"), v.getString("file")));
-//                }
-//                activeVaultName = obj.getString("active", vaults.isEmpty() ? null : vaults.get(0).name);
-//                theme = obj.getString("theme", "cyberpunk");
-//            }
-//        }
-//
-//        void saveConfig() throws Exception {
-//            StringBuilder sb = new StringBuilder();
-//            sb.append("{\n  \"vaults\": [\n");
-//            for (int i = 0; i < vaults.size(); i++) {
-//                VaultInfo v = vaults.get(i);
-//                sb.append("    {\"name\": ").append(jsonStr(v.name));
-//                sb.append(", \"file\": ").append(jsonStr(v.file)).append("}");
-//                if (i < vaults.size() - 1) sb.append(",");
-//                sb.append("\n");
-//            }
-//            sb.append("  ],\n");
-//            sb.append("  \"active\": ").append(jsonStr(activeVaultName)).append(",\n");
-//            sb.append("  \"theme\": ").append(jsonStr(theme)).append("\n");
-//            sb.append("}\n");
-//            Files.write(configFile, sb.toString().getBytes(StandardCharsets.UTF_8));
-//        }
-//
-//         VaultData createVault(String name, char[] master) throws Exception {
-//             String file = name.toLowerCase().replaceAll("[^a-z0-9]", "_") + ".vault";
-//             for (VaultInfo v : vaults) {
-//                 if (v.file.equals(file)) {
-//                     throw new Exception("Vault file already exists: " + file);
-//                 }
-//             }
-//             Vault vault = new Vault(dir.resolve(file));
-//             vault.create(master);
-//             vaults.add(new VaultInfo(name, file));
-//             activeVaultName = name;
-//             saveConfig();
-//             active = vault;
-//             return manager.active.data;
-//         }
-//
-//         VaultData initExisting(String name, char[] master) throws Exception {
-//             VaultInfo info = null;
-//             for (VaultInfo v : vaults) {
-//                 if (v.name.equals(name)) { info = v; break; }
-//             }
-//             if (info == null) throw new Exception("Vault not found: " + name);
-//             Vault vault = new Vault(dir.resolve(info.file));
-//             vault.create(master);
-//             activeVaultName = name;
-//             saveConfig();
-//             active = vault;
-//             return vault.data;
-//         }
-//
-//         VaultData openVault(String name, char[] master) throws Exception {
-//             VaultInfo info = null;
-//             for (VaultInfo v : vaults) {
-//                 if (v.name.equals(name)) { info = v; break; }
-//             }
-//             if (info == null) throw new Exception("Vault not found: " + name);
-//             Path file = dir.resolve(info.file);
-//             if (!Files.exists(file)) throw new Exception("Vault file missing: " + file);
-//             Vault vault = new Vault(file);
-//             if (!vault.unlock(master)) {
-//                 throw new Exception("Invalid master key");
-//             }
-//             activeVaultName = name;
-//             saveConfig();
-//             active = vault;
-//             return manager.active.data;
-//         }
-//
-//         void deleteVault(String name) throws Exception {
-//             if (vaults.size() <= 1) {
-//                 throw new Exception("Cannot delete the last vault");
-//             }
-//             VaultInfo info = null;
-//             for (VaultInfo v : vaults) {
-//                 if (v.name.equals(name)) { info = v; break; }
-//             }
-//             if (info == null) return;
-//             Files.deleteIfExists(dir.resolve(info.file));
-//             vaults.remove(info);
-//             if (activeVaultName.equals(name)) {
-//                 activeVaultName = vaults.get(0).name;
-//             }
-//             active = null;
-//             saveConfig();
-//         }
-//
-//         void renameVault(String oldName, String newName) throws Exception {
-//             for (VaultInfo v : vaults) {
-//                 if (v.name.equals(newName)) {
-//                     throw new Exception("Vault name already exists: " + newName);
-//                 }
-//             }
-//             for (VaultInfo v : vaults) {
-//                 if (v.name.equals(oldName)) {
-//                     v.name = newName;
-//                     break;
-//                 }
-//             }
-//             if (activeVaultName.equals(oldName)) {
-//                 activeVaultName = newName;
-//             }
-//             saveConfig();
-//         }
-//
-//         void setTheme(String theme) throws Exception {
-//             this.theme = theme;
-//             saveConfig();
-//         }
-//
-//         List<String> getVaultNames() {
-//             List<String> names = new ArrayList<>();
-//             for (VaultInfo v : vaults) names.add(v.name);
-//             return names;
-//         }
-//     }
-
-//    static class VaultInfo {
-//        String name, file;
-//        VaultInfo(String name, String file) { this.name = name; this.file = file; }
-//    }
-
-//    static class JsonObject {
-//        Map<String, Object> map = new HashMap<>();
-//        String getString(String key) { return getString(key, null); }
-//        String getString(String key, String def) {
-//            Object v = map.get(key);
-//            return v instanceof String ? (String) v : def;
-//        }
-//        List<JsonObject> getArray(String key) {
-//            Object v = map.get(key);
-//            return v instanceof List ? (List<JsonObject>) v : new ArrayList<>();
-//        }
-//    }
-//
-//    static JsonObject parseJson(String json) {
-//        json = json.trim();
-//        if (json.startsWith("{")) {
-//            JsonObject obj = new JsonObject();
-//            json = json.substring(1, json.length() - 1).trim();
-//            while (!json.isEmpty()) {
-//                int i = json.indexOf('"');
-//                if (i < 0) break;
-//                int j = json.indexOf('"', i + 1);
-//                String key = json.substring(i + 1, j);
-//                json = json.substring(j + 1).trim();
-//                if (!json.startsWith(":")) break;
-//                json = json.substring(1).trim();
-//                Object val;
-//                if (json.startsWith("[")) {
-//                    int end = findMatchingBracket(json, '[', ']');
-//                    String arrStr = json.substring(1, end);
-//                    val = parseJsonArray(arrStr);
-//                    json = json.substring(end + 1).trim();
-//                } else if (json.startsWith("{")) {
-//                    int end = findMatchingBracket(json, '{', '}');
-//                    val = parseJson(json.substring(0, end + 1));
-//                    json = json.substring(end + 1).trim();
-//                } else if (json.startsWith("\"")) {
-//                    int end = json.indexOf('"', 1);
-//                    val = json.substring(1, end);
-//                    json = json.substring(end + 1).trim();
-//                } else {
-//                    int end = Math.min(json.indexOf(','), json.length());
-//                    if (end < 0) end = json.length();
-//                    val = json.substring(0, end).trim();
-//                    json = json.substring(end).trim();
-//                }
-//                if (json.startsWith(",")) json = json.substring(1).trim();
-//                obj.map.put(key, val);
-//            }
-//            return obj;
-//        }
-//        return new JsonObject();
-//    }
-//
-//    static List<JsonObject> parseJsonArray(String arr) {
-//        List<JsonObject> list = new ArrayList<>();
-//        arr = arr.trim();
-//        while (!arr.isEmpty()) {
-//            if (arr.startsWith("{")) {
-//                int end = findMatchingBracket(arr, '{', '}');
-//                list.add(parseJson(arr.substring(0, end + 1)));
-//                arr = arr.substring(end + 1).trim();
-//            } else {
-//                break;
-//            }
-//            if (arr.startsWith(",")) arr = arr.substring(1).trim();
-//        }
-//        return list;
-//    }
-//
-//    static int findMatchingBracket(String s, char open, char close) {
-//        int depth = 0;
-//        for (int i = 0; i < s.length(); i++) {
-//            char c = s.charAt(i);
-//            if (c == open) depth++;
-//            else if (c == close) {
-//                depth--;
-//                if (depth == 0) return i;
-//            }
-//        }
-//        return s.length() - 1;
-//    }
-//
-//    static String jsonStr(String s) {
-//        if (s == null) return "null";
-//        return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
-//    }
-
-//    static class Vault {
-//        Path file;
-//        byte[] salt;
-//        SecretKey key;
-//        VaultData data;
-//
-//        Vault() {
-//            file = Paths.get(System.getProperty("user.home"), ".cybervault", "vault.dat");
-//        }
-//
-//        Vault(Path file) {
-//            this.file = file;
-//        }
-//
-//        boolean exists() { return Files.exists(file); }
-//
-//        void create(char[] master) throws Exception {
-//            salt = new byte[16];
-//            new SecureRandom().nextBytes(salt);
-//            key = derive(master, salt);
-//            data = new VaultData();
-//            save();
-//        }
-//
-//        boolean unlock(char[] master) throws Exception {
-//            byte[] raw = Files.readAllBytes(file);
-//            if (raw.length < 29) return false;
-//            salt = Arrays.copyOfRange(raw, 0, 16);
-//            key = derive(master, salt);
-//            try {
-//                byte[] dec = decrypt(key, Arrays.copyOfRange(raw, 16, raw.length));
-//                ObjectInputStream ois = new ObjectInputStream(new java.io.ByteArrayInputStream(dec));
-//                data = (VaultData) ois.readObject();
-//                for (PasswordEntry pe : data.passwords) if (pe.tags == null) pe.tags = new ArrayList<>();
-//                for (TokenEntry te : data.tokens) if (te.tags == null) te.tags = new ArrayList<>();
-//                ois.close();
-//                return true;
-//            } catch (Exception e) {
-//                key = null; data = null;
-//                return false;
-//            }
-//        }
-//
-//        void save() throws Exception {
-//            Files.createDirectories(file.getParent());
-//            ByteArrayOutputStream b = new ByteArrayOutputStream();
-//            ObjectOutputStream s = new ObjectOutputStream(b);
-//            s.writeObject(data);
-//            s.close();
-//            byte[] enc = encrypt(key, b.toByteArray());
-//            byte[] out = new byte[16 + enc.length];
-//            System.arraycopy(salt, 0, out, 0, 16);
-//            System.arraycopy(enc, 0, out, 16, enc.length);
-//            Files.write(file, out);
-//        }
-//
-//        void lock() { key = null; data = null; salt = null; }
-//
-//        static SecretKey derive(char[] pass, byte[] salt) throws Exception {
-//            SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-//            KeySpec ks = new PBEKeySpec(pass, salt, 120000, 256);
-//            return new SecretKeySpec(f.generateSecret(ks).getEncoded(), "AES");
-//        }
-//
-//        static byte[] encrypt(SecretKey k, byte[] d) throws Exception {
-//            byte[] iv = new byte[12];
-//            new SecureRandom().nextBytes(iv);
-//            Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
-//            c.init(Cipher.ENCRYPT_MODE, k, new GCMParameterSpec(128, iv));
-//            byte[] e = c.doFinal(d);
-//            byte[] out = new byte[12 + e.length];
-//            System.arraycopy(iv, 0, out, 0, 12);
-//            System.arraycopy(e, 0, out, 12, e.length);
-//            return out;
-//        }
-//
-//        static byte[] decrypt(SecretKey k, byte[] d) throws Exception {
-//            Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
-//            c.init(Cipher.DECRYPT_MODE, k, new GCMParameterSpec(128, Arrays.copyOfRange(d, 0, 12)));
-//            return c.doFinal(Arrays.copyOfRange(d, 12, d.length));
-//        }
-//    }
-
-//    static class Theme {
-//        final String name, displayName;
-//        final Color bg, bgPanel, bgCard, bgField;
-//        final Color line, neonCyan, neonPink, neonPurp, neonGrn, neonYel;
-//        final Color txt, txtDim, bgGrad, dim1, dim2, scrollC;
-//        final boolean ThemeManager.matrixRain;
-//
-//        Theme(String name, String displayName,
-//              Color bg, Color bgPanel, Color bgCard, Color bgField,
-//              Color line, Color neonCyan, Color neonPink, Color neonPurp, Color neonGrn, Color neonYel,
-//              Color txt, Color txtDim, Color bgGrad, Color dim1, Color dim2, Color scrollC,
-//              boolean ThemeManager.matrixRain) {
-//            this.name = name; this.displayName = displayName;
-//            this.bg = bg; this.bgPanel = bgPanel; this.bgCard = bgCard; this.bgField = bgField;
-//            this.line = line; this.neonCyan = neonCyan; this.neonPink = neonPink;
-//            this.neonPurp = neonPurp; this.neonGrn = neonGrn; this.neonYel = neonYel;
-//            this.txt = txt; this.txtDim = txtDim; this.bgGrad = bgGrad;
-//            this.dim1 = dim1; this.dim2 = dim2; this.scrollC = scrollC;
-//            this.ThemeManager.matrixRain = ThemeManager.matrixRain;
-//        }
-//    }
-//
-//    static final Theme[] PRESETS = {
-//        new Theme("cyberpunk", "Cyberpunk",
-//            new Color(0x0A0A14), new Color(0x10101E), new Color(0x151528), new Color(0x0C0C1A),
-//            new Color(0x2A2F4A), new Color(0x00F0FF), new Color(0xFF2A6D), new Color(0x9D4EFF),
-//            new Color(0x39FF14), new Color(0xFFE600), new Color(0xE4E9FF), new Color(0x7A82A8),
-//            new Color(0x16, 0x0B, 0x26), new Color(0x555C82), new Color(0x454B6E), new Color(0x333A5C),
-//            false),
-//        new Theme("matrix", "Matrix",
-//            new Color(0x000A00), new Color(0x001400), new Color(0x001C00), new Color(0x000E00),
-//            new Color(0x1E4D1E), new Color(0x00FF41), new Color(0x00CC33), new Color(0x66FF99),
-//            new Color(0x00FF41), new Color(0xB3FFB3), new Color(0xD6FFD6), new Color(0x4E994E),
-//            new Color(0x001400), new Color(0x3E8A3E), new Color(0x2E662E), new Color(0x1E4D1E),
-//            true),
-//        new Theme("dark", "Dark",
-//            new Color(0x1A1A1A), new Color(0x222222), new Color(0x2A2A2A), new Color(0x1E1E1E),
-//            new Color(0x3A3A3A), new Color(0x5DADE2), new Color(0xE74C3C), new Color(0x9B59B6),
-//            new Color(0x27AE60), new Color(0xF39C12), new Color(0xECF0F1), new Color(0x95A5A6),
-//            new Color(0x1A1A1A), new Color(0x7F8C8D), new Color(0x616161), new Color(0x4A4A4A),
-//            false),
-//        new Theme("light", "Light",
-//            new Color(0xF5F5F5), new Color(0xFFFFFF), new Color(0xFAFAFA), new Color(0xEFEFEF),
-//            new Color(0xDCDCDC), new Color(0x0099CC), new Color(0xCC3366), new Color(0x7733CC),
-//            new Color(0x2D8844), new Color(0xCC9900), new Color(0x1A1A1A), new Color(0x666666),
-//            new Color(0xE8E8E8), new Color(0x999999), new Color(0xAAAAAA), new Color(0xBBBBBB),
-//            false),
-//        new Theme("pufak", "Pufak Namaki",
-//            new Color(0xDA291C), new Color(0xB02015), new Color(0xBE2418), new Color(0xA01A0F),
-//            new Color(0xE8A33D), new Color(0xFFC72C), new Color(0xFFFFFF), new Color(0xFFB300),
-//            new Color(0xFFE082), new Color(0xFFEB3B), new Color(0xFFF8E1), new Color(0xEFA093),
-//            new Color(0x8C1A10), new Color(0xE58F7F), new Color(0xD07A6C), new Color(0xFFC72C),
-//            false),
-////        new Theme()
-//    };
-//
-//    static Theme findTheme(String name) {
-//        for (Theme t : PRESETS) if (t.name.equals(name)) return t;
-//        return PRESETS[0];
-//    }
 }
