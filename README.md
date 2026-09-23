@@ -49,6 +49,13 @@
 - 🌃 **Neon cyberpunk UI** — custom-painted buttons, slider, scrollbars & hex logo
 - 🖥️ **Cross-platform** — works on Linux, macOS & Windows (JDK 8+)
 
+### 🏗️ Under the Hood (v1.7.0 Architecture)
+- **Modular Codebase:** Refactored from a single monolithic file into a clean, scalable domain-driven structure (MVC-like).
+- **Separation of Concerns:** Isolated cryptographic logic (`crypto`), UI components (`ui.components`), views (`ui.panels`), and data models (`model`).
+- **Centralized Theme Engine:** `ThemeManager` controls all UI colors and styling dynamically.
+- **Developer Friendly:** Extremely easy to add new panels, features, or themes without touching the core vault logic.
+
+
 # 🖼 More screenshots
 
 <p align="center"><img src="assets/ScreenShot-01.png" width="700"></p>
@@ -77,7 +84,7 @@
 
 ```bash
 ./build.sh                 # or build.bat on Windows
-java -jar main.CyberVault.jar
+java -jar CyberVault.jar
 ```
 
 **First run:** create a master key (min 6 chars) → it is **never stored and cannot be recovered** → start adding entries.
@@ -112,9 +119,9 @@ Create `~/.local/share/applications/cybervault.desktop`:
 
 ```ini
 [Desktop Entry]
-Name=main.CyberVault
+Name=CyberVault
 Comment=Cyberpunk password manager
-Exec=java -jar /home/USER/path/to/main.CyberVault.jar
+Exec=java -jar /home/USER/path/to/CyberVault.jar
 Icon=/home/USER/path/to/assets/icon.png
 Terminal=false
 Type=Application
@@ -137,7 +144,7 @@ then right-click its icon and **Add to Favorites** to pin it to your dock.
 
 ## 🤖 AI Assistance
 
-This project was built with an AI pair programmer ([Qwen](https://qwen.ai)).
+This project was built with an AI pair programmer ([Qwen](https://qwen.ai) & [Gemini](https://gemini.google.com)).
 Every line of code was reviewed, understood and tested by me before shipping —
 the AI accelerated the process, but the decisions (and the bugs) are mine.
 
