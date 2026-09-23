@@ -87,4 +87,12 @@ public class ThemeManager {
             new Color(0x8C1A10), new Color(0xE58F7F), new Color(0xD07A6C), new Color(0xFFC72C),
             false)
     };
+
+    public static Color withAlpha(Color c, int a) {
+        return new Color(c.getRed(), c.getGreen(), c.getBlue(), a);
+    }
+
+    public static Color shade(Color c, float f) {
+        return new Color((int) (c.getRed() * f), (int) (c.getGreen() * f), (int) (c.getBlue() * f));
+    }
 }
