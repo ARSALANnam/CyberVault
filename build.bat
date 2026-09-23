@@ -1,12 +1,12 @@
 @echo off
 if exist build rmdir /s /q build
 mkdir build
-javac -encoding UTF-8 -d build src\CyberVault.java || exit /b 1
+javac -encoding UTF-8 -d build src\main.CyberVault.java || exit /b 1
 cd build
-echo Main-Class: CyberVault> manifest.mf
-jar cfm ..\CyberVault.jar manifest.mf CyberVault*.class
+echo Main-Class: main.CyberVault> manifest.mf
+jar cfm ..\main.CyberVault.jar manifest.mf main.CyberVault*.class
 cd ..
 echo.
-echo Built: CyberVault.jar
-echo Run:   java -jar CyberVault.jar
+echo Built: main.CyberVault.jar
+echo Run:   java -jar main.CyberVault.jar
 pause

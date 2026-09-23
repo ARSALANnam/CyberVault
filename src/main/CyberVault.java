@@ -1,3 +1,5 @@
+package main;
+
 import model.*;
 import crypto.*;
 import ui.theme.Theme;
@@ -7,7 +9,6 @@ import static ui.UIUtils.*;
 import ui.panels.GeneratorPanel;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -17,28 +18,19 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
-import javax.swing.plaf.basic.BasicScrollBarUI;
-import javax.swing.plaf.basic.BasicSliderUI;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -46,33 +38,18 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import java.net.URI;
 import java.nio.file.Files;
 
-import java.security.SecureRandom;
-import java.text.SimpleDateFormat;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.BoxLayout;
@@ -82,7 +59,7 @@ import javax.swing.Box;
 
 public class CyberVault extends JFrame {
 
-    static VaultManager manager;
+    public static VaultManager manager;
     final CardLayoutScreens screens = new CardLayoutScreens();
     final JPanel screenHolder = new JPanel(screens.layout);
 
@@ -1280,72 +1257,72 @@ public class CyberVault extends JFrame {
 //        return "ELITE";
 //    }
 
-
-    /* DIALOGS & ACTIONS */
-    JDialog cyberDialog(String title, Color accent) {
-        JDialog d = new JDialog(this, true);
-        d.setUndecorated(true);
-        JPanel root = new JPanel(new BorderLayout());
-        root.setBackground(ThemeManager.BG_PANEL);
-        root.setBorder(BorderFactory.createLineBorder(accent));
-        JPanel bar = new JPanel(new BorderLayout());
-        bar.setBackground(ThemeManager.BG);
-        bar.setPreferredSize(new Dimension(0, 32));
-        bar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ThemeManager.LINE));
-        JLabel t = label("  // " + title, ThemeManager.F_MONO_S, accent);
-        bar.add(t, BorderLayout.WEST);
-        JButton x = miniBtn("\u2715", ev -> d.dispose(), ThemeManager.NEON_PINK);
-        JPanel xr = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 3));
-        xr.setOpaque(false); xr.add(x);
-        bar.add(xr, BorderLayout.EAST);
-        root.add(bar, BorderLayout.NORTH);
-        MouseAdapter drag = windowDrag(d);
-        bar.addMouseListener(drag); bar.addMouseMotionListener(drag);
-        t.addMouseListener(drag);   t.addMouseMotionListener(drag);
-        d.setContentPane(root);
-        return d;
-    }
-
-    boolean confirmAction(String msg) {
-        JDialog d = cyberDialog("CONFIRM ACTION", ThemeManager.NEON_PINK);
-        JPanel body = new JPanel(new BorderLayout(0, 20));
-        body.setBackground(ThemeManager.BG_PANEL);
-        body.setBorder(empty(24, 26, 24, 26));
-        body.add(label("<html>" + msg + "</html>", ThemeManager.F_MONO, ThemeManager.TXT), BorderLayout.CENTER);
-        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        btns.setOpaque(false);
-        boolean[] r = { false };
-        CyberButton yes = new CyberButton("CONFIRM", ThemeManager.NEON_PINK, true);
-        CyberButton no = new CyberButton("CANCEL", ThemeManager.NEON_CYAN, false);
-        yes.addActionListener(ev -> { r[0] = true; d.dispose(); });
-        no.addActionListener(ev -> d.dispose());
-        btns.add(yes); btns.add(no);
-        body.add(btns, BorderLayout.SOUTH);
-        d.add(body, BorderLayout.CENTER);
-        d.setSize(440, 150);
-        d.setLocationRelativeTo(this);
-        escapeToClose(d);
-        d.setVisible(true);
-        return r[0];
-    }
-
-    void alert(String msg) {
-        JDialog d = cyberDialog("SYSTEM ALERT", ThemeManager.NEON_PINK);
-        JPanel body = new JPanel(new BorderLayout(0, 18));
-        body.setBackground(ThemeManager.BG_PANEL);
-        body.setBorder(empty(24, 26, 24, 26));
-        body.add(label(msg, ThemeManager.F_MONO, ThemeManager.TXT), BorderLayout.CENTER);
-        CyberButton ok = new CyberButton("OK", ThemeManager.NEON_CYAN, true);
-        ok.addActionListener(ev -> d.dispose());
-        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        btns.setOpaque(false); btns.add(ok);
-        body.add(btns, BorderLayout.SOUTH);
-        d.add(body, BorderLayout.CENTER);
-        d.setSize(420, 150);
-        d.setLocationRelativeTo(this);
-        escapeToClose(d);
-        d.setVisible(true);
-    }
+//
+//    /* DIALOGS & ACTIONS */
+//    JDialog cyberDialog(String title, Color accent) {
+//        JDialog d = new JDialog(this, true);
+//        d.setUndecorated(true);
+//        JPanel root = new JPanel(new BorderLayout());
+//        root.setBackground(ThemeManager.BG_PANEL);
+//        root.setBorder(BorderFactory.createLineBorder(accent));
+//        JPanel bar = new JPanel(new BorderLayout());
+//        bar.setBackground(ThemeManager.BG);
+//        bar.setPreferredSize(new Dimension(0, 32));
+//        bar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ThemeManager.LINE));
+//        JLabel t = label("  // " + title, ThemeManager.F_MONO_S, accent);
+//        bar.add(t, BorderLayout.WEST);
+//        JButton x = miniBtn("\u2715", ev -> d.dispose(), ThemeManager.NEON_PINK);
+//        JPanel xr = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 3));
+//        xr.setOpaque(false); xr.add(x);
+//        bar.add(xr, BorderLayout.EAST);
+//        root.add(bar, BorderLayout.NORTH);
+//        MouseAdapter drag = windowDrag(d);
+//        bar.addMouseListener(drag); bar.addMouseMotionListener(drag);
+//        t.addMouseListener(drag);   t.addMouseMotionListener(drag);
+//        d.setContentPane(root);
+//        return d;
+//    }
+//
+//    boolean confirmAction(String msg) {
+//        JDialog d = cyberDialog("CONFIRM ACTION", ThemeManager.NEON_PINK);
+//        JPanel body = new JPanel(new BorderLayout(0, 20));
+//        body.setBackground(ThemeManager.BG_PANEL);
+//        body.setBorder(empty(24, 26, 24, 26));
+//        body.add(label("<html>" + msg + "</html>", ThemeManager.F_MONO, ThemeManager.TXT), BorderLayout.CENTER);
+//        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+//        btns.setOpaque(false);
+//        boolean[] r = { false };
+//        CyberButton yes = new CyberButton("CONFIRM", ThemeManager.NEON_PINK, true);
+//        CyberButton no = new CyberButton("CANCEL", ThemeManager.NEON_CYAN, false);
+//        yes.addActionListener(ev -> { r[0] = true; d.dispose(); });
+//        no.addActionListener(ev -> d.dispose());
+//        btns.add(yes); btns.add(no);
+//        body.add(btns, BorderLayout.SOUTH);
+//        d.add(body, BorderLayout.CENTER);
+//        d.setSize(440, 150);
+//        d.setLocationRelativeTo(this);
+//        escapeToClose(d);
+//        d.setVisible(true);
+//        return r[0];
+//    }
+//
+//    void alert(String msg) {
+//        JDialog d = cyberDialog("SYSTEM ALERT", ThemeManager.NEON_PINK);
+//        JPanel body = new JPanel(new BorderLayout(0, 18));
+//        body.setBackground(ThemeManager.BG_PANEL);
+//        body.setBorder(empty(24, 26, 24, 26));
+//        body.add(label(msg, ThemeManager.F_MONO, ThemeManager.TXT), BorderLayout.CENTER);
+//        CyberButton ok = new CyberButton("OK", ThemeManager.NEON_CYAN, true);
+//        ok.addActionListener(ev -> d.dispose());
+//        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+//        btns.setOpaque(false); btns.add(ok);
+//        body.add(btns, BorderLayout.SOUTH);
+//        d.add(body, BorderLayout.CENTER);
+//        d.setSize(420, 150);
+//        d.setLocationRelativeTo(this);
+//        escapeToClose(d);
+//        d.setVisible(true);
+//    }
 
     void openSettings() {
         JDialog d = cyberDialog("SETTINGS", ThemeManager.NEON_CYAN);
@@ -1472,10 +1449,15 @@ public class CyberVault extends JFrame {
         return p;
     }
 
-    boolean saveVault() {
+    public static boolean saveVault() {
         try { manager.active.save(); return true; }
         catch (Exception ex) { alert("VAULT SAVE FAILED: " + ex.getMessage()); return false; }
     }
+
+//    boolean saveVault() {
+//        try { manager.active.save(); return true; }
+//        catch (Exception ex) { alert("VAULT SAVE FAILED: " + ex.getMessage()); return false; }
+//    }
 
 //    void copyText(String s, JButton src) {
 //        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(s), null);

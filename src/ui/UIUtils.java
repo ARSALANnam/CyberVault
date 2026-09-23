@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import java.awt.Window;
+import java.awt.Point;
+
 import static ui.theme.ThemeManager.*;
 
 public class UIUtils {
@@ -267,5 +270,97 @@ public class UIUtils {
     public static void escapeToClose(JDialog d) {
         d.getRootPane().registerKeyboardAction(ev -> d.dispose(),
             KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+
+    public static JButton miniBtn(String txt, ActionListener al, Color hover) {
+        JButton b = new JButton(txt);
+        b.setFont(F_MONO_S);
+        b.setForeground(TXT_DIM);
+        b.setPreferredSize(new Dimension(28, 22));
+        b.setMargin(new Insets(0, 0, 0, 0));
+        b.setContentAreaFilled(false); b.setBorderPainted(false); b.setFocusPainted(false);
+        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        b.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) { b.setForeground(hover); }
+            public void mouseExited(MouseEvent e)  { b.setForeground(TXT_DIM); }
+        });
+        b.addActionListener(al);
+        return b;
+    }
+
+    public static MouseAdapter windowDrag(Window w) {
+        return new MouseAdapter() {
+            Point start, winStart;
+            public void mousePressed(MouseEvent e) { start = e.getLocationOnScreen(); winStart = w.getLocation(); }
+            public void mouseDragged(MouseEvent e) {
+                Point p = e.getLocationOnScreen();
+                w.setLocation(winStart.x + p.x - start.x, winStart.y + p.y - start.y);
+            }
+        };
+    }
+
+    public static JDialog cyberDialog(String title, Color accent) {
+        JDialog d = new JDialog((Frame)null, true);
+        d.setUndecorated(true);
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(BG_PANEL);
+        root.setBorder(BorderFactory.createLineBorder(accent));
+        JPanel bar = new JPanel(new BorderLayout());
+        bar.setBackground(BG);
+        bar.setPreferredSize(new Dimension(0, 32));
+        bar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, LINE));
+        JLabel t = label("  // " + title, F_MONO_S, accent);
+        bar.add(t, BorderLayout.WEST);
+        JButton x = miniBtn("\u2715", ev -> d.dispose(), NEON_PINK);
+        JPanel xr = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 3));
+        xr.setOpaque(false); xr.add(x);
+        bar.add(xr, BorderLayout.EAST);
+        root.add(bar, BorderLayout.NORTH);
+        MouseAdapter drag = windowDrag(d);
+        bar.addMouseListener(drag); bar.addMouseMotionListener(drag);
+        t.addMouseListener(drag);   t.addMouseMotionListener(drag);
+        d.setContentPane(root);
+        return d;
+    }
+
+    public static boolean confirmAction(String msg) {
+        JDialog d = cyberDialog("CONFIRM ACTION", NEON_PINK);
+        JPanel body = new JPanel(new BorderLayout(0, 20));
+        body.setBackground(BG_PANEL);
+        body.setBorder(empty(24, 26, 24, 26));
+        body.add(label("<html>" + msg + "</html>", F_MONO, TXT), BorderLayout.CENTER);
+        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        btns.setOpaque(false);
+        boolean[] r = { false };
+        ui.components.CyberButton yes = new ui.components.CyberButton("CONFIRM", NEON_PINK, true);
+        ui.components.CyberButton no = new ui.components.CyberButton("CANCEL", NEON_CYAN, false);
+        yes.addActionListener(ev -> { r[0] = true; d.dispose(); });
+        no.addActionListener(ev -> d.dispose());
+        btns.add(yes); btns.add(no);
+        body.add(btns, BorderLayout.SOUTH);
+        d.add(body, BorderLayout.CENTER);
+        d.setSize(440, 150);
+        d.setLocationRelativeTo(null);
+        escapeToClose(d);
+        d.setVisible(true);
+        return r[0];
+    }
+
+    public static void alert(String msg) {
+        JDialog d = cyberDialog("SYSTEM ALERT", NEON_PINK);
+        JPanel body = new JPanel(new BorderLayout(0, 18));
+        body.setBackground(BG_PANEL);
+        body.setBorder(empty(24, 26, 24, 26));
+        body.add(label(msg, F_MONO, TXT), BorderLayout.CENTER);
+        ui.components.CyberButton ok = new ui.components.CyberButton("OK", NEON_CYAN, true);
+        ok.addActionListener(ev -> d.dispose());
+        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        btns.setOpaque(false); btns.add(ok);
+        body.add(btns, BorderLayout.SOUTH);
+        d.add(body, BorderLayout.CENTER);
+        d.setSize(420, 150);
+        d.setLocationRelativeTo(null);
+        escapeToClose(d);
+        d.setVisible(true);
     }
 }

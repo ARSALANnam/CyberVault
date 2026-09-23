@@ -77,7 +77,7 @@
 
 ```bash
 ./build.sh                 # or build.bat on Windows
-java -jar CyberVault.jar
+java -jar main.CyberVault.jar
 ```
 
 **First run:** create a master key (min 6 chars) → it is **never stored and cannot be recovered** → start adding entries.
@@ -112,9 +112,9 @@ Create `~/.local/share/applications/cybervault.desktop`:
 
 ```ini
 [Desktop Entry]
-Name=CyberVault
+Name=main.CyberVault
 Comment=Cyberpunk password manager
-Exec=java -jar /home/USER/path/to/CyberVault.jar
+Exec=java -jar /home/USER/path/to/main.CyberVault.jar
 Icon=/home/USER/path/to/assets/icon.png
 Terminal=false
 Type=Application
@@ -128,7 +128,7 @@ chmod +x ~/.local/share/applications/cybervault.desktop
 update-desktop-database ~/.local/share/applications
 ```
 
-Now CyberVault is available in the app menu (Super key) — launch it once,
+Now main.CyberVault is available in the app menu (Super key) — launch it once,
 then right-click its icon and **Add to Favorites** to pin it to your dock.
 
 

@@ -54,20 +54,28 @@ public class Vault {
             byte[] dec = decrypt(key, Arrays.copyOfRange(raw, 16, raw.length));
 
             ObjectInputStream ois = new ObjectInputStream(new java.io.ByteArrayInputStream(dec)) {
+
                 @Override
                 protected java.io.ObjectStreamClass readClassDescriptor() throws java.io.IOException, ClassNotFoundException {
                     java.io.ObjectStreamClass desc = super.readClassDescriptor();
-                    String className = desc.getName();
-                    if (className.equals("CyberVault$VaultData")) {
-                        return java.io.ObjectStreamClass.lookup(model.VaultData.class);
-                    }
-                    if (className.equals("CyberVault$PasswordEntry")) {
-                        return java.io.ObjectStreamClass.lookup(model.PasswordEntry.class);
-                    }
-                    if (className.equals("CyberVault$TokenEntry")) {
-                        return java.io.ObjectStreamClass.lookup(model.TokenEntry.class);
-                    }
+                    String name = desc.getName();
+
+                    if (name.contains("VaultData")) return java.io.ObjectStreamClass.lookup(model.VaultData.class);
+                    if (name.contains("PasswordEntry")) return java.io.ObjectStreamClass.lookup(model.PasswordEntry.class);
+                    if (name.contains("TokenEntry")) return java.io.ObjectStreamClass.lookup(model.TokenEntry.class);
+
                     return desc;
+                }
+
+                @Override
+                protected Class<?> resolveClass(java.io.ObjectStreamClass desc) throws java.io.IOException, ClassNotFoundException {
+                    String name = desc.getName();
+
+                    if (name.contains("VaultData")) return model.VaultData.class;
+                    if (name.contains("PasswordEntry")) return model.PasswordEntry.class;
+                    if (name.contains("TokenEntry")) return model.TokenEntry.class;
+
+                    return super.resolveClass(desc);
                 }
             };
 
