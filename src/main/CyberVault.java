@@ -577,7 +577,7 @@ public class CyberVault extends JFrame {
         JPanel txts = new JPanel(new GridLayout(0, 1, 0, 2));
         txts.setOpaque(false);
         txts.add(label("CYBERVAULT", ThemeManager.F_MONO_B, ThemeManager.NEON_CYAN));
-        txts.add(label("v1.8.0 // SECURE", ThemeManager.F_MONO_S, ThemeManager.TXT_DIM));
+        txts.add(label("v1.7.0 // SECURE", ThemeManager.F_MONO_S, ThemeManager.TXT_DIM));
         brand.add(txts, BorderLayout.CENTER);
         sb.add(brand, BorderLayout.NORTH);
 
