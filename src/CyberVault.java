@@ -91,6 +91,11 @@ import javax.swing.JOptionPane;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 
+import model.TokenEntry;
+import model.PasswordEntry;
+import model.VaultData;
+import model.VaultInfo;
+
 
 public class CyberVault extends JFrame {
 
@@ -1999,28 +2004,28 @@ public class CyberVault extends JFrame {
     }
 
 
-    /* DATA & CRYPTO */
-    static class PasswordEntry implements Serializable {
-        static final long serialVersionUID = 1L;
-        String title = "", username = "", password = "", url = "", notes = "";
-        List<String> tags = new ArrayList<>();
-        boolean favorite = false;
-        long created = System.currentTimeMillis();
-    }
+//    /* DATA & CRYPTO */
+//    static class PasswordEntry implements Serializable {
+//        static final long serialVersionUID = 1L;
+//        String title = "", username = "", password = "", url = "", notes = "";
+//        List<String> tags = new ArrayList<>();
+//        boolean favorite = false;
+//        long created = System.currentTimeMillis();
+//    }
 
-    static class TokenEntry implements Serializable {
-        static final long serialVersionUID = 1L;
-        String name = "", token = "", notes = "";
-        List<String> tags = new ArrayList<>();
-        boolean favorite = false;
-        long created = System.currentTimeMillis();
-    }
+//    static class TokenEntry implements Serializable {
+//        static final long serialVersionUID = 1L;
+//        String name = "", token = "", notes = "";
+//        List<String> tags = new ArrayList<>();
+//        boolean favorite = false;
+//        long created = System.currentTimeMillis();
+//    }
 
-    static class VaultData implements Serializable {
-        static final long serialVersionUID = 1L;
-        List<PasswordEntry> passwords = new ArrayList<>();
-        List<TokenEntry> tokens = new ArrayList<>();
-    }
+//    static class VaultData implements Serializable {
+//        static final long serialVersionUID = 1L;
+//        List<PasswordEntry> passwords = new ArrayList<>();
+//        List<TokenEntry> tokens = new ArrayList<>();
+//    }
 
      // VAULT MANAGER — manages multiple vaults with config file
     static class VaultManager {
@@ -2178,10 +2183,10 @@ public class CyberVault extends JFrame {
          }
      }
 
-    static class VaultInfo {
-        String name, file;
-        VaultInfo(String name, String file) { this.name = name; this.file = file; }
-    }
+//    static class VaultInfo {
+//        String name, file;
+//        VaultInfo(String name, String file) { this.name = name; this.file = file; }
+//    }
 
     static class JsonObject {
         Map<String, Object> map = new HashMap<>();
