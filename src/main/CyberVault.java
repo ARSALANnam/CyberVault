@@ -55,8 +55,6 @@ import javax.swing.JOptionPane;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 
-
-
 public class CyberVault extends JFrame {
 
     public static ui.panels.PasswordsPanel passwordsPanel;
@@ -85,7 +83,6 @@ public class CyberVault extends JFrame {
     boolean creatingNewVault = false;
     JPanel vaultSelectorPanel;
 
-
     /* FRAME */
     CyberVault() {
         setTitle("CYBERVAULT");
@@ -103,8 +100,6 @@ public class CyberVault extends JFrame {
             JOptionPane.showMessageDialog(null, "Failed to initialize: " + e.getMessage());
             System.exit(1);
         }
-
-
         ThemeManager.applyTheme(manager.theme);
         buildFrame();
         startActivityMonitor();
@@ -519,15 +514,12 @@ public class CyberVault extends JFrame {
         refreshVaultSelector();
     }
 
-    /* TRAY */
-
     /* AUTO-LOCK */
     void resetActivity() {
         lastActivity = System.currentTimeMillis();
     }
 
     void startActivityMonitor() {
-        // Listener سراسری — همه eventهای ماوس/کیبورد رو می‌گیره
         Toolkit.getDefaultToolkit().addAWTEventListener(ev -> {
             int id = ev.getID();
             if (id == java.awt.event.MouseEvent.MOUSE_MOVED ||
@@ -539,7 +531,6 @@ public class CyberVault extends JFrame {
             java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK |
             java.awt.AWTEvent.KEY_EVENT_MASK);
 
-        // تایمر هر ثانیه چک می‌کنه
         autoLockTimer = new Timer(1000, ev -> {
             if (manager.active == null) return;
             long idle = System.currentTimeMillis() - lastActivity;
@@ -547,7 +538,6 @@ public class CyberVault extends JFrame {
                 lockVault();
                 return;
             }
-            // نمایش شمارش معکوس
             long remain = (AUTO_LOCK_MS - idle) / 1000;
             long m = remain / 60, sec = remain % 60;
             String timeStr = String.format("%d:%02d", m, sec);
@@ -557,7 +547,6 @@ public class CyberVault extends JFrame {
         });
         autoLockTimer.start();
     }
-
 
     /* MAIN APP */
     JPanel buildAppScreen() {
