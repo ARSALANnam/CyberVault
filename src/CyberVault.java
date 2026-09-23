@@ -93,51 +93,53 @@ import javax.swing.Box;
 
 import model.*;
 import crypto.*;
+import static ui.theme.ThemeManager.*;
+import ui.theme.Theme;
 
 public class CyberVault extends JFrame {
 
-    /* THEME */
-    static Color BG = new Color(0x0A0A14);
-    static Color BG_PANEL = new Color(0x10101E);
-    static Color BG_CARD = new Color(0x151528);
-    static Color BG_FIELD = new Color(0x0C0C1A);
-    static Color LINE = new Color(0x2A2F4A);
-    static Color NEON_CYAN = new Color(0x00F0FF);
-    static Color NEON_PINK = new Color(0xFF2A6D);
-    static Color NEON_PURP = new Color(0x9D4EFF);
-    static Color NEON_GRN = new Color(0x39FF14);
-    static Color NEON_YEL = new Color(0xFFE600);
-    static Color TXT = new Color(0xE4E9FF);
-    static Color TXT_DIM = new Color(0x7A82A8);
-    static Color BG_GRAD = new Color(0x16, 0x0B, 0x26);
-    static Color DIM_1 = new Color(0x555C82);
-    static Color DIM_2 = new Color(0x454B6E);
-    static Color SCROLL_C = new Color(0x333A5C);
-    static boolean matrixRain = false;
-
-    static Font pickMono(int style, float size) {
-        String[] prefs = {"Consolas", "JetBrains Mono", "Cascadia Code", "Fira Code", "Menlo", "DejaVu Sans Mono"};
-        Set<String> avail = new HashSet<>(Arrays.asList(
-                GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
-        for (String p : prefs) if (avail.contains(p)) return new Font(p, style, 12).deriveFont(size);
-        return new Font(Font.MONOSPACED, style, 12).deriveFont(size);
-    }
-
-    static final Font F_MONO   = pickMono(Font.PLAIN, 13f);
-    static final Font F_MONO_S = pickMono(Font.PLAIN, 11f);
-    static final Font F_MONO_B = pickMono(Font.BOLD, 13f);
-    static final Font F_TITLE  = pickMono(Font.BOLD, 20f);
-    static final Font F_BIG    = pickMono(Font.BOLD, 27f);
-
-    static void applyTheme(String name) {
-        Theme t = findTheme(name);
-        BG = t.bg; BG_PANEL = t.bgPanel; BG_CARD = t.bgCard; BG_FIELD = t.bgField;
-        LINE = t.line; NEON_CYAN = t.neonCyan; NEON_PINK = t.neonPink;
-        NEON_PURP = t.neonPurp; NEON_GRN = t.neonGrn; NEON_YEL = t.neonYel;
-        TXT = t.txt; TXT_DIM = t.txtDim; BG_GRAD = t.bgGrad;
-        DIM_1 = t.dim1; DIM_2 = t.dim2; SCROLL_C = t.scrollC;
-        matrixRain = t.matrixRain;
-    }
+//    /* THEME */
+//    static Color BG = new Color(0x0A0A14);
+//    static Color BG_PANEL = new Color(0x10101E);
+//    static Color BG_CARD = new Color(0x151528);
+//    static Color BG_FIELD = new Color(0x0C0C1A);
+//    static Color LINE = new Color(0x2A2F4A);
+//    static Color NEON_CYAN = new Color(0x00F0FF);
+//    static Color NEON_PINK = new Color(0xFF2A6D);
+//    static Color NEON_PURP = new Color(0x9D4EFF);
+//    static Color NEON_GRN = new Color(0x39FF14);
+//    static Color NEON_YEL = new Color(0xFFE600);
+//    static Color TXT = new Color(0xE4E9FF);
+//    static Color TXT_DIM = new Color(0x7A82A8);
+//    static Color BG_GRAD = new Color(0x16, 0x0B, 0x26);
+//    static Color DIM_1 = new Color(0x555C82);
+//    static Color DIM_2 = new Color(0x454B6E);
+//    static Color SCROLL_C = new Color(0x333A5C);
+//    static boolean matrixRain = false;
+//
+//    static Font pickMono(int style, float size) {
+//        String[] prefs = {"Consolas", "JetBrains Mono", "Cascadia Code", "Fira Code", "Menlo", "DejaVu Sans Mono"};
+//        Set<String> avail = new HashSet<>(Arrays.asList(
+//                GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
+//        for (String p : prefs) if (avail.contains(p)) return new Font(p, style, 12).deriveFont(size);
+//        return new Font(Font.MONOSPACED, style, 12).deriveFont(size);
+//    }
+//
+//    static final Font F_MONO   = pickMono(Font.PLAIN, 13f);
+//    static final Font F_MONO_S = pickMono(Font.PLAIN, 11f);
+//    static final Font F_MONO_B = pickMono(Font.BOLD, 13f);
+//    static final Font F_TITLE  = pickMono(Font.BOLD, 20f);
+//    static final Font F_BIG    = pickMono(Font.BOLD, 27f);
+//
+//    static void applyTheme(String name) {
+//        Theme t = findTheme(name);
+//        BG = t.bg; BG_PANEL = t.bgPanel; BG_CARD = t.bgCard; BG_FIELD = t.bgField;
+//        LINE = t.line; NEON_CYAN = t.neonCyan; NEON_PINK = t.neonPink;
+//        NEON_PURP = t.neonPurp; NEON_GRN = t.neonGrn; NEON_YEL = t.neonYel;
+//        TXT = t.txt; TXT_DIM = t.txtDim; BG_GRAD = t.bgGrad;
+//        DIM_1 = t.dim1; DIM_2 = t.dim2; SCROLL_C = t.scrollC;
+//        matrixRain = t.matrixRain;
+//    }
 
     static VaultManager manager;
     final CardLayoutScreens screens = new CardLayoutScreens();
@@ -2356,64 +2358,64 @@ public class CyberVault extends JFrame {
 //        }
 //    }
 
-    static class Theme {
-        final String name, displayName;
-        final Color bg, bgPanel, bgCard, bgField;
-        final Color line, neonCyan, neonPink, neonPurp, neonGrn, neonYel;
-        final Color txt, txtDim, bgGrad, dim1, dim2, scrollC;
-        final boolean matrixRain;
-
-        Theme(String name, String displayName,
-              Color bg, Color bgPanel, Color bgCard, Color bgField,
-              Color line, Color neonCyan, Color neonPink, Color neonPurp, Color neonGrn, Color neonYel,
-              Color txt, Color txtDim, Color bgGrad, Color dim1, Color dim2, Color scrollC,
-              boolean matrixRain) {
-            this.name = name; this.displayName = displayName;
-            this.bg = bg; this.bgPanel = bgPanel; this.bgCard = bgCard; this.bgField = bgField;
-            this.line = line; this.neonCyan = neonCyan; this.neonPink = neonPink;
-            this.neonPurp = neonPurp; this.neonGrn = neonGrn; this.neonYel = neonYel;
-            this.txt = txt; this.txtDim = txtDim; this.bgGrad = bgGrad;
-            this.dim1 = dim1; this.dim2 = dim2; this.scrollC = scrollC;
-            this.matrixRain = matrixRain;
-        }
-    }
-
-    static final Theme[] PRESETS = {
-        new Theme("cyberpunk", "Cyberpunk",
-            new Color(0x0A0A14), new Color(0x10101E), new Color(0x151528), new Color(0x0C0C1A),
-            new Color(0x2A2F4A), new Color(0x00F0FF), new Color(0xFF2A6D), new Color(0x9D4EFF),
-            new Color(0x39FF14), new Color(0xFFE600), new Color(0xE4E9FF), new Color(0x7A82A8),
-            new Color(0x16, 0x0B, 0x26), new Color(0x555C82), new Color(0x454B6E), new Color(0x333A5C),
-            false),
-        new Theme("matrix", "Matrix",
-            new Color(0x000A00), new Color(0x001400), new Color(0x001C00), new Color(0x000E00),
-            new Color(0x1E4D1E), new Color(0x00FF41), new Color(0x00CC33), new Color(0x66FF99),
-            new Color(0x00FF41), new Color(0xB3FFB3), new Color(0xD6FFD6), new Color(0x4E994E),
-            new Color(0x001400), new Color(0x3E8A3E), new Color(0x2E662E), new Color(0x1E4D1E),
-            true),
-        new Theme("dark", "Dark",
-            new Color(0x1A1A1A), new Color(0x222222), new Color(0x2A2A2A), new Color(0x1E1E1E),
-            new Color(0x3A3A3A), new Color(0x5DADE2), new Color(0xE74C3C), new Color(0x9B59B6),
-            new Color(0x27AE60), new Color(0xF39C12), new Color(0xECF0F1), new Color(0x95A5A6),
-            new Color(0x1A1A1A), new Color(0x7F8C8D), new Color(0x616161), new Color(0x4A4A4A),
-            false),
-        new Theme("light", "Light",
-            new Color(0xF5F5F5), new Color(0xFFFFFF), new Color(0xFAFAFA), new Color(0xEFEFEF),
-            new Color(0xDCDCDC), new Color(0x0099CC), new Color(0xCC3366), new Color(0x7733CC),
-            new Color(0x2D8844), new Color(0xCC9900), new Color(0x1A1A1A), new Color(0x666666),
-            new Color(0xE8E8E8), new Color(0x999999), new Color(0xAAAAAA), new Color(0xBBBBBB),
-            false),
-        new Theme("pufak", "Pufak Namaki",
-            new Color(0xDA291C), new Color(0xB02015), new Color(0xBE2418), new Color(0xA01A0F),
-            new Color(0xE8A33D), new Color(0xFFC72C), new Color(0xFFFFFF), new Color(0xFFB300),
-            new Color(0xFFE082), new Color(0xFFEB3B), new Color(0xFFF8E1), new Color(0xEFA093),
-            new Color(0x8C1A10), new Color(0xE58F7F), new Color(0xD07A6C), new Color(0xFFC72C),
-            false),
-//        new Theme()
-    };
-
-    static Theme findTheme(String name) {
-        for (Theme t : PRESETS) if (t.name.equals(name)) return t;
-        return PRESETS[0];
-    }
+//    static class Theme {
+//        final String name, displayName;
+//        final Color bg, bgPanel, bgCard, bgField;
+//        final Color line, neonCyan, neonPink, neonPurp, neonGrn, neonYel;
+//        final Color txt, txtDim, bgGrad, dim1, dim2, scrollC;
+//        final boolean matrixRain;
+//
+//        Theme(String name, String displayName,
+//              Color bg, Color bgPanel, Color bgCard, Color bgField,
+//              Color line, Color neonCyan, Color neonPink, Color neonPurp, Color neonGrn, Color neonYel,
+//              Color txt, Color txtDim, Color bgGrad, Color dim1, Color dim2, Color scrollC,
+//              boolean matrixRain) {
+//            this.name = name; this.displayName = displayName;
+//            this.bg = bg; this.bgPanel = bgPanel; this.bgCard = bgCard; this.bgField = bgField;
+//            this.line = line; this.neonCyan = neonCyan; this.neonPink = neonPink;
+//            this.neonPurp = neonPurp; this.neonGrn = neonGrn; this.neonYel = neonYel;
+//            this.txt = txt; this.txtDim = txtDim; this.bgGrad = bgGrad;
+//            this.dim1 = dim1; this.dim2 = dim2; this.scrollC = scrollC;
+//            this.matrixRain = matrixRain;
+//        }
+//    }
+//
+//    static final Theme[] PRESETS = {
+//        new Theme("cyberpunk", "Cyberpunk",
+//            new Color(0x0A0A14), new Color(0x10101E), new Color(0x151528), new Color(0x0C0C1A),
+//            new Color(0x2A2F4A), new Color(0x00F0FF), new Color(0xFF2A6D), new Color(0x9D4EFF),
+//            new Color(0x39FF14), new Color(0xFFE600), new Color(0xE4E9FF), new Color(0x7A82A8),
+//            new Color(0x16, 0x0B, 0x26), new Color(0x555C82), new Color(0x454B6E), new Color(0x333A5C),
+//            false),
+//        new Theme("matrix", "Matrix",
+//            new Color(0x000A00), new Color(0x001400), new Color(0x001C00), new Color(0x000E00),
+//            new Color(0x1E4D1E), new Color(0x00FF41), new Color(0x00CC33), new Color(0x66FF99),
+//            new Color(0x00FF41), new Color(0xB3FFB3), new Color(0xD6FFD6), new Color(0x4E994E),
+//            new Color(0x001400), new Color(0x3E8A3E), new Color(0x2E662E), new Color(0x1E4D1E),
+//            true),
+//        new Theme("dark", "Dark",
+//            new Color(0x1A1A1A), new Color(0x222222), new Color(0x2A2A2A), new Color(0x1E1E1E),
+//            new Color(0x3A3A3A), new Color(0x5DADE2), new Color(0xE74C3C), new Color(0x9B59B6),
+//            new Color(0x27AE60), new Color(0xF39C12), new Color(0xECF0F1), new Color(0x95A5A6),
+//            new Color(0x1A1A1A), new Color(0x7F8C8D), new Color(0x616161), new Color(0x4A4A4A),
+//            false),
+//        new Theme("light", "Light",
+//            new Color(0xF5F5F5), new Color(0xFFFFFF), new Color(0xFAFAFA), new Color(0xEFEFEF),
+//            new Color(0xDCDCDC), new Color(0x0099CC), new Color(0xCC3366), new Color(0x7733CC),
+//            new Color(0x2D8844), new Color(0xCC9900), new Color(0x1A1A1A), new Color(0x666666),
+//            new Color(0xE8E8E8), new Color(0x999999), new Color(0xAAAAAA), new Color(0xBBBBBB),
+//            false),
+//        new Theme("pufak", "Pufak Namaki",
+//            new Color(0xDA291C), new Color(0xB02015), new Color(0xBE2418), new Color(0xA01A0F),
+//            new Color(0xE8A33D), new Color(0xFFC72C), new Color(0xFFFFFF), new Color(0xFFB300),
+//            new Color(0xFFE082), new Color(0xFFEB3B), new Color(0xFFF8E1), new Color(0xEFA093),
+//            new Color(0x8C1A10), new Color(0xE58F7F), new Color(0xD07A6C), new Color(0xFFC72C),
+//            false),
+////        new Theme()
+//    };
+//
+//    static Theme findTheme(String name) {
+//        for (Theme t : PRESETS) if (t.name.equals(name)) return t;
+//        return PRESETS[0];
+//    }
 }
