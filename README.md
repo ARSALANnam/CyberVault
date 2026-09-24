@@ -150,13 +150,10 @@ the AI accelerated the process, but the decisions (and the bugs) are mine.
 > Transparency matters: you deserve to know how the software you trust is made.
 
 <br>
-<br>
 
 ## 🧾 License
 
 MIT — see [LICENSE](LICENSE).
-
----
 
 <br>
 <p align="center">Made with ⚡, pure Java Swing & an AI pair programmer</p>
