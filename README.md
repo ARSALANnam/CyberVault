@@ -159,6 +159,5 @@ MIT — see [LICENSE](LICENSE).
 ---
 
 <br>
-<br>
 <p align="center">Made with ⚡, pure Java Swing & an AI pair programmer</p>
 <p align="center">May The Force Be With You</p>
