@@ -16,7 +16,6 @@
 </p>
 
 ## ✨ Features
-
 ### 🔒 Security First
 - 🔐 **Master-key vault** — PBKDF2 (120k iterations) + AES-256-GCM authenticated encryption
 - ⏰ **Auto-Lock** — vault locks automatically after 5 minutes of idle time (live countdown in sidebar)
