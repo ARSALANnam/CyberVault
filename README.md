@@ -60,16 +60,13 @@
 <p align="center"><img src="assets/ScreenShot-01.png" width="700"></p>
 <p align="center"><img src="assets/ScreenShot-02.png" width="700"></p>
 
-
 ## Matrix
 <p align="center"><img src="assets/Screenshot-05.png" width="700"></p>
 <p align="center"><img src="assets/Screenshot-06.png" width="700"></p>
 
-
 # Dark
 <p align="center"><img src="assets/Screenshot-07.png" width="700"></p>
 <p align="center"><img src="assets/Screenshot-08.png" width="700"></p>
-
 
 # Light
 <p align="center"><img src="assets/Screenshot-09.png" width="700"></p>
@@ -80,11 +77,7 @@
 
 - JDK 8+
 
-
-
-
 <br>
-
 <br>
 
 ## 🚀 Quick start
