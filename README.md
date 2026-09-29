@@ -1,4 +1,4 @@
-<h1 align="center">CYBERVAULT</h1>
+<h1 align="center"> CYBERVAULT </h1>
 <p align="center"> <img src="assets/bg.png" width="700"> </p>
 
 <p align="center">
@@ -16,6 +16,7 @@
 </p>
 
 ## ✨ Features
+
 ### 🔒 Security First
 - 🔐 **Master-key vault** — PBKDF2 (120k iterations) + AES-256-GCM authenticated encryption
 - ⏰ **Auto-Lock** — vault locks automatically after 5 minutes of idle time (live countdown in sidebar)
