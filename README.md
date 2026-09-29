@@ -1,5 +1,5 @@
 <h1 align="center">CYBERVAULT</h1>
-<p align="center"><img src="assets/bg.png" width="700"></p>
+<p align="center"> <img src="assets/bg.png" width="700"> </p>
 
 <p align="center">
   A cyberpunk-styled, fully offline password manager &amp; API token vault.<br>
