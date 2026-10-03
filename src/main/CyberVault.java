@@ -24,7 +24,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -46,10 +45,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import java.nio.file.Files;
 import java.util.Arrays;
-
 import javax.swing.JOptionPane;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
