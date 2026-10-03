@@ -54,6 +54,8 @@
 - **Centralized Theme Engine:** `ThemeManager` controls all UI colors and styling dynamically.
 - **Developer Friendly:** Extremely easy to add new panels, features, or themes without touching the core vault logic.
 
+<br>
+<br>
 
 # 🖼 More screenshots
 
