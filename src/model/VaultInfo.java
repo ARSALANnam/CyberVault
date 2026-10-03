@@ -1,6 +1,7 @@
 package model;
 
 public class VaultInfo {
+    
     public String name;
     public String file;
 
