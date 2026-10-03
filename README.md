@@ -68,9 +68,13 @@
 <p align="center"><img src="assets/Screenshot-05.png" width="700"></p>
 <p align="center"><img src="assets/Screenshot-06.png" width="700"></p>
 
+<br>
+
 # Dark
 <p align="center"><img src="assets/Screenshot-07.png" width="700"></p>
 <p align="center"><img src="assets/Screenshot-08.png" width="700"></p>
+
+<br>
 
 # Light
 <p align="center"><img src="assets/Screenshot-09.png" width="700"></p>
